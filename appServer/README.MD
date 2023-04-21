@@ -4,5 +4,6 @@
 <!-- install package Sequelize ORM  --> npm install --save sequelize
 <!-- install driver mssql --> 
 
+<!-- create file .env --> cp .env.example .env
 <!-- start Server-->
 <!-- use --> npm start
