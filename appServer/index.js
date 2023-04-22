@@ -1,29 +1,21 @@
 const express = require('express');
+const db = require('./common/utils/connect_database');
+const routes = require('./routes/routes');
+const systemConst = require('./common/consts/system_const')
 const app = express();
 
-const connectDatabase = require('./common/utils/connect_database');
-const routes = require('./routes/routes');
+const port = systemConst.PORT
 
-
-const port = 3000;
-app.use('/', routes);
+app.use('/api', routes);
 const start = async () => {
     try {
-        //await connectDatabase()
+        await db.connectDatabase();
         app.listen(port, () => {
             console.log(`Example app listening on port: ${port}`);
-        })
+        });
     }
     catch (error) {
-        console.log(error.message)
+        console.log(error.message);
     }
 };
 start();
-
-
-
-
-
-
-
-
