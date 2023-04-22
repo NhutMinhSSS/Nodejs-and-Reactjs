@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/controller');
+const getController = require('../app/controllers/controller');
 
 router.use(express.json());
 
-router.get('/api', (req,res) => {
+router.get('/', (req,res) => {
     res.send('Start')
 });
-router.post('/api/send', controller.request);
+router.post('/send', getController.request);
 
+router.get('/get-accounts', getController.selectQuery);
 module.exports = router;
