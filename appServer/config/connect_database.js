@@ -1,3 +1,4 @@
+const logger = require('./logger');
 const dotenv = require('dotenv');
 const { Sequelize } = require('sequelize');
 
@@ -20,7 +21,7 @@ class Database {
                     encrypt: true,
                 },
             },
-           
+            logging: (msg) => logger.info(msg)
         });
         this.pool = this.sequelize;
     }
@@ -28,8 +29,9 @@ class Database {
         try {
             await this.sequelize.authenticate();
         } catch (error) {
-            throw error
-            // throw new Error('Unable to connect database');
+            logger.error(error);
+            //throw error
+            throw new Error('Unable to connect database');
         }
     }
     getPool() {
