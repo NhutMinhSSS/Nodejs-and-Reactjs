@@ -1,6 +1,7 @@
 const logger = require('./logger');
 const dotenv = require('dotenv');
 const { Sequelize } = require('sequelize');
+const EnumMessage = require('../common/enums/enum_message');
 
 dotenv.config();
 
@@ -30,8 +31,7 @@ class Database {
             await this.sequelize.authenticate();
         } catch (error) {
             logger.error(error);
-            //throw error
-            throw new Error('Unable to connect database');
+            throw new Error(EnumMessage.UNABLE_CONNECT_DATABASE);
         }
     }
     getPool() {

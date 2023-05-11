@@ -14,11 +14,14 @@ const logger = createLogger({
     format.timestamp(),
     format.errors({ stack: true }),
     format.splat(),
-    format.json()
+    // format.json()
+    format.printf(({ timestamp, level, message, stack }) => {
+      return `${timestamp} ${level}: ${message}${stack || ''}`;
+    })
   ),
   transports: [
-    new transports.File({ filename: path.join(logDirectory, 'error.log'), level: 'error' }),
-    new transports.File({ filename: path.join(logDirectory, 'combined.log') })
+    //new transports.File({ filename: path.join(logDirectory, 'error.log'), level: 'error'}),
+    new transports.File({ filename: path.join(logDirectory, 'combined.log')})
   ]
 });
 
