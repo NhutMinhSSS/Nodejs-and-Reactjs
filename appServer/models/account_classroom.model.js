@@ -1,4 +1,4 @@
-const { DataTypes, DATE, Model } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 
 const db = require("../config/connect_database");
 const sequelize = db.getPool(); 
@@ -42,16 +42,16 @@ Account.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    create_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    update_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-    },
+    // create_at: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false,
+    //     defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+    // },
+    // update_at: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false,
+    //     defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+    // },
     status: {
         type: DataTypes.BOOLEAN,
         defaultValue: 1
