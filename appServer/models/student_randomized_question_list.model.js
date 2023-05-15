@@ -1,54 +1,49 @@
-const {DataTypes, Model} = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
 
-class Comment extends Model{}
+class StudentRandomizedQuestionList extends Model{}
 
-Comment.init({
+StudentRandomizedQuestionList.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
     },
-    postId: {
+    studentExamId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'posts',
+            model: 'studentExams',
             key: 'id'
         }
     },
-    accountId: {
+    questionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'questions',
             key: 'id'
         }
     },
-    content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    commentDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
+    order: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     status: {
         type: DataTypes.SMALLINT,
         allowNull: false,
         defaultValue: 1
     }
-},{
+}, {
     sequelize,
-    modelName: 'Comment',
-    tableName: 'comments',
+    modelName: 'StudentRandomizedQuestionList',
+    tableName: 'studentRandomizedQuestionLists',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
 
-module.exports = Comment;
+module.exports = StudentRandomizedQuestionList;

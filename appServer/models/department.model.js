@@ -2,10 +2,35 @@ const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
-
+//Bộ môn
 class Department extends Model{}
 
-Department.init({}, {
+Department.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    departmentName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    facultyId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'faculties',
+            key: 'id'
+        }
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        defaultValue: 1,
+        allowNull: false
+    }
+}, {
     sequelize, 
     modelName: 'Department',
     tableName: 'departments',

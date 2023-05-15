@@ -5,7 +5,35 @@ const sequelize = db.getPool();
 
 class PostFile extends Model{}
 
-PostFile.init({}, {
+PostFile.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    fileId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'files',
+            key: 'id'
+        }
+    },
+    postId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'posts',
+            key: 'id'
+        }
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        allowNull: false,
+        defaultValue: 1
+    }
+}, {
     sequelize,
     modelName: 'PostFile',
     tableName: 'postFiles',

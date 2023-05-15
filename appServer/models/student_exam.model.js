@@ -1,11 +1,53 @@
-const { Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
 
 class StudentExam extends Model{}
 
-StudentExam.init({}, {
+StudentExam.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    examId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'posts',
+            key: 'id'
+        }
+    },
+    studentId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'students',
+            key: 'id'
+        }
+    },
+    finishDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    totalScore: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        defaultValue: 0
+    },
+    submission: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        allowNull: false,
+        defaultValue: 1
+    }
+}, {
     sequelize,
     modelName: 'StudentExam',
     tableName: 'studentExams',

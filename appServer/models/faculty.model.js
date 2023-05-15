@@ -2,10 +2,27 @@ const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
-
+//Khoa
 class Faculty extends Model{}
 
-Faculty.init({}, {
+Faculty.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    facultyName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        defaultValue: 1,
+        allowNull: false
+    }
+}, {
     sequelize,
     modelName: 'Faculty',
     tableName: 'faculties',

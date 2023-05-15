@@ -11,9 +11,10 @@ PostCategory.init({
         primaryKey: true,
         autoIncrement: true
     },
-    postCategoryName: {
+    categoryName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     status: {
         type: DataTypes.SMALLINT,
