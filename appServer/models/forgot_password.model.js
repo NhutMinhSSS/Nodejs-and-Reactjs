@@ -16,7 +16,7 @@ ForgotPassword.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'AccountClassroom',
+            model: 'accountClassrooms',
             key: 'id'
         }
     },
@@ -28,7 +28,7 @@ ForgotPassword.init({
     createDate: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+        defaultValue: DataTypes.NOW
     },
     used: {
         type: DataTypes.BOOLEAN,

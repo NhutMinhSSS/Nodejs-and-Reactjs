@@ -5,7 +5,35 @@ const sequelize = db.getPool();
 
 class StudentList extends Model{}
 
-StudentList.init({}, {
+StudentList.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    classRoomId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'classRooms',
+            key: 'id'
+        }
+    },
+    studentId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'students',
+            key: 'id'
+        }
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        defaultValue: 1,
+        allowNull: false
+    }
+}, {
     sequelize,
     modelName: 'StudentList',
     tableName: 'studentLists',

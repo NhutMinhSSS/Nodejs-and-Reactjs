@@ -5,7 +5,36 @@ const sequelize = db.getPool();
 
 class Answer extends Model{}
 
-Answer.init({}, {
+Answer.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    questionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'questions',
+            key: 'id'
+        }
+    },
+    answer: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    correctAnswer: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        allowNull: false,
+        defaultValue: 1
+    }
+}, {
     sequelize,
     modelName: 'Answer',
     tableName: 'answers',
