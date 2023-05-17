@@ -12,7 +12,7 @@ StudentFileSubmission.init({
         autoIncrement: true,
         allowNull: false
     },
-    examId: {
+    exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -20,7 +20,7 @@ StudentFileSubmission.init({
             key: 'id'
         }
     },
-    fileId: {
+    file_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -28,11 +28,11 @@ StudentFileSubmission.init({
             key: 'id'
         }
     },
-    studentExamId: {
+    student_exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'studentExams',
+            model: 'student_exams',
             key: 'id'
         }
     },
@@ -44,7 +44,7 @@ StudentFileSubmission.init({
 }, {
     sequelize,
     modelName: 'StudentFileSubmission',
-    tableName: 'studentFileSubmissions',
+    tableName: 'student_file_submissions',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

@@ -11,7 +11,7 @@ PostCategory.init({
         primaryKey: true,
         autoIncrement: true
     },
-    categoryName: {
+    category_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -23,7 +23,7 @@ PostCategory.init({
 }, {
     sequelize,
     modelName: 'PostCategory',
-    tableName: 'postCategories',
+    tableName: 'post_categories',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

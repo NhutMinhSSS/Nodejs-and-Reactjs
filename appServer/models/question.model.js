@@ -12,11 +12,11 @@ Question.init({
         autoIncrement: true,
         allowNull: false
     },
-    examId: {
+    exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Post',
+            model: 'posts',
             key: 'id'
         }
     },
@@ -28,11 +28,11 @@ Question.init({
         type: DataTypes.FLOAT,
         allowNull: false,
     },
-    questionCategoryId: {
+    question_category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'questionCategories',
+            model: 'question_categories',
             key: 'id'
         }
     },
@@ -44,7 +44,7 @@ Question.init({
 }, {
     sequelize,
     modelName: 'Question',
-    tableName: 'Questions',
+    tableName: 'questions',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

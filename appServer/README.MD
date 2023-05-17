@@ -12,3 +12,19 @@
 <!-- create tables into database--> npm run migration
 <!-- start Server-->
 <!-- use --> npm start
+
+API Layout
+check token 
+    headers: {
+    'Authorization': 'Bearer <your_token>'
+  }
+Login function
+    -> route: domain/api/login
+    client request [post] json: {
+        "email": email,
+        "password": password
+    }
+    server response 
+        - Status 200 || 400 || 404 || 500 json: {
+                "result_message": message
+            }

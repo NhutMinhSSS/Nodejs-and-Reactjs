@@ -12,7 +12,7 @@ Faculty.init({
         autoIncrement: true,
         allowNull: false
     },
-    facultyName: {
+    faculty_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true

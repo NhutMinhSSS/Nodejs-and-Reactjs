@@ -12,7 +12,7 @@ PostFile.init({
         autoIncrement: true,
         allowNull: false
     },
-    fileId: {
+    file_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -20,7 +20,7 @@ PostFile.init({
             key: 'id'
         }
     },
-    postId: {
+    post_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -36,7 +36,7 @@ PostFile.init({
 }, {
     sequelize,
     modelName: 'PostFile',
-    tableName: 'postFiles',
+    tableName: 'post_files',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

@@ -12,7 +12,7 @@ Answer.init({
         autoIncrement: true,
         allowNull: false
     },
-    questionId: {
+    question_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -24,7 +24,7 @@ Answer.init({
         type: DataTypes.TEXT,
         allowNull: false
     },
-    correctAnswer: {
+    correct_answer: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: 0

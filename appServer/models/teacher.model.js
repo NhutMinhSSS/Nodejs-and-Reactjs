@@ -1,7 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
 
-const db = require("../config/connect_database");
-const AccountClassroom = require('./account_classroom.model');
+const db = require('../config/connect_database');
+const AccountClassroom = require('./account.model');
 const sequelize = db.getPool();
 
 class Teacher extends Model{}
@@ -13,20 +13,20 @@ Teacher.init({
         autoIncrement: true,
         allowNull: false
     },
-    teachCode: {
+    teacher_code: {
         type: DataTypes.CHAR(10),
         allowNull: false,
         unique: true
     },
-    firstName: {
+    first_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    lastName: {
+    last_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dateOfBirth: {
+    date_of_birth: {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
@@ -34,7 +34,7 @@ Teacher.init({
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    phoneNumber: {
+    phone_number: {
         type: DataTypes.STRING(20),
         allowNull: true
     },
@@ -43,15 +43,15 @@ Teacher.init({
         allowNull: false,
         unique: true
     },
-    accountId: {
+    account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'accounts',
             key: 'id'
         }
     },
-    departmentId: {
+    department_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -77,6 +77,6 @@ Teacher.init({
     updatedAt: 'update_at'
 });
 
-Teacher.belongsTo(AccountClassroom, {foreignKey: 'accountId'});
+Teacher.belongsTo(AccountClassroom, {foreignKey: 'account_id'});
 
 module.exports = Teacher;

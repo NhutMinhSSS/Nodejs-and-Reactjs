@@ -1,7 +1,7 @@
-const { DataTypes, Model } = require("sequelize");
+const { DataTypes, Model } = require('sequelize');
 
-const db = require("../config/connect_database");
-const Account = require("./account_classroom.model");
+const db = require('../config/connect_database');
+const Account = require('./account.model');
 const sequelize = db.getPool();
 
 class Student extends Model{}
@@ -13,20 +13,20 @@ Student.init({
         autoIncrement: true,
         allowNull: false
     },
-    studentCode: {
+    student_code: {
         type: DataTypes.CHAR(10),
         allowNull: false,
         unique: true
     },
-    firstName: {
+    first_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    lastName: {
+    last_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dateOfBirth: {
+    date_of_birth: {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
@@ -34,7 +34,7 @@ Student.init({
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    phoneNumber: {
+    phone_number: {
         type: DataTypes.STRING(20),
         allowNull: true
     },
@@ -43,11 +43,11 @@ Student.init({
         allowNull: false,
         unique: true
     },
-    accountId: {
+    account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'accounts',
             key: 'id'
         }
     },
@@ -68,6 +68,6 @@ Student.init({
     updatedAt: 'update_at'
 });
 
-Student.belongsTo(Account, {foreignKey: 'accountId'});
+Student.belongsTo(Account, {foreignKey: 'account_id'});
 
 module.exports = Student;

@@ -1,7 +1,7 @@
 const db = require('../config/connect_database');
 const logger = require('../config/logger');
 // const pool = db.getPool();
-const Accounts = require('../models/account_classroom.model');
+const Accounts = require('../models/account.model');
 class GetController {
     request(req, res) {
         let data = req.body.name;

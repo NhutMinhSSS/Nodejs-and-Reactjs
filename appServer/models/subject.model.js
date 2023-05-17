@@ -13,7 +13,7 @@ Subject.init({
         autoIncrement: true,
         allowNull: false
     },
-    subjectName: {
+    subject_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -22,7 +22,7 @@ Subject.init({
         type: DataTypes.SMALLINT,
         defaultValue: 1
     },
-    departmentId: {
+    department_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -44,6 +44,6 @@ Subject.init({
     updatedAt: 'update_at'
 });
 
-Subject.belongsTo(Department, { foreignKey: 'departmentId'});
+Subject.belongsTo(Department, { foreignKey: 'department_id'});
 
 module.exports = Subject;

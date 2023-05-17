@@ -12,7 +12,7 @@ QuestionCategory.init({
         autoIncrement: true,
         allowNull: false
     },
-    categoryName: {
+    category_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
@@ -25,7 +25,7 @@ QuestionCategory.init({
 }, {
     sequelize,
     modelName: 'QuestionCategory',
-    tableName: 'questionCategories',
+    tableName: 'question_categories',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

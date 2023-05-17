@@ -1,10 +1,10 @@
-const { DataTypes, Model } = require("sequelize");
+const { DataTypes, Model } = require('sequelize');
 
-const db = require("../config/connect_database");
+const db = require('../config/connect_database');
 const sequelize = db.getPool(); 
 
-class AccountClassroom extends Model {}
-AccountClassroom.init({
+class Account extends Model {}
+Account.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -34,11 +34,17 @@ AccountClassroom.init({
         allowNull: false
     }
 }, { sequelize,
-    modelName: 'AccountClassroom',
-    tableName: 'accountClassrooms',
+    modelName: 'Account',
+    tableName: 'accounts',
     timestamps: true,
     createdAt: 'create_at',
-    updatedAt: 'update_at'
+    updatedAt: 'update_at',
+    indexes: [
+        {
+            unique: true,
+            fields: ['email']
+        }
+    ]
 });
 
-module.exports = AccountClassroom;
+module.exports = Account;

@@ -12,15 +12,15 @@ Topic.init({
         autoIncrement: true,
         allowNull: false
     },
-    topicName: {
+    topic_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    topicOrder: {
+    topic_order: {
         type: DataTypes.SMALLINT,
         allowNull: true
     },
-    classRoomId: {
+    classroom_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

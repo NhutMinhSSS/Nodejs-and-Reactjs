@@ -12,37 +12,37 @@ File.init({
         autoIncrement: true,
         allowNull: false
     },
-    fileName: {
+    file_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    physicalName: {
+    physical_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    createDate: {
+    create_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    filePath: {
+    file_path: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    fileType: {
+    file_type: {
         type: DataTypes.STRING(10),
         allowNull: false
     },
-    accountId: {
+    account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'accounts',
             key: 'id'
         }
     },
-    fileData: {
+    file_data: {
         type: DataTypes.FLOAT(10),
         allowNull: false
     },
