@@ -3,9 +3,8 @@ const {DataTypes, Model} = require('sequelize');
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
 
-class Comment extends Model{}
-
-Comment.init({
+class PostDetail extends Model{}
+PostDetail.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -20,35 +19,27 @@ Comment.init({
             key: 'id'
         }
     },
-    account_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'accounts',
-            key: 'id'
-        }
-    },
-    content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    comment_date: {
+    finish_date: {
         type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
+        allowNull: true
     },
-    status: {
-        type: DataTypes.SMALLINT,
+    inverted_question: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1
-    }
-},{
+        defaultValue: 0
+    },
+    inverted_answer: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0
+    },
+}, {
     sequelize,
-    modelName: 'Comment',
-    tableName: 'comments',
+    modelName: 'PostDetail',
+    tableName: 'post_details',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
 
-module.exports = Comment;
+module.exports = PostDetail;

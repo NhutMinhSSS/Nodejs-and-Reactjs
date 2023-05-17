@@ -12,17 +12,17 @@ RegularClass.init({
         autoIncrement: true,
         allowNull: false
     },
-    className: {
+    class_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    createDate: {
+    create_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    departmentId: {
+    department_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -37,7 +37,7 @@ RegularClass.init({
 }, {
     sequelize,
     modelName: 'RegularClass',
-    tableName: 'regularClass',
+    tableName: 'regular_class',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

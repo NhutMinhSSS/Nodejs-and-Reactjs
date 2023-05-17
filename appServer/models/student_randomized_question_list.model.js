@@ -12,15 +12,15 @@ StudentRandomizedQuestionList.init({
         autoIncrement: true,
         allowNull: false
     },
-    studentExamId: {
+    student_exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'studentExams',
+            model: 'student_exams',
             key: 'id'
         }
     },
-    questionId: {
+    question_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -40,7 +40,7 @@ StudentRandomizedQuestionList.init({
 }, {
     sequelize,
     modelName: 'StudentRandomizedQuestionList',
-    tableName: 'studentRandomizedQuestionLists',
+    tableName: 'student_randomized_question_lists',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

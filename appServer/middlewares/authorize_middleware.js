@@ -11,7 +11,7 @@ const authorize = (allowedRoles) => (req, res, next) => {
       }
   } catch (error) {
     logger.error(error);
-    return res.status(SystemConst.FORBIDDEN_REQUEST).json({ result_message: error.message });
+    return res.status(SystemConst.STATUS_CODE.FORBIDDEN_REQUEST).json({ result_message: error.message });
   }
 }
 module.exports = authorize;

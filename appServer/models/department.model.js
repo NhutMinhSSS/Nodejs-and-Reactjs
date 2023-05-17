@@ -12,12 +12,12 @@ Department.init({
         autoIncrement: true,
         allowNull: false
     },
-    departmentName: {
+    department_name: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
     },
-    facultyId: {
+    faculty_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

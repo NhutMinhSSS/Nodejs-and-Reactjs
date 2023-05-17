@@ -12,7 +12,7 @@ StudentExam.init({
         autoIncrement: true,
         allowNull: false
     },
-    examId: {
+    exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -20,7 +20,7 @@ StudentExam.init({
             key: 'id'
         }
     },
-    studentId: {
+    student_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -28,11 +28,11 @@ StudentExam.init({
             key: 'id'
         }
     },
-    finishDate: {
+    finish_date: {
         type: DataTypes.DATE,
         allowNull: true
     },
-    totalScore: {
+    total_score: {
         type: DataTypes.FLOAT,
         allowNull: true,
         defaultValue: 0
@@ -50,7 +50,7 @@ StudentExam.init({
 }, {
     sequelize,
     modelName: 'StudentExam',
-    tableName: 'studentExams',
+    tableName: 'student_exams',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'

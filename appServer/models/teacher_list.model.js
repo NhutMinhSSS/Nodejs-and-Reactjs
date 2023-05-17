@@ -12,15 +12,15 @@ TeacherList.init({
         autoIncrement: true,
         allowNull: false
     },
-    classRoomId: {
+    classroom_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'classRooms',
+            model: 'classrooms',
             key: 'id'
         }
     },
-    teacherId: {
+    teacher_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -36,10 +36,15 @@ TeacherList.init({
 }, {
     sequelize,
     modelName: 'TeacherList',
-    tableName: 'teacherLists',
+    tableName: 'teacher_lists',
     timestamps: true,
     createdAt: 'create_at',
-    updatedAt: 'update_at'
+    updatedAt: 'update_at',
+    indexes: [
+        {
+            fields: ['classroom_id', 'teacher_id']
+        }
+    ]
 });
 
 module.exports = TeacherList;

@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const SystemConst = require('../common/consts/system_const');
 dotenv.config();

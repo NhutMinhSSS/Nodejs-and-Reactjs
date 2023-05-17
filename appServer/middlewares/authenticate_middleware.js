@@ -10,18 +10,18 @@ const authenticateToken = (req, res, next) => {
         const authHeader = req.headers[EnumServerDefinitions.AUTHORIZATION];
         const token = authHeader && authHeader.split(' ')[1];
         if (token == null) {
-            throw new Error(EnumMessage.TOKEN_NOT_PROVIDE); // Ném một lỗi nếu token không được cung cấp
+            throw new Error(EnumMessage.TOKEN.TOKEN_NOT_PROVIDE); // Ném một lỗi nếu token không được cung cấp
         }
         jwt.verify(token, secretToken, (err, user) => {
             if (err) {
-              throw new Error(EnumMessage.TOKEN_NOT_INVALID); // Ném một lỗi nếu token không hợp lệ
+              throw new Error(EnumMessage.TOKEN.TOKEN_NOT_INVALID); // Ném một lỗi nếu token không hợp lệ
             }
             req.user = user;
             next();
         });
     } catch (error) {
         logger.error(error);
-        return res.status(SystemConst.UNAUTHORIZED_REQUEST).json({ result_message: error.message });
+        return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({ result_message: error.message });
     }
 }
 

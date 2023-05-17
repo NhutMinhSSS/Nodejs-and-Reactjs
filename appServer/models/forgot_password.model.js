@@ -1,22 +1,22 @@
 const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database');
-const Account = require('./account_classroom.model');
+const Account = require('./account.model');
 const sequelize = db.getPool();
 
 class ForgotPassword extends Model{}
 
 ForgotPassword.init({
     id: {
-        type: DataTypes.INTEGER.length(20),
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    accountId: {
+    account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'accounts',
             key: 'id'
         }
     },
@@ -25,7 +25,7 @@ ForgotPassword.init({
         allowNull: false,
         unique: true
     },
-    createDate: {
+    create_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
@@ -45,7 +45,7 @@ ForgotPassword.init({
 });
 
 ForgotPassword.belongsTo(Account, {
-    foreignKey: 'accountId'
+    foreignKey: 'account_id'
 });
 
 module.exports = ForgotPassword;

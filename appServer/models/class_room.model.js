@@ -1,23 +1,27 @@
 const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database');
-const { IGNORE } = require('sequelize/types/index-hints');
 const sequelize = db.getPool();
 
-class ClassRoom extends Model{}
+class Classroom extends Model{}
 
-ClassRoom.init({
+Classroom.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
     },
-    className: {
+    class_code:{
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        unique: true
+    },
+    class_name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    createDate: {
+    create_date: {
         type: DataTypes.DATEONLY,
         allowNull: false,
         defaultValue: DataTypes.NOW
@@ -30,11 +34,11 @@ ClassRoom.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    regularClassId: {
+    regular_class_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'regularClass',
+            model: 'regular_class',
             key: 'id'
         }
     },
@@ -45,11 +49,17 @@ ClassRoom.init({
     }
 }, {
     sequelize,
-    modelName: 'ClassRoom',
-    tableName: 'classRooms',
+    modelName: 'Classroom',
+    tableName: 'classrooms',
     timestamps: true,
     createdAt: 'create_at',
-    updatedAt: 'update_at'
+    updatedAt: 'update_at',
+    indexes: [
+        {
+            unique: true,
+            fields: ['class_code']
+        }
+    ]
 });
 
-module.exports = ClassRoom;
+module.exports = Classroom;

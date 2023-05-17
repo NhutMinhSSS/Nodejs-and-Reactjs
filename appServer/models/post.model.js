@@ -20,56 +20,42 @@ Post.init({
         type: DataTypes.TEXT,
         allowNull: true
     },
-    createDate: {
+    create_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    postCategoryId: {
+    post_category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'postCategories',
+            model: 'post_categories',
             key: 'id'
         }
     },
-    accountId: {
+    account_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'accountClassrooms',
+            model: 'accounts',
             key: 'id'
         }
     },
-    classRoomId: {
+    classroom_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'classRooms',
+            model: 'classrooms',
             key: 'id'
         }
     },
-    topicId: {
+    topic_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
             model: 'topics',
             key: 'id'
         }
-    },
-    finishDate: {
-        type: DataTypes.DATE,
-        allowNull: true
-    },
-    invertedQuestion: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: 0
-    },
-    InvertedAnswer: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: 0
     },
     status: {
         type: DataTypes.SMALLINT,
@@ -78,7 +64,7 @@ Post.init({
     }
 }, {
     sequelize,
-    modelName: 'Posts',
+    modelName: 'Post',
     tableName: 'posts',
     timestamps: true,
     createdAt: 'create_at',

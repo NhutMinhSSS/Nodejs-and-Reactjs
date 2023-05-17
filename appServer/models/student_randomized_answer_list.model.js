@@ -1,16 +1,24 @@
-const { DataTypes, Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database');
 const sequelize = db.getPool();
 
-class StudentAnswerOption extends Model { }
+class StudentRandomizedAnswerList extends Model{}
 
-StudentAnswerOption.init({
+StudentRandomizedAnswerList.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
+    },
+    student_exam_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'student_exams',
+            key: 'id'
+        }
     },
     question_id: {
         type: DataTypes.INTEGER,
@@ -22,28 +30,15 @@ StudentAnswerOption.init({
     },
     answer_id: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
             model: 'answers',
             key: 'id'
         }
     },
-    essay_answer: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    student_exam_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'student_exams',
-            key: 'id'
-        }
-    },
-    score: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0
+    order: {
+        type: DataTypes.SMALLINT,
+        allowNull: false
     },
     status: {
         type: DataTypes.SMALLINT,
@@ -52,11 +47,9 @@ StudentAnswerOption.init({
     }
 }, {
     sequelize,
-    modelName: 'StudentAnswerOption',
-    tableName: 'student_answer_options',
+    modelName: 'StudentRandomizedAnswerList',
+    tableName: 'Student_randomized_answer_lists',
     timestamps: true,
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
-
-module.exports = StudentAnswerOption;
