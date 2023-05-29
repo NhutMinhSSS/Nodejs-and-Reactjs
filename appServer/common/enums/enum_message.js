@@ -17,5 +17,8 @@ class EnumMessage{
    
     static UNABLE_CONNECT_DATABASE = 'Unable to connect database';
     static DEFAULT_ERROR = 'Error in the server';
+    //
+    static ERROR_HASHING_PASSWORD = 'Error hashing password';
+    static ERROR_COMPARING_PASSWORDS = 'Error comparing passwords';
 }
 module.exports = EnumMessage;
