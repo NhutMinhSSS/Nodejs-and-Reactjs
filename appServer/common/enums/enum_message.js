@@ -11,7 +11,8 @@ class EnumMessage{
     static UNAUTHORIZED_ERROR = 'Unauthorized';
     static TOKEN = {
         TOKEN_NOT_PROVIDE: 'Token is not provided',
-        TOKEN_NOT_INVALID: 'Token is invalid'
+        TOKEN_NOT_INVALID: 'Token is invalid',
+        TOKEN_EXPIRED: 'Token is expired'
     };
    
     static UNABLE_CONNECT_DATABASE = 'Unable to connect database';

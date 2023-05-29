@@ -14,7 +14,11 @@ const authenticateToken = (req, res, next) => {
         }
         jwt.verify(token, secretToken, (err, user) => {
             if (err) {
-              throw new Error(EnumMessage.TOKEN.TOKEN_NOT_INVALID); // Ném một lỗi nếu token không hợp lệ
+                if (err.name === 'TokenExpiredError') {
+                    throw new Error(EnumMessage.TOKEN.TOKEN_EXPIRED);
+                } else {
+                    throw new Error(EnumMessage.TOKEN.TOKEN_NOT_INVALID); // Ném lỗi nếu token không hợp lệ
+                }
             }
             req.user = user;
             next();

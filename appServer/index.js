@@ -14,7 +14,7 @@ app.use('/api', routes);
 const start = async () => {
     try {
         await db.connectDatabase();
-       app.listen(port, async() => {
+       app.listen(port, domain,async() => {
             logger.info(`Example app listening on port: ${port}`);
         }).on(EnumServerDefinitions.ERROR, (error) => {
             logger.error(`Failed to start server: ${error}`);
