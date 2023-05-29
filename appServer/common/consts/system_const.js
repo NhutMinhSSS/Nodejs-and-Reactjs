@@ -12,5 +12,7 @@ class SystemConst {
     };
     // time token
     static EXPIRES_IN = '1d';
+    // Số lượng vòng lặp mã hóa
+    static SALTROUNDS = 10;
 }
 module.exports = SystemConst;
