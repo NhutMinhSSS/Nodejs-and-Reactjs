@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-const db = require('../config/connect_database');
+const db = require('../config/connect_database.config');
 const sequelize = db.getPool();
 
 class StudentRandomizedAnswerList extends Model{}

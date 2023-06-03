@@ -1,4 +1,4 @@
-const logger = require('../config/logger');
+const logger = require('../config/logger.config');
 const Faculty = require('../models/faculty.model');
 const PostCategory = require('../models/post_category.model');
 const QuestionCategory = require('../models/question_category.mode');
