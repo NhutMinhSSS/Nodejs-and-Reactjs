@@ -4,7 +4,7 @@ const BcryptUtils = require("../config/bcrypt_utils.config");
 const createToken = require("../config/create_token.config");
 const logger = require("../config/logger.config");
 const Account = require('../models/account.model');
-const AccountService = require("../services/account_service");
+const AccountService = require("../services/account.service");
 
 class LoginController {
 

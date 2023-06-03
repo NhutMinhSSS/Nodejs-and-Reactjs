@@ -1,7 +1,7 @@
 const EnumMessage = require("../common/enums/enum_message");
 const { STATUS } = require("../common/enums/enum_server_definitions");
-const BcryptUtils = require("../config/bcrypt_utils");
-const logger = require("../config/logger");
+const BcryptUtils = require("../config/bcrypt_utils.config");
+const logger = require("../config/logger.config");
 const Account = require("../models/account.model");
 
 class AccountService {

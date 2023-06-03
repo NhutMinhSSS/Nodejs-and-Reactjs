@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const logger = require('../config/logger');
+const logger = require('../config/logger.config');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
 const EnumMessage = require('../common/enums/enum_message');
 const SystemConst = require('../common/consts/system_const')

@@ -1,4 +1,4 @@
-const logger = require('../config/logger');
+const logger = require('../config/logger.config');
 
 const responseMiddleware = (req, res, next) => {
     const start = Date.now();
