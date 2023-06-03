@@ -9,51 +9,51 @@ import HomeScreen from './page/Main/HomeScreen';
 import { Route, Routes } from 'react-router-dom';
 
 function App() {
-  return (
-    <>
-      <Routes>
-        <Route
-          path='/'
-          element={
-            <div>
-              <Login />
-            </div>
-          }
-        />
-        <Route
-          path='/giang-vien'
-          element={
-            <div>
-              <HomeScreen />
-            </div>
-          }
-        />
-        <Route
-          path='/giang-vien/class/:id'
-          element={
-            <div>
-              <JoinClassedTeacher />
-            </div>
-          }
-        />
-        <Route
-          path='/sinh-vien'
-          element={
-            <div>
-              <HomeScreen />
-            </div>
-          }
-        />
-        <Route
-          path='/sinh-vien/class/:id'
-          element={
-            <div>
-              <JoinClassedStudent />
-            </div>
-          }
-        />
+    return (
+        <>
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <div>
+                            <Login />
+                        </div>
+                    }
+                />
+                <Route
+                    path="/giang-vien"
+                    element={
+                        <div>
+                            <HomeScreen />
+                        </div>
+                    }
+                />
+                <Route
+                    path="/giang-vien/class/:id"
+                    element={
+                        <div>
+                            <JoinClassedTeacher />
+                        </div>
+                    }
+                />
+                <Route
+                    path="/sinh-vien"
+                    element={
+                        <div>
+                            <HomeScreen />
+                        </div>
+                    }
+                />
+                <Route
+                    path="/sinh-vien/class/:id"
+                    element={
+                        <div>
+                            <JoinClassedStudent />
+                        </div>
+                    }
+                />
 
-        {/* <Route
+                {/* <Route
           path='quiz'
           element={
             <div>
@@ -61,9 +61,9 @@ function App() {
             </div>
           }
         ></Route> */}
-      </Routes>
-    </>
-  );
+            </Routes>
+        </>
+    );
 }
 
 export default App;
