@@ -11,7 +11,7 @@ class SystemConst {
         INTERNAL_SERVER: 500
     };
     // time token
-    static EXPIRES_IN = '1d';
+    static EXPIRES_IN = '5d';
     // Số lượng vòng lặp mã hóa
     static SALTROUNDS = 10;
 }

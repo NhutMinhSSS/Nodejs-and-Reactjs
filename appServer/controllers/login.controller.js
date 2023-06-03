@@ -1,8 +1,10 @@
 const SystemConst = require("../common/consts/system_const");
 const EnumMessage = require("../common/enums/enum_message");
-const createToken = require("../config/create_token");
-const logger = require("../config/logger");
+const BcryptUtils = require("../config/bcrypt_utils.config");
+const createToken = require("../config/create_token.config");
+const logger = require("../config/logger.config");
 const Account = require('../models/account.model');
+const AccountService = require("../services/account_service");
 
 class LoginController {
 
@@ -12,23 +14,25 @@ class LoginController {
             const password = req.body.password;
             if (!email || !password) {
                 return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({
-                    result_message: "Email and password are required"
+                    result_message: EnumMessage.LOGIN.REQUIRED_EMAIL_AND_PASSWORD
                 });
             }
             //bcrypt password
-            const result = await Account.findOne({
-                where: {
-                    email: email,
-                    password: password
+            const account = await AccountService.findAccountByEmail(email);
+            if (account != null) {
+                const isMatch = BcryptUtils.comparePassword(password, account.password);
+                if (isMatch) {
+                    const accessToken = createToken({ accountId: account.id, role: account.role });
+                    return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
+                        result_message: EnumMessage.RESPONSE.SUCCESS,
+                        token: accessToken,
+                        role: account.role
+                    });
+                } else {
+                    return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({
+                        result_message: EnumMessage.LOGIN.INVALID_PASSWORD
+                    });
                 }
-            });
-            if (result != null) {
-                const token = createToken({ accountId: result.id, role: result.role });
-                return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
-                    result_message: EnumMessage.RESPONSE.SUCCESS,
-                    token: token,
-                    role: result.role
-                });
             } else {
                 return res.status(SystemConst.STATUS_CODE.NOT_FOUND).json({
                     result_message: EnumMessage.RESPONSE.FAILED

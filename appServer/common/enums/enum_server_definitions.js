@@ -3,5 +3,7 @@ class EnumServerDefinitions {
     static ERROR = 'error';
     static FINISH = 'finish';
     static AUTHORIZATION = 'Authorization';
+    //
+    static STATUS = 1;
 }
 module.exports = EnumServerDefinitions;

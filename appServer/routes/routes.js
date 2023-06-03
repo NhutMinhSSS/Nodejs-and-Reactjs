@@ -16,6 +16,5 @@ router.post('/send', getController.request);
 
 router.post('/login', LoginController.login);
 
-router.get('/get-accounts', authenticateToken, getController.selectQuery);
 
 module.exports = router;
