@@ -1,6 +1,6 @@
 class SystemConst {
     static PORT = 3000;
-    static DOMAIN = '192.168.1.9'
+    static DOMAIN = '192.168.1.7'
     static STATUS_CODE = {
         SUCCESS: 200,
         BAD_REQUEST: 400,
