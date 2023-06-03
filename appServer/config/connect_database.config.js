@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const logger = require('./logger.config');
 const dotenv = require('dotenv');
 const { Sequelize } = require('sequelize');
 const EnumMessage = require('../common/enums/enum_message');
