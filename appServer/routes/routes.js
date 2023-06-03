@@ -12,7 +12,6 @@ router.use(responseMiddleware);
 router.get('/', (req, res) => {
   res.send('Start')
 });
-router.post('/send', getController.request);
 
 router.post('/login', LoginController.login);
 

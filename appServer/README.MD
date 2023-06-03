@@ -1,6 +1,8 @@
 <!-- npm init --> 
 <!-- install framework express --> npm install express
 <!-- set up --> npm install nodemon --save-dev
+<!-- install log--> npm i winston
+<!-- install variable config --> npm i dotenv
 <!-- install package Sequelize ORM  --> npm install --save sequelize
 <!-- install driver mssql --> 
 
@@ -20,7 +22,7 @@ check token
   }
 Login function
     -> route: domain/api/login
-    client request [post] json: {
+    client request [GET] json: {
         "email": email,
         "password": password
     }
