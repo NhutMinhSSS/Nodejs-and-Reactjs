@@ -5,7 +5,6 @@ const responseMiddleware = require('../middlewares/response_middleware');
 const authenticateToken = require('../middlewares/authenticate_middleware');
 const LoginController = require('../controllers/login.controller');
 
-
 router.use(express.json());
 router.use(responseMiddleware);
 
