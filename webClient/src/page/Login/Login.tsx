@@ -18,8 +18,12 @@ const Login: React.FC = () => {
         const userEmail = email.current?.value;
         const userPassword = password.current?.value;
 
+        if (!userEmail || !userPassword) {
+            return setMessage('Vui lòng nhập đầy đủ thông tin tài khoản và mật khẩu.');
+        }
+
         try {
-            const response = await axios.post('API Login', {
+            const response = await axios.post('http://192.168.1.7:3000/api/login', {
                 email: userEmail,
                 password: userPassword,
             });
@@ -48,18 +52,6 @@ const Login: React.FC = () => {
             setMessage('Đăng nhập không thành công');
             console.log('Lỗi đăng nhập', error);
         }
-        // if (userEmail === '0306201048@caothang.edu.vn' && userPassword === '123456') {
-        //     const token = 'YOUR_TOKEN_HERE';
-        //     localStorage.setItem('token', token);
-        //     navigate('/sinh-vien');
-        // } else if (userEmail === 'giangvien@caothang.edu.vn' && userPassword === '123456') {
-        //     const token = 'YOUR_TOKEN_HERE';
-        //     localStorage.setItem('token', token);
-        //     navigate('/giang-vien');
-        // } else {
-        //     // Handle invalid login credentials here
-        //     console.log('Invalid credentials');
-        // }
     };
 
     return (
@@ -97,14 +89,14 @@ const Login: React.FC = () => {
                                                         placeholder="MSSV@caothang.edu.vn"
                                                         type="text"
                                                         className="border placeholder-gray-400 focus:outline-none
-                  focus:border-blue-600 w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
+                          focus:border-blue-600 w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
+                          border-gray-300 rounded-md"
                                                     />
                                                 </div>
                                                 <div className="relative">
                                                     <p
                                                         className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                  absolute"
+                          absolute"
                                                     >
                                                         Password
                                                     </p>
@@ -113,18 +105,21 @@ const Login: React.FC = () => {
                                                         placeholder="Password"
                                                         type="password"
                                                         className="border placeholder-gray-400 focus:outline-none
-                  focus:border-blue-600 w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                  border-gray-300 rounded-md"
+                          focus:border-blue-600 w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
+                          border-gray-300 rounded-md"
                                                     />
                                                 </div>
                                                 <div className="relative">
                                                     <button
                                                         className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
-                  rounded-lg transition duration-200 hover:bg-indigo-600 ease"
+                          rounded-lg transition duration-200 hover:bg-indigo-600 ease"
                                                     >
                                                         Đăng nhập
                                                     </button>
                                                 </div>
+                                                {message && (
+                                                    <div className="text-red-500">{message}</div>
+                                                )}
                                             </div>
                                         </div>
                                     </form>
