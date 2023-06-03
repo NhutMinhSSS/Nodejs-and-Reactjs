@@ -3,7 +3,6 @@ const EnumMessage = require("../common/enums/enum_message");
 const BcryptUtils = require("../config/bcrypt_utils.config");
 const createToken = require("../config/create_token.config");
 const logger = require("../config/logger.config");
-const Account = require('../models/account.model');
 const AccountService = require("../services/account.service");
 
 class LoginController {
@@ -20,7 +19,7 @@ class LoginController {
             //bcrypt password
             const account = await AccountService.findAccountByEmail(email);
             if (account != null) {
-                const isMatch = BcryptUtils.comparePassword(password, account.password);
+                const isMatch = await BcryptUtils.comparePassword(password, account.password);
                 if (isMatch) {
                     const accessToken = createToken({ accountId: account.id, role: account.role });
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
@@ -29,7 +28,7 @@ class LoginController {
                         role: account.role
                     });
                 } else {
-                    return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({
+                    return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({
                         result_message: EnumMessage.LOGIN.INVALID_PASSWORD
                     });
                 }
