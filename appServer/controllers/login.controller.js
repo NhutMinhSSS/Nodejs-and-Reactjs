@@ -29,7 +29,7 @@ class LoginController {
                         role: account.role
                     });
                 } else {
-                    return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({
+                    return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({
                         result_message: EnumMessage.LOGIN.INVALID_PASSWORD
                     });
                 }
