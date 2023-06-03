@@ -27,6 +27,7 @@ const Login: React.FC = () => {
                 email: userEmail,
                 password: userPassword,
             });
+
             if (response.status === 200) {
                 const { token, role } = response.data;
                 localStorage.setItem('token', token);
@@ -41,16 +42,29 @@ const Login: React.FC = () => {
                     setMessage('Không hợp lệ');
                     console.log('Invalid');
                 }
-            } else if (response.status === 404) {
-                return alert('Tài khoản không tồn tại!!!');
-            } else if (response.status === 400) {
-                return alert('Mật khẩu không đúng !!!');
             } else {
-                return alert('Xảy ra lỗi ở server');
+                return alert('Đã xảy ra lỗi');
             }
         } catch (error) {
-            setMessage('Đăng nhập không thành công');
-            console.log('Lỗi đăng nhập', error);
+            if (axios.isAxiosError(error)) {
+                if (
+                    error.response?.status === 404 &&
+                    error.response.data.result_message == 'Failed'
+                ) {
+                    setMessage('Tài khoản không tồn tại');
+                } else if (
+                    error.response?.status === 401 &&
+                    error.response.data.result_message == 'Invalid password'
+                ) {
+                    setMessage('Sai mật khẩu');
+                } else if (error.response?.status === 400) {
+                    setMessage('Cần Nhập tài khoản và mật khẩu');
+                } else {
+                    setMessage('Không thể kết nối máy chủ');
+                }
+            } else {
+                console.error(error);
+            }
         }
     };
 
