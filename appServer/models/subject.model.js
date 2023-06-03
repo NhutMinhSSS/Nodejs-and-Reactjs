@@ -1,6 +1,6 @@
 const {DataTypes, Model} = require('sequelize');
 
-const db = require('../config/connect_database');
+const db = require('../config/connect_database.config');
 const Department = require('./department.model');
 const sequelize = db.getPool();
 //Môn học

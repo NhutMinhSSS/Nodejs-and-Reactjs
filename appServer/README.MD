@@ -4,6 +4,7 @@
 <!-- install log--> npm i winston
 <!-- install variable config --> npm i dotenv
 <!-- install package Sequelize ORM  --> npm install --save sequelize
+<!-- driver mysql2--> npm i mysql2
 <!-- install driver mssql --> 
 
 <!-->install json web token--> npm i jsonwebtoken

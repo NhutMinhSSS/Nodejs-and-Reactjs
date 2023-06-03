@@ -1,6 +1,6 @@
 const {DataTypes, Model} = require('sequelize');
 
-const db = require('../config/connect_database');
+const db = require('../config/connect_database.config');
 const sequelize = db.getPool();
 //Bộ môn
 class Department extends Model{}
