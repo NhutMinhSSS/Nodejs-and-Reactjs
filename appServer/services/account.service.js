@@ -19,19 +19,15 @@ class AccountService {
         }
     }
     async addAccount(email, password, role) {
-        const transaction = await Account.sequelize.transaction();
         try {
             const hashedPassword = await BcryptUtils.hashPassword(password);
             const newAccount = await Account.create({
                 email: email,
                 password: hashedPassword,
                 role: role
-            },
-            { transaction });
-            await transaction.commit();
+            });
             return newAccount;
         } catch (error) {
-            await transaction.rollback();
             throw error;
         }
     }
