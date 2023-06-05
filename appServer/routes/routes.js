@@ -4,6 +4,7 @@ const responseMiddleware = require('../middlewares/response_middleware');
 const authenticateToken = require('../middlewares/authenticate_middleware');
 const LoginController = require('../controllers/login.controller');
 const QuestionCategoryService = require('../services/question_category.service');
+const ClassroomController = require('../controllers/class_room.controller');
 
 
 
@@ -15,9 +16,5 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', LoginController.login);
-
-router.post('/create', (req, res) => {
-  QuestionCategoryService.addQuestionCategory(req.body.name).then(() => res.send('Success')).catch((error) => { 
-    return res.status(500).send(error.name) });
-}); 
+router.post('/create-class', ClassroomController.createClassroom);
 module.exports = router;
