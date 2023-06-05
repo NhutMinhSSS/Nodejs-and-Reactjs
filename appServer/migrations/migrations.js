@@ -22,7 +22,7 @@ const StudentExam = require('../models/student_exam.model');
 const StudentAnswerOption = require('../models/student_answer_option.model');
 const StudentFileSubmission = require('../models/student_file_submission.model');
 const StudentRandomizedQuestionList = require('../models/student_randomized_question_list.model');
-
+//Nếu muốn thay đổi bảng thì sử dung after hoặc force.
 (async() => {
     try {
         await Faculty.sync();

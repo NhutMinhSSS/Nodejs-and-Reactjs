@@ -42,6 +42,14 @@ Classroom.init({
             key: 'id'
         }
     },
+    subject_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'subjects',
+            key: 'id'
+        }
+    },
     status: {
         type: DataTypes.SMALLINT,
         defaultValue: 1,

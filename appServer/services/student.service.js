@@ -1,4 +1,5 @@
-const { STATUS } = require("../common/enums/enum_server_definitions");
+const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const Classroom = require("../models/class_room.model");
 const Student = require("../models/student.model");
 
 
@@ -8,7 +9,7 @@ class StudentService {
             const student = await Student.findOne({
                 where: {
                     id: id,
-                    status: STATUS
+                    status: EnumServerDefinitions.STATUS
                 }
             });
             return student;
@@ -16,8 +17,21 @@ class StudentService {
             throw error;
         }
     }
+    async findClassroomByStudentId(studentId) {
+        try {
+            const student = await Student.findOne({
+                where: {
+                    id: studentId,
+                    status: EnumServerDefinitions.STATUS
+                },
+                include: [Classroom]
+            });
+            return student.Classrooms;
+        } catch (error) {
+            throw error;
+        }
+    }
     async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address) {
-        const transaction = await Student.sequelize.transaction();
         try {
             const newStudent = await Student.create({
                 student_code: studentCode,
@@ -29,11 +43,9 @@ class StudentService {
                 CCCD: CCCD,
                 account_id: accountId,
                 address: address
-            }, { transaction });
-            await transaction.commit();
+            });
             return newStudent;
         } catch (error) {
-            await transaction.rollback();
             throw error;
         }
     }
