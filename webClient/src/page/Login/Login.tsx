@@ -23,11 +23,10 @@ const Login: React.FC = () => {
         }
 
         try {
-            const response = await axios.post('http://192.168.2.6:3000/api/login', {
+            const response = await axios.post('http://192.168.31.18:3000/api/login', {
                 email: userEmail,
                 password: userPassword,
             });
-
             if (response.status === 200) {
                 const { token, role } = response.data;
                 localStorage.setItem('token', token);

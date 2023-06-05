@@ -11,11 +11,13 @@ router.use(express.json());
 router.use(responseMiddleware);
 
 router.get('/', (req, res) => {
-  res.send('Start')
+    res.send('Start');
 });
 
 router.post('/login', LoginController.login);
 
+module.exports = router;
+=======
 router.post('/create', (req, res) => {
   QuestionCategoryService.addQuestionCategory(req.body.name).then(() => res.send('Success')).catch((error) => { 
     return res.status(500).send(error.name) });
