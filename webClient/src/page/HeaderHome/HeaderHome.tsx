@@ -49,7 +49,7 @@ const HeaderHome: React.FC = () => {
             },
         };
         axios
-            .post('/api', roomData, config)
+            .post('http://192.168.1.7:3000/api/create-class', roomData, config)
             .then((response) => {
                 console.log(response.data);
             })
