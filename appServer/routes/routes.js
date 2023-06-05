@@ -10,7 +10,7 @@ router.use(express.json());
 router.use(responseMiddleware);
 
 router.get('/', (req, res) => {
-  res.send('Start')
+    res.send('Start');
 });
 
 router.post('/login', LoginController.login);
