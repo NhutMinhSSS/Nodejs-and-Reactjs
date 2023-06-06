@@ -4,6 +4,9 @@ class EnumServerDefinitions {
     static FINISH = 'finish';
     static AUTHORIZATION = 'Authorization';
     //
-    static STATUS = 1;
+    static STATUS = {
+        ACTIVE: 1,
+        NO_ACTIVE: 0
+    };
 }
 module.exports = EnumServerDefinitions;

@@ -9,7 +9,7 @@ class StudentService {
             const student = await Student.findOne({
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
             return student;
@@ -22,7 +22,7 @@ class StudentService {
             const student = await Student.findOne({
                 where: {
                     id: studentId,
-                    status: EnumServerDefinitions.STATUS
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 include: [Classroom]
             });
@@ -31,7 +31,20 @@ class StudentService {
             throw error;
         }
     }
-    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address) {
+    async findStudentByAccountId(accountId) {
+        try {
+            const student = await Student.findOne({
+                where: {
+                    account_id: accountId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return student;
+        } catch(error) {
+            throw error;
+        }
+    }
+    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address, transaction) {
         try {
             const newStudent = await Student.create({
                 student_code: studentCode,
@@ -43,10 +56,12 @@ class StudentService {
                 CCCD: CCCD,
                 account_id: accountId,
                 address: address
-            });
+            }, { transaction: transaction});
             return newStudent;
         } catch (error) {
             throw error;
         }
     }
 }
+
+module.exports = new StudentService;
