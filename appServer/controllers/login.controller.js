@@ -13,7 +13,8 @@ class LoginController {
             const password = req.body.password;
             if (!email || !password) {
                 return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({
-                    result_message: EnumMessage.LOGIN.REQUIRED_EMAIL_AND_PASSWORD
+                    result_message: EnumMessage.RESPONSE.FAILED,
+                    error_message: EnumMessage.LOGIN.REQUIRED_EMAIL_AND_PASSWORD
                 });
             }
             //bcrypt password
@@ -21,7 +22,7 @@ class LoginController {
             if (account != null) {
                 const isMatch = await BcryptUtils.comparePassword(password, account.password);
                 if (isMatch) {
-                    const accessToken = createToken({ accountId: account.id, role: account.role });
+                    const accessToken = createToken({ account_id: account.id, role: account.role });
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
                         result_message: EnumMessage.RESPONSE.SUCCESS,
                         token: accessToken,
@@ -29,18 +30,21 @@ class LoginController {
                     });
                 } else {
                     return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({
-                        result_message: EnumMessage.LOGIN.INVALID_PASSWORD
+                        result_message: EnumMessage.RESPONSE.FAILED,
+                        error_message: EnumMessage.LOGIN.INVALID_PASSWORD
                     });
                 }
             } else {
                 return res.status(SystemConst.STATUS_CODE.NOT_FOUND).json({
-                    result_message: EnumMessage.RESPONSE.FAILED
+                    result_message: EnumMessage.RESPONSE.FAILED,
+                    error_message: EnumMessage.LOGIN.NO_EXISTS_EMAIL
                 });
             }
         } catch (error) {
             logger.error(error);
             res.status(SystemConst.STATUS_CODE.INTERNAL_SERVER).json({
-                result_message: EnumMessage.DEFAULT_ERROR
+                result_message: EnumMessage.RESPONSE.FAILED,
+                error_message: EnumMessage.DEFAULT_ERROR
             });
         }
     }

@@ -9,7 +9,7 @@ class ClassroomService {
             const classroom = await Classroom.findOne({
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
             return classroom;
@@ -21,7 +21,8 @@ class ClassroomService {
         try {
             const result = await Classroom.findOne({
                 where: {
-                    class_code: classCode
+                    class_code: classCode,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
             return result;
@@ -36,17 +37,17 @@ class ClassroomService {
             throw error;
         }
     }
-    async createClassroom(className, title, note, regularClassId, subjectId) {
+    async createClassroom(className, title, note, regularClassId, subjectId, transaction) {
         try {
             const classCode = await this.generateCodeWithCheck();
-            const newClassroom = await Classroom.create({
+            const newClassroom = Classroom.create({
                 class_code: classCode,
                 class_name: className,
                 title: title,
                 note: note,
                 regular_class_id: regularClassId,
                 subject_id: subjectId
-            });
+            }, { transaction: transaction});
             return newClassroom;
         } catch (error) {
             throw error;

@@ -1,7 +1,6 @@
 const EnumMessage = require("../common/enums/enum_message");
-const { STATUS } = require("../common/enums/enum_server_definitions");
+const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const BcryptUtils = require("../config/bcrypt_utils.config");
-const logger = require("../config/logger.config");
 const Account = require("../models/account.model");
 
 class AccountService {
@@ -10,7 +9,7 @@ class AccountService {
             const account = await Account.findOne({
                 where: {
                     email: email,
-                    status: STATUS
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
             return account;
@@ -18,14 +17,14 @@ class AccountService {
             throw error;
         }
     }
-    async addAccount(email, password, role) {
+    async addAccount(email, password, role, transaction) {
         try {
             const hashedPassword = await BcryptUtils.hashPassword(password);
             const newAccount = await Account.create({
                 email: email,
                 password: hashedPassword,
                 role: role
-            });
+            }, { transaction: transaction});
             return newAccount;
         } catch (error) {
             throw error;
