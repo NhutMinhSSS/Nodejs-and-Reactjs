@@ -1,7 +1,5 @@
-const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
-const Classroom = require("../models/class_room.model");
-const Student = require("../models/student.model");
-
+const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+const Student = require("../../models/student.model");
 
 class StudentService {
     async findStudentById(id) {
@@ -17,20 +15,6 @@ class StudentService {
             throw error;
         }
     }
-    async findClassroomByStudentId(studentId) {
-        try {
-            const student = await Student.findOne({
-                where: {
-                    id: studentId,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
-                include: [Classroom]
-            });
-            return student.Classrooms;
-        } catch (error) {
-            throw error;
-        }
-    }
     async findStudentByAccountId(accountId) {
         try {
             const student = await Student.findOne({
@@ -41,6 +25,22 @@ class StudentService {
             });
             return student;
         } catch(error) {
+            throw error;
+        }
+    }
+    async findAllUsersByIds(studentIds) {
+        try {
+            if (studentIds.length === EnumServerDefinitions.EMPTY) {
+                return [];
+            }
+            const students = await Student.findAll({
+                where: {
+                    id: studentIds,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return students;
+        } catch (error) {
             throw error;
         }
     }

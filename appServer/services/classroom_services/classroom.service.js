@@ -1,6 +1,6 @@
-const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
-const generateCode = require("../common/utils/generate_class_code");
-const Classroom = require("../models/class_room.model");
+const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+const generateCode = require("../../common/utils/generate_class_code");
+const Classroom = require("../../models/classroom.model");
 
 
 class ClassroomService {
@@ -17,6 +17,23 @@ class ClassroomService {
             throw error;
         }
     }
+    async findAllClassroomsByIds(classroomIds, excludedColumn = '') {
+        try {
+            if (classroomIds.length === EnumServerDefinitions.EMPTY) {
+                return []
+            }
+            const classrooms = await Classroom.findAll({
+                where: {
+                    id: classroomIds,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: { exclude: [excludedColumn] }
+            });
+            return classrooms;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findClassroomByClassCode(classCode) {
         try {
             const result = await Classroom.findOne({
@@ -27,13 +44,6 @@ class ClassroomService {
             });
             return result;
         } catch (error) {
-            throw error;
-        }
-    }
-    async findStudentByClassroomId(id) {
-        try {
-
-        } catch(error) {
             throw error;
         }
     }

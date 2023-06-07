@@ -3,8 +3,9 @@ const SystemConst = require('../common/consts/system_const');
 const db = require('../config/connect_database.config');
 const logger = require('../config/logger.config');
 const sequelize = db.getPool();
-const AccountService = require('../services/account.service');
-const StudentService = require('../services/student.service');
+const ServerResponse = require('../common/utils/server_response');
+const AccountService = require('../services/account_service/account.service');
+const StudentService = require('../services/student_service/student.service');
 class UserManager {
     async addStudentOrTeacher(req, res) {
         const transaction = await sequelize.transaction();
@@ -21,9 +22,8 @@ class UserManager {
             const CCCD = req.body.CCCD;
             const address = req.body.address;
             if (!email || !password || !role || !studentCode || !firstName || !lastName || !dateOfBirth || !gender || !CCCD || !address) {
-                return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({ 
-                    result_message: EnumMessage.RESPONSE.FAILED,
-                    error_message: "Required information" });
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    "Required information");
             }
             const newAccount = await AccountService.addAccount(email, password, role, transaction);
             if (role == 0) {
@@ -31,18 +31,18 @@ class UserManager {
             } else if (role == 1) {
                 //addTeacher
             } else {
-                return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({ 
-                    result_message: EnumMessage.RESPONSE.FAILED,
-                    error_message:  EnumMessage.ROLE_INVALID});
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ROLE_INVALID);
             }
             await transaction.commit();
-            return res.json({ result_message: EnumMessage.RESPONSE.SUCCESS });
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
-            return res.status(SystemConst.STATUS_CODE.INTERNAL_SERVER).json({ 
-                result_message: EnumMessage.RESPONSE.FAILED,
-                error_message: EnumMessage.DEFAULT_ERROR });
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
         }
     }
 }
+
+module.exports = new UserManager;
