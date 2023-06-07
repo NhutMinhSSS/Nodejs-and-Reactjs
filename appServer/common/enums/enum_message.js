@@ -28,11 +28,18 @@ class EnumMessage{
     //Error hash and compare password
     static ERROR_HASHING_PASSWORD = 'Error hashing password';
     static ERROR_COMPARING_PASSWORDS = 'Error comparing passwords';
-    //Error create classroom
-    static REQUIRED_CLASS_NAME = 'Required class name';
+    //Error classroom
+    static ERROR_CLASSROOM = {
+        REQUIRED_CLASS_NAME: 'Required class name',
+        CLASSROOM_NOT_EXISTS: 'Classroom no exist'
+    };
     //Teacher no exists
-    static TEACHER_NO_EXISTS = 'Teacher no exists';
+    static TEACHER_NOT_EXISTS = 'Teacher no exists';
+    //Student no exists
+    static STUDENT_NOT_EXISTS = 'Student no exists';
     //Role invalid
     static ROLE_INVALID = 'Role Invalid';
+    //You have already joined this class
+    static IS_JOINED_CLASSROOM = 'You have already joined classroom';
 }
 module.exports = EnumMessage;

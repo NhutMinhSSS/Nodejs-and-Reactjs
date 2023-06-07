@@ -8,11 +8,12 @@ class SystemConst {
         UNAUTHORIZED_REQUEST: 401,
         // not found
         NOT_FOUND: 404,
+        CONFLICT: 409,
         INTERNAL_SERVER: 500,
     };
     // time token
     static EXPIRES_IN = '5d';
     // Số lượng vòng lặp mã hóa
-    static SALTROUNDS = 10;
+    static SALTROUNDS = 8;
 }
 module.exports = SystemConst;

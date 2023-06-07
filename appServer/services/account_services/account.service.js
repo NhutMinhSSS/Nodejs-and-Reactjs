@@ -1,7 +1,6 @@
-const EnumMessage = require("../common/enums/enum_message");
-const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
-const BcryptUtils = require("../config/bcrypt_utils.config");
-const Account = require("../models/account.model");
+const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+const BcryptUtils = require("../../config/bcrypt_utils.config");
+const Account = require("../../models/account.model");
 
 class AccountService {
     async findAccountByEmail(email) {

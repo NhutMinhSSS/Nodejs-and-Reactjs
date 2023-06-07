@@ -1,5 +1,6 @@
-const Teacher = require('../models/teacher.model');
-const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const Teacher = require('../../models/teacher.model');
+const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+
 class TeacherService {
     async findTeacherByAccountId(accountId) {
         try {
@@ -8,7 +9,23 @@ class TeacherService {
                 status: EnumServerDefinitions.STATUS.ACTIVE
             });
             return teacher;
-        } catch(error) {
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findAllUsersByIds(teacherIds) {
+        try {
+            if (teacherIds.length === EnumServerDefinitions.EMPTY) {
+                return [];
+            }
+            const teachers = await Teacher.findAll({
+                where: {
+                    id: teacherIds,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return teachers;
+        } catch (error) {
             throw error;
         }
     }
@@ -25,7 +42,7 @@ class TeacherService {
                 account_id: accountId,
                 department_id: departmentId,
                 address: address
-            }, { transaction: transaction});
+            }, { transaction: transaction });
             return newTeacher;
         } catch (error) {
             throw error;

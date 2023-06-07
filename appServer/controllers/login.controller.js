@@ -3,7 +3,8 @@ const EnumMessage = require("../common/enums/enum_message");
 const BcryptUtils = require("../config/bcrypt_utils.config");
 const createToken = require("../config/create_token.config");
 const logger = require("../config/logger.config");
-const AccountService = require("../services/account.service");
+const ServerResponse = require('../common/utils/server_response');
+const AccountService = require("../services/account_services/account.service");
 
 class LoginController {
 
@@ -12,10 +13,8 @@ class LoginController {
             const email = req.body.email;
             const password = req.body.password;
             if (!email || !password) {
-                return res.status(SystemConst.STATUS_CODE.BAD_REQUEST).json({
-                    result_message: EnumMessage.RESPONSE.FAILED,
-                    error_message: EnumMessage.LOGIN.REQUIRED_EMAIL_AND_PASSWORD
-                });
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.LOGIN.REQUIRED_EMAIL_AND_PASSWORD);
             }
             //bcrypt password
             const account = await AccountService.findAccountByEmail(email);
@@ -29,23 +28,17 @@ class LoginController {
                         role: account.role
                     });
                 } else {
-                    return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({
-                        result_message: EnumMessage.RESPONSE.FAILED,
-                        error_message: EnumMessage.LOGIN.INVALID_PASSWORD
-                    });
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
+                        EnumMessage.LOGIN.INVALID_PASSWORD);
                 }
             } else {
-                return res.status(SystemConst.STATUS_CODE.NOT_FOUND).json({
-                    result_message: EnumMessage.RESPONSE.FAILED,
-                    error_message: EnumMessage.LOGIN.NO_EXISTS_EMAIL
-                });
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.LOGIN.NO_EXISTS_EMAIL);
             }
         } catch (error) {
             logger.error(error);
-            res.status(SystemConst.STATUS_CODE.INTERNAL_SERVER).json({
-                result_message: EnumMessage.RESPONSE.FAILED,
-                error_message: EnumMessage.DEFAULT_ERROR
-            });
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
         }
     }
 }
