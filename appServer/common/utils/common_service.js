@@ -5,6 +5,7 @@ const ClassroomService = require('../../services/classroom_services/classroom.se
 const EnumMessage = require('../enums/enum_message');
 const TeacherService = require('../../services/teacher_services/teacher.service');
 const StudentService = require('../../services/student_services/student.service');
+const Teacher = require('../../models/teacher.model');
 
 class CommonService {
     //function find list classroom form student id or teacher id with condition role
@@ -13,13 +14,18 @@ class CommonService {
             let listClassroomUser;
             const classroomId = 'classroom_id';
             if (userRole === EnumServerDefinitions.ROLE.TEACHER) {
-                listClassroomUser = await TeacherList.findAll({
+                listClassroomUser = await Teacher.getClassrooms({
                     where: {
-                        teacher_id: userId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
-                    },
-                    attributes: [classroomId]
+                    }
                 });
+                // listClassroomUser = await TeacherList.findAll({
+                //     where: {
+                //         teacher_id: userId,
+                //         status: EnumServerDefinitions.STATUS.ACTIVE
+                //     },
+                //     attributes: [classroomId]
+                // });
             } else if (userRole === EnumServerDefinitions.ROLE.STUDENT) {
                 listClassroomUser = await StudentList.findAll({
                     where: {
@@ -31,9 +37,10 @@ class CommonService {
             } else {
                 throw new Error(EnumMessage.ROLE_INVALID);
             }
-            const classroomIds = listClassroomUser.map((item) => item[classroomId]);
-            const classrooms = await ClassroomService.findAllClassroomsByIds(classroomIds);
-            return classrooms;
+            //const classroomIds = listClassroomUser.map((item) => item[classroomId]);
+            //const classrooms = await ClassroomService.findAllClassroomsByIds(classroomIds);
+
+            return listClassroomUser;
         } catch (error) {
             throw error;
         }

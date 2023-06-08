@@ -1,6 +1,9 @@
 const { DataTypes, DATE, Model} = require('sequelize');
-
+const PostDetail = require('./post_detail.model');
 const db = require('../config/connect_database.config');
+const File = require('./file.model');
+const PostFile = require('./post_file.model');
+const Comment = require('./comment.model');
 const sequelize = db.getPool();
 
 class Post extends Model{}
@@ -70,5 +73,9 @@ Post.init({
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
+
+// Post.hasOne(PostDetail);
+Post.hasMany(PostFile, {foreignKey: 'post_id', as: 'post_files'});
+Post.hasMany(Comment, { foreignKey: 'post_id', as: 'comments'});
 
 module.exports = Post;

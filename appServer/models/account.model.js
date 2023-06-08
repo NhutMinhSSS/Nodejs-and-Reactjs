@@ -1,6 +1,8 @@
 const { DataTypes, Model } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Student = require('./student.model');
+const Teacher = require('./teacher.model');
 const sequelize = db.getPool();
 
 class Account extends Model { }
@@ -55,5 +57,10 @@ Account.init({
         }
     ]
 });
+
+Account.hasOne(Student, {foreignKey: 'account_id'});
+Account.hasOne(Teacher, {foreignKey: 'account_id'});
+Student.belongsTo(Account, { foreignKey: 'account_id' });
+Teacher.belongsTo(Account, { foreignKey: 'account_id' });
 
 module.exports = Account;
