@@ -1,6 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Account = require('./account.model');
 const sequelize = db.getPool();
 
 class Comment extends Model{}
@@ -51,4 +52,5 @@ Comment.init({
     updatedAt: 'update_at'
 });
 
+Comment.belongsTo(Account, { foreignKey: 'account_id'});
 module.exports = Comment;

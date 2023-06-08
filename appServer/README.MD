@@ -31,3 +31,84 @@ Login function
         - Status 200 || 400 || 404 || 500 json: {
                 "result_message": message
             }
+Json initial classroom
+[
+    {
+        "id": 1,
+        "title": "bảng tin 1",
+        "content": "mới",
+        "create_date": null,
+        "post_category_id": 1,
+        "account_id": 1,
+        "classroom_id": 1,
+        "topic_id": null,
+        "post_files": [
+            {
+                "id": 1,
+                "file_id": 1,
+                "post_id": 1,
+                "status": 1,
+                "create_at": null,
+                "update_at": null,
+                "File": {
+                    "id": 1,
+                    "file_name": "ấcc",
+                    "physical_name": "đâsd",
+                    "create_date": null,
+                    "file_path": "đâsd",
+                    "file_type": "png",
+                    "account_id": 1,
+                    "file_data": 200,
+                    "status": 1,
+                    "create_at": null,
+                    "update_at": null
+                }
+            }
+        ],
+        "comments": [
+            {
+                "id": 1,
+                "post_id": 1,
+                "account_id": 1,
+                "content": "Minh vipro",
+                "comment_date": null,
+                "status": 1,
+                "create_at": null,
+                "update_at": null,
+                "Account": {
+                    "id": 1,
+                    "role": 1,
+                    "Student": null,
+                    "Teacher": {
+                        "id": 1,
+                        "teacher_code": "0306201050",
+                        "first_name": "Dương Nhựt Minh",
+                        "last_name": "Lê",
+                        "date_of_birth": "2002-10-11",
+                        "gender": true,
+                        "phone_number": "0399313240",
+                        "CCCD": "3224512421",
+                        "account_id": 1,
+                        "department_id": 1,
+                        "address": "Bến Tre",
+                        "status": 1,
+                        "create_at": null,
+                        "update_at": null
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "title": "bảng tin 2",
+        "content": "abc",
+        "create_date": null,
+        "post_category_id": 1,
+        "account_id": 1,
+        "classroom_id": 1,
+        "topic_id": null,
+        "post_files": [],
+        "comments": []
+    }
+]

@@ -2,7 +2,7 @@ const { DataTypes, Model } = require('sequelize');
 
 const db = require('../config/connect_database.config');
 const Account= require('./account.model');
-const Classroom = require('./class_room.model');
+const Classroom = require('./classroom.model');
 const sequelize = db.getPool();
 
 class Student extends Model { }
@@ -70,6 +70,5 @@ Student.init({
     updatedAt: 'update_at'
 });
 
-Student.belongsTo(Account, { foreignKey: 'account_id' });
-Student.belongsToMany(Classroom, { through: 'student_lists', foreignKey: 'student_id', otherKey: 'classroom_id' });
+
 module.exports = Student;
