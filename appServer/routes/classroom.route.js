@@ -1,0 +1,16 @@
+
+const express = require('express');
+const classroomController = require('../controllers/classroom.controller');
+const classroomRouter = express.Router();
+const PostController = require('../controllers/post.controller');
+const authorize = require('../middlewares/authorize.middleware');
+const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
+const checkRoomMember = require('../middlewares/check_room_member.middleware');
+
+
+classroomRouter.get('/', classroomController.showJoinedClassrooms);
+classroomRouter.get('/:classroom_id', checkRoomMember, PostController.showPostsByUser);
+classroomRouter.post('/create-classroom', authorize(EnumServerDefinitions.ROLE.TEACHER), classroomController.createClassroom);
+classroomRouter.post('/join-classroom', classroomController.joinClassroom);
+
+module.exports = classroomRouter;

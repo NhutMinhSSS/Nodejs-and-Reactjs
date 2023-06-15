@@ -6,7 +6,7 @@ const Account = require('../models/account.model');
 const Department = require('../models/department.model');
 const Subject = require('../models/subject.model');
 const RegularClass = require('../models/regular_class.model');
-const Classroom = require('../models/class_room.model');
+const Classroom = require('../models/classroom.model');
 const File = require('../models/file.model');
 const Student = require('../models/student.model');
 const Teacher = require('../models/teacher.model');
@@ -22,6 +22,8 @@ const StudentExam = require('../models/student_exam.model');
 const StudentAnswerOption = require('../models/student_answer_option.model');
 const StudentFileSubmission = require('../models/student_file_submission.model');
 const StudentRandomizedQuestionList = require('../models/student_randomized_question_list.model');
+const Comment = require('../models/comment.model');
+const PostDetail = require('../models/post_detail.model');
 //Nếu muốn thay đổi bảng thì sử dung after hoặc force.
 (async() => {
     try {
@@ -32,10 +34,10 @@ const StudentRandomizedQuestionList = require('../models/student_randomized_ques
         await Department.sync();
         await Subject.sync();
         await RegularClass.sync();
-        await Classroom.sync();
         await File.sync();
         await Student.sync();
         await Teacher.sync();
+        await Classroom.sync();
         await StudentList.sync();
         await TeacherList.sync();
         await Topic.sync();
@@ -48,6 +50,8 @@ const StudentRandomizedQuestionList = require('../models/student_randomized_ques
         await StudentAnswerOption.sync();
         await StudentFileSubmission.sync();
         await StudentRandomizedQuestionList.sync();
+        await Comment.sync();
+        await PostDetail.sync();
         console.log("Bảng đã được tạo thành công!");
     } catch (error) {
         logger.error(error);

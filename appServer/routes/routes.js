@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const responseMiddleware = require('../middlewares/response_middleware');
-const authenticateToken = require('../middlewares/authenticate_middleware');
+const responseMiddleware = require('../middlewares/response.middleware');
+const authenticateToken = require('../middlewares/authenticate.middleware');
 const LoginController = require('../controllers/login.controller');
-const QuestionCategoryService = require('../services/question_category.service');
-const ClassroomController = require('../controllers/class_room.controller');
+const classroomRouter = require('./classroom.route');
+const postRouter = require('./post.route');
 
 
 
@@ -16,5 +16,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', LoginController.login);
-router.post('/create-class', ClassroomController.createClassroom);
+router.use('/classrooms', /* authenticateToken, */ classroomRouter);
+router.use('/posts', /* authenticateToken, */ postRouter);
+//post check detail, edit, delete, send exam
 module.exports = router;

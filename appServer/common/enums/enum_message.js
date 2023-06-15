@@ -1,4 +1,5 @@
 class EnumMessage{
+    //Response
     static RESPONSE = {
         //Success
         SUCCESS: 'Success',
@@ -8,6 +9,7 @@ class EnumMessage{
     //Login
     static LOGIN = {
         REQUIRED_EMAIL_AND_PASSWORD: 'Email and password are required',
+        NO_EXISTS_EMAIL: 'No exist email',
         INVALID_PASSWORD: 'Invalid password',
     }
     //Default error
@@ -15,6 +17,7 @@ class EnumMessage{
     //Error Unauthorized
     static ACCESS_DENIED_ERROR = 'Access denied';
     static UNAUTHORIZED_ERROR = 'Unauthorized';
+    //Error token
     static TOKEN = {
         TOKEN_NOT_PROVIDE: 'Token is not provided',
         TOKEN_NOT_INVALID: 'Token is invalid',
@@ -25,6 +28,29 @@ class EnumMessage{
     //Error hash and compare password
     static ERROR_HASHING_PASSWORD = 'Error hashing password';
     static ERROR_COMPARING_PASSWORDS = 'Error comparing passwords';
-    //
+    //Error classroom
+    static ERROR_CLASSROOM = {
+        REQUIRED_CLASS_NAME: 'Required class name',
+        CLASSROOM_NOT_EXISTS: 'Classroom no exist',
+    };
+    //Teacher no exists
+    static TEACHER_NOT_EXISTS = 'Teacher no exists';
+    //Student no exists
+    static STUDENT_NOT_EXISTS = 'Student no exists';
+    //Role invalid
+    static ROLE_INVALID = 'Role Invalid';
+    //You have already joined this class
+    static IS_JOINED_CLASSROOM = 'You have already joined classroom';
+    //No permission 
+    static NO_PERMISSION = 'No permission';
+    //Is not belong department
+    static TEACHER_NOT_REGULAR_CLASS = `Teacher don't teach this regular class`;
+    static TEACHER_NOT_SUBJECT = `Teacher don't teach this subject`;
+    //Error post
+    static ERROR_POST = {
+        //Post Not exists
+        POST_NOT_EXISTS: 'Post not exists',
+        POST_NOT_CLASSROOM: 'Post not classroom'
+    }
 }
 module.exports = EnumMessage;

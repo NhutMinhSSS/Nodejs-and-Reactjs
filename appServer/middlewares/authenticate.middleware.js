@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const logger = require('../config/logger.config');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
 const EnumMessage = require('../common/enums/enum_message');
-const SystemConst = require('../common/consts/system_const')
+const SystemConst = require('../common/consts/system_const');
+const ServerResponse = require('../common/utils/server_response');
 
 const secretToken = process.env.ACCESS_TOKEN_SECRET;
 const authenticateToken = (req, res, next) => {
@@ -25,7 +26,8 @@ const authenticateToken = (req, res, next) => {
         });
     } catch (error) {
         logger.error(error);
-        return res.status(SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST).json({ result_message: error.message });
+        return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
+            error.message);
     }
 }
 
