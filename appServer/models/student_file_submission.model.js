@@ -51,6 +51,6 @@ StudentFileSubmission.init({
     updatedAt: 'update_at'
 });
 
-StudentFileSubmission.hasMany(File, {foreignKey: 'file_id'});
+StudentFileSubmission.belongsTo(File, {foreignKey: 'file_id'});
 
 module.exports = StudentFileSubmission;
