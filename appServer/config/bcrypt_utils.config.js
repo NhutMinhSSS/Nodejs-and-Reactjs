@@ -4,7 +4,7 @@ const EnumMessage = require('../common/enums/enum_message');
 
 class BcryptUtils {
     constructor() {
-        this.saltRounds = SystemConst.SALTROUNDS;
+        this.saltRounds = SystemConst.SALT_ROUNDS;
     }
     async hashPassword(plaintextPassword) {
         try {

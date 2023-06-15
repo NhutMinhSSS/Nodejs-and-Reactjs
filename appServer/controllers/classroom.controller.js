@@ -9,12 +9,16 @@ const TeacherService = require("../services/teacher_services/teacher.service");
 const StudentService = require("../services/student_services/student.service");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
+const PostService = require("../services/post_services/post.service");
+const StudentExamService = require("../services/student_services/student_exam.service");
+const SubjectService = require("../services/subject.service");
+const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
 
 class ClassroomController {
     async showJoinedClassrooms(req, res) {
         try {
-            const role= req.user.role;
+            const role = req.user.role;
             const accountId = req.user.account_id;
             let user;
             let listClassroom;
@@ -61,7 +65,7 @@ class ClassroomController {
             const classroom = await ClassroomService.findClassroomByClassCode(classCode);
             if (!classroom) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             }
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
                 const teacher = await TeacherService.findTeacherByAccountId(accountId);
@@ -87,6 +91,13 @@ class ClassroomController {
                         EnumMessage.IS_JOINED_CLASSROOM);
                 }
                 await ClassroomStudentService.addStudentToClassroom(classroom.id, student.id, transaction);
+                const listPosts = await PostService.findAllPostsByClassroomId(classroom.id);
+                if (listPosts) {
+                    const listStudentIds = listPosts.filter(post => post.post_details.is_public === true).map(post => post.id);
+                    //create student exam
+                    await StudentExamService.addStudentExams(listStudentIds, transaction);
+                }
+                //update student exam private
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
@@ -110,15 +121,25 @@ class ClassroomController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
             }
-            const newClassroom = await ClassroomService.createClassroom(className, title, note, 1, 1, transaction);
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
             if (!teacher) {
-                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.TEACHER_NOT_EXISTS);
-            } else {
-                await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
             }
+            const checkSubjectAndRegularClass = await Promise.all([
+                SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
+                RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
+            ]);
+            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+
+            if (checkSubject) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
+            }
+            if (checkRegularClass) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
+            }
+            const newClassroom = await ClassroomService.createClassroom(className, title, note, 1, 1, transaction);
+            await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {

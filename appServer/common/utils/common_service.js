@@ -1,66 +1,141 @@
-const TeacherList = require('../../models/teacher_list.model');
 const EnumServerDefinitions = require('../enums/enum_server_definitions');
-const StudentList = require('../../models/student_list.model');
-const ClassroomService = require('../../services/classroom_services/classroom.service');
 const EnumMessage = require('../enums/enum_message');
+const Teacher = require('../../models/teacher.model');
+const Student = require('../../models/student.model');
+const Classroom = require('../../models/classroom.model');
+const moment = require('moment-timezone');
+const SystemConst = require('../consts/system_const');
+const logger = require('../../config/logger.config');
+const ServerResponse = require('./server_response');
 const TeacherService = require('../../services/teacher_services/teacher.service');
 const StudentService = require('../../services/student_services/student.service');
-const Teacher = require('../../models/teacher.model');
 
 class CommonService {
     //function find list classroom form student id or teacher id with condition role
     async findClassroomsByUser(userId, userRole) {
         try {
             let listClassroomUser;
-            const classroomId = 'classroom_id';
             if (userRole === EnumServerDefinitions.ROLE.TEACHER) {
-                listClassroomUser = await Teacher.getClassrooms({
-                    where: {
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                    }
-                });
-                // listClassroomUser = await TeacherList.findAll({
-                //     where: {
-                //         teacher_id: userId,
-                //         status: EnumServerDefinitions.STATUS.ACTIVE
-                //     },
-                //     attributes: [classroomId]
-                // });
-            } else if (userRole === EnumServerDefinitions.ROLE.STUDENT) {
-                listClassroomUser = await StudentList.findAll({
-                    where: {
-                        student_id: userId,
+                listClassroomUser = await Classroom.findAll({
+                    where: {                       
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: [classroomId]
+                    include: [
+                        {
+                            model: Teacher,
+                            where: {
+                                teacher_id: userId,
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            attributes: [],
+                            through: {
+                                attributes: [],
+                                where: {
+                                    status: EnumServerDefinitions.STATUS.ACTIVE
+                                }
+                            }
+                        }
+                    ]
+                });
+            } else if (userRole === EnumServerDefinitions.ROLE.STUDENT) {
+                listClassroomUser = await Classroom.findAll({
+                    where: {                        
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            where: {
+                                student_id: userId,
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            attributes: [],
+                            through: {
+                                attributes: [],
+                                where: {
+                                    status: EnumServerDefinitions.STATUS.ACTIVE
+                                }
+                            }
+                        }
+                    ]
                 });
             } else {
                 throw new Error(EnumMessage.ROLE_INVALID);
             }
-            //const classroomIds = listClassroomUser.map((item) => item[classroomId]);
-            //const classrooms = await ClassroomService.findAllClassroomsByIds(classroomIds);
-
             return listClassroomUser;
         } catch (error) {
             throw error;
         }
     }
-    async findUsersByClassroomId(classroomId, userRole) {
+    async findMembersByClassroomId(classroomId) {
         try {
-            const userType = userRole === EnumServerDefinitions.ROLE.TEACHER ? 'teacher_id' : 'student_id';
-            const listClassroomUser = await (userRole === EnumServerDefinitions.ROLE.TEACHER ? TeacherList : StudentList).findAll({
-                where: {
-                    classroom_id: classroomId,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
-                attributes: [userType]
+            const listClassroomMembers = await Classroom.findOne({
+               where : {
+                id: classroomId,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+               },
+               include: [
+                {
+                    model: Student,
+                    where: {
+                        status: EnumServerDefinitions
+                    },
+                    attributes: ['id', 'first_name', 'last_name'],
+                    through: {
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        }
+                    }
+                }, {
+                    model: Teacher,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'first_name', 'last_name'],
+                    through: {
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        }
+                    }
+                }
+               ]
             });
-            const userIds = listClassroomUser.map((item) => item[userType]);
-            const users = await (userRole === EnumServerDefinitions.ROLE.TEACHER ? TeacherService : StudentService).findAllUsersByIds(userIds);
-            return users;
+            return {
+                list_teachers: listClassroomMembers.Students,
+                list_students: listClassroomMembers.Teachers
+            };
         } catch (error) {
             throw error;
         }
+    }
+    async getTeacherCodeOrStudentCodeByAccountId(accountId, role) {
+        try {
+            let userInfo = role === EnumServerDefinitions.ROLE.TEACHER ? { model: Teacher, user_code: 'teacher_code'}  
+            : { model: Student, user_code: 'student_code'}
+            const user = await userInfo.model.findOne({
+                where : {
+                    account_id: accountId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: [userInfo.user_code]
+            });
+            return {
+                user_code: user[userInfo.user_code]
+            }
+        } catch (error) {
+            logger.error(error);
+            return
+        }
+    }
+    getGVOrST(role) {
+        return role === EnumServerDefinitions.ROLE.TEACHER ? 'GV' : 'SV'
+    }
+    checkPostsDeadline(dateString) {
+        const timeZone = SystemConst.TIME_ZONE;
+        const now = moment().tz(timeZone);
+        const tomorrow = moment().tz(timeZone).add(1,'day');
+        const exam_deadline = moment(dateString);
+        return exam_deadline <= tomorrow && now < exam_deadline;
     }
 }
 

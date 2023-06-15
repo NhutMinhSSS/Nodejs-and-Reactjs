@@ -1,4 +1,6 @@
+const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const Department = require("../models/department.model");
+const Subject = require("../models/subject.model");
 
 
 class DepartmentService {

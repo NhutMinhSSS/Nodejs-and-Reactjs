@@ -1,6 +1,7 @@
-const logger = require('../config/logger');
 const SystemConst = require('../common/consts/system_const');
 const EnumMessage = require('../common/enums/enum_message');
+const ServerResponse = require('../common/utils/server_response');
+const logger = require('../config/logger.config');
 
 const authorize = (allowedRoles) => (req, res, next) => {
   try {
@@ -11,7 +12,8 @@ const authorize = (allowedRoles) => (req, res, next) => {
       }
   } catch (error) {
     logger.error(error);
-    return res.status(SystemConst.STATUS_CODE.FORBIDDEN_REQUEST).json({ result_message: error.message });
+    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+      error.message);
   }
 }
 module.exports = authorize;

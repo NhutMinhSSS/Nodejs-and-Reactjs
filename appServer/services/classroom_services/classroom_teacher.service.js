@@ -12,14 +12,6 @@ class ClassroomTeacherService {
             throw error;
         }
     }
-    async findTeachersByClassroomId(classroomId) {
-        try {
-            const teachers = await CommonService.findUsersByClassroomId(classroomId, EnumServerDefinitions.ROLE.TEACHER);
-            return teachers;
-        } catch (error) {
-            throw error;
-        }
-    }
     async isTeacherJoined(classroomId, teacherId) {
         try {
         const isJoined = await TeacherList.findOne({
@@ -32,13 +24,37 @@ class ClassroomTeacherService {
             throw error;
         }
     }
+    async checkTeacherNoActive(classroomId, teacherId) {
+        try {
+            const teacher = await TeacherList.findOne({
+               where: {
+                classroom_id: classroomId,
+                teacher_id: teacherId,
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+               }
+            });
+            return teacher; 
+            } catch(error) {
+                throw error;
+            }
+    }
     async addTeacherToClassroom(classroomId, teacherId, transaction) {
         try{
-            const newTeacherToClassroom = await TeacherList.create({
-                classroom_id: classroomId,
-                teacher_id: teacherId
-            }, { transaction: transaction});
-            return newTeacherToClassroom;
+            const teacherExistsClassroom = await this.checkTeacherNoActive(classroomId, teacherId);
+            if (teacherExistsClassroom) {
+                 await TeacherList.update({
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, { where: {
+                    id: teacherExistsClassroom.id
+                }, transaction: transaction});
+                return teacherExistsClassroom;
+            } else {
+               const  newTeacherToClassroom = await TeacherList.create({
+                    classroom_id: classroomId,
+                    teacher_id: teacherId
+                }, { transaction: transaction});ư
+                return newTeacherToClassroom;
+            } 
         } catch(error) {
             throw error;
         }

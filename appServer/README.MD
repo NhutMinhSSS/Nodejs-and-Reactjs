@@ -6,7 +6,7 @@
 <!-- install package Sequelize ORM  --> npm install --save sequelize
 <!-- driver mysql2--> npm i mysql2
 <!-- install driver mssql --> 
-
+<!-- install fs-->npm install fs-extra
 <!-->install json web token--> npm i jsonwebtoken
 
 <!-- create file .env --> cp .env.example .env

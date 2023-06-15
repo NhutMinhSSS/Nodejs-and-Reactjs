@@ -31,7 +31,7 @@ class EnumMessage{
     //Error classroom
     static ERROR_CLASSROOM = {
         REQUIRED_CLASS_NAME: 'Required class name',
-        CLASSROOM_NOT_EXISTS: 'Classroom no exist'
+        CLASSROOM_NOT_EXISTS: 'Classroom no exist',
     };
     //Teacher no exists
     static TEACHER_NOT_EXISTS = 'Teacher no exists';
@@ -41,5 +41,16 @@ class EnumMessage{
     static ROLE_INVALID = 'Role Invalid';
     //You have already joined this class
     static IS_JOINED_CLASSROOM = 'You have already joined classroom';
+    //No permission 
+    static NO_PERMISSION = 'No permission';
+    //Is not belong department
+    static TEACHER_NOT_REGULAR_CLASS = `Teacher don't teach this regular class`;
+    static TEACHER_NOT_SUBJECT = `Teacher don't teach this subject`;
+    //Error post
+    static ERROR_POST = {
+        //Post Not exists
+        POST_NOT_EXISTS: 'Post not exists',
+        POST_NOT_CLASSROOM: 'Post not classroom'
+    }
 }
 module.exports = EnumMessage;

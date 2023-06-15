@@ -1,8 +1,6 @@
 const { DataTypes, Model } = require('sequelize');
 
 const db = require('../config/connect_database.config');
-const Account= require('./account.model');
-const Classroom = require('./classroom.model');
 const sequelize = db.getPool();
 
 class Student extends Model { }
