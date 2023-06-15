@@ -5,6 +5,7 @@ import ScreenPageTest from './PageTest/ScreenPageTest';
 import AllPeople from '../AllPeople';
 import ClassBulletin from '../ClassBulletin';
 import ClassroomExercisesTeacher from '../ClassExercises/ClassroomExercisesTeacher';
+import FormCreateTest from '../../page/FormCreateTest/FormCreateTest';
 const PopupCreateTest = () => {
     return (
         // <div className="bg-blue-100 w-screen h-screen">
@@ -64,15 +65,17 @@ const PopupCreateTest = () => {
                 </div>
 
                 <span>
-                    <button className="w-16 h-12 bg-blue-500 rounded-xl">
-                        Gửi
-                    </button>
+                    <button className="w-16 h-12 bg-blue-500 rounded-xl">Gửi</button>
                 </span>
             </div>
             <span className="  grid iphone 12:grid-flow-col">
                 <Tabs className=" items-center " defaultActiveKey="1">
                     <TabPane className="" tab="Câu hỏi" key="1">
-                        <ScreenPageTest />
+                        {/* <ScreenPageTest /> */}
+                        <div className="mb-2">
+                            <FormCreateTest />
+                        </div>
+                        
                     </TabPane>
                     <TabPane className="" tab="Đáp Án" key="2">
                         <ClassroomExercisesTeacher />

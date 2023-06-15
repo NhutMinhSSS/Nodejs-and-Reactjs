@@ -7,8 +7,15 @@ import JoinClassedTeacher from './page/JoinClassed/JoinClassedTeacher';
 import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
 import { Route, Routes } from 'react-router-dom';
+import DetailExcercise from './screens/DetailExercise/DetailExcercise';
 
 function App() {
+    const TeacherRoutes = [
+        {
+            path: '/',
+            element: <Login />,
+        },
+    ];
     return (
         <>
             <Routes>
@@ -36,6 +43,7 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/detail" element={<DetailExcercise />} />
                 <Route
                     path="/sinh-vien"
                     element={
@@ -52,15 +60,6 @@ function App() {
                         </div>
                     }
                 />
-
-                {/* <Route
-          path='quiz'
-          element={
-            <div>
-              <QuizCreator />
-            </div>
-          }
-        ></Route> */}
             </Routes>
         </>
     );

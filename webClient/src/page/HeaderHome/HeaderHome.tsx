@@ -221,143 +221,159 @@ const HeaderHome: React.FC = () => {
                     </div>
                 </Modal>
                 {/* Popup Create Class */}
-                <Modal
-                    visible={isPopupVisibleCreateClass}
-                    onCancel={handlePopupCancelCreateClass}
-                    className="w-[1000px]"
-                    footer={null}
-                >
-                    <Row>
-                        <Col span={24}>
-                            <Header className="bg-blue-300 flex items-center">
-                                <div className="text-xl text-gray-200 font-sans">Tạo lớp học</div>
-                            </Header>
-                        </Col>
-                    </Row>
-                    <div className="px-5 py-10 grid justify-center mt-2">
-                        <Row className="w-[800px] gap-y-4">
+                <div className="">
+                    <Modal
+                        visible={isPopupVisibleCreateClass}
+                        onCancel={handlePopupCancelCreateClass}
+                        className="w-[1000px]"
+                        footer={null}
+                    >
+                        <Row>
                             <Col span={24}>
-                                <div
-                                    className="relative mb-3 mt-2 px-2"
-                                    data-te-textarea-wrapper-init
-                                >
-                                    <input
-                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                        id="exampleFormControlTextarea1"
-                                        placeholder="Your message"
-                                        style={{ resize: 'none' }}
-                                        value={nameClass}
-                                        onChange={handleNameClassChange}
-                                    ></input>
-                                    <label
-                                        htmlFor="exampleFormControlTextarea1"
-                                        className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
-                                    >
-                                        Tên lớp học
-                                    </label>
-                                </div>
-                            </Col>
-                            <Col span={24}>
-                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                    <input
-                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                        id="exampleFormControlTextarea1"
-                                        placeholder="Your message"
-                                        style={{ resize: 'none' }}
-                                        value={title}
-                                        onChange={handleTitleChange}
-                                    ></input>
-                                    <label
-                                        htmlFor="exampleFormControlTextarea1"
-                                        className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
-                                    >
-                                        Tiêu đề
-                                    </label>
-                                </div>
-                            </Col>
-                            <Col span={24}>
-                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                    <input
-                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                        id="exampleFormControlTextarea1"
-                                        placeholder="Your message"
-                                        style={{ resize: 'none' }}
-                                        value={note}
-                                        onChange={handleNoteChange}
-                                    ></input>
-                                    <label
-                                        htmlFor="exampleFormControlTextarea1"
-                                        className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
-                                    >
-                                        Ghi chú
-                                    </label>
-                                </div>
-                            </Col>
-                            <Col span={24}>
-                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                    <select
-                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                        id="exampleFormControlTextarea1"
-                                        placeholder="Your message"
-                                        style={{ resize: 'none' }}
-                                        value={selectedClass}
-                                        onChange={handleClassSelect}
-                                    >
-                                        <option value="" disabled selected hidden>
-                                            Chọn Lớp
-                                        </option>
-                                        <option value="Lớp 1">Lớp 1</option>
-                                        <option value="Lớp 2">Lớp 2</option>
-                                        <option value="Lớp 3">Lớp 3</option>
-                                    </select>
-                                </div>
-                            </Col>
-                            <Col span={24}>
-                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                    <select
-                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                        id="exampleFormControlTextarea1"
-                                        placeholder="Your message"
-                                        style={{ resize: 'none' }}
-                                        value={selectedSubject}
-                                        onChange={handleSelectSubject}
-                                    >
-                                        <option value="" disabled selected hidden>
-                                            Chọn Môn
-                                        </option>
-                                        <option value="Nhập Môn Lập Trình">
-                                            Nhập Môn Lập Trình
-                                        </option>
-                                        <option value="Mạng Máy Tính">Mạng Máy Tính</option>
-                                        <option value="Anh văn Chuyên Ngành">
-                                            Anh văn Chuyên Ngành
-                                        </option>
-                                    </select>
-                                </div>
-                            </Col>
-                            <Col className="flex justify-center mt-10" span={24}>
-                                <div className="flex gap-x-4 ">
-                                    <div>
-                                        <button
-                                            className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                            onClick={handleCreateRoom}
-                                        >
-                                            Tạo
-                                        </button>
+                                <Header className="bg-blue-300 flex items-center">
+                                    <div className="text-xl text-gray-200 font-sans">
+                                        Tạo lớp học
                                     </div>
-                                    <div>
-                                        <button
-                                            onClick={handlePopupCancelCreateClass}
-                                            className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                        >
-                                            Hủy
-                                        </button>
-                                    </div>
-                                </div>
+                                </Header>
                             </Col>
                         </Row>
-                    </div>
-                </Modal>
+                        <div className=" px-5 py-10 grid justify-center mt-2">
+                            <Row className="w-[800px] gap-y-2">
+                                <Col span={24}>
+                                    <div
+                                        className="relative mb-3 mt-2 px-2"
+                                        data-te-textarea-wrapper-init
+                                    >
+                                        <input
+                                            className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your message"
+                                            style={{ resize: 'none' }}
+                                            value={nameClass}
+                                            onChange={handleNameClassChange}
+                                        ></input>
+                                        <label
+                                            htmlFor="exampleFormControlTextarea1"
+                                            className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                                        >
+                                            Tên lớp học
+                                        </label>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <div
+                                        className="relative mb-3 mt-2 px-2"
+                                        data-te-input-wrapper-init
+                                    >
+                                        <input
+                                            className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your message"
+                                            style={{ resize: 'none' }}
+                                            value={title}
+                                            onChange={handleTitleChange}
+                                        ></input>
+                                        <label
+                                            htmlFor="exampleFormControlTextarea1"
+                                            className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                                        >
+                                            Tiêu đề
+                                        </label>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <div
+                                        className="relative mb-3 mt-2 px-2"
+                                        data-te-input-wrapper-init
+                                    >
+                                        <input
+                                            className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your message"
+                                            style={{ resize: 'none' }}
+                                            value={note}
+                                            onChange={handleNoteChange}
+                                        ></input>
+                                        <label
+                                            htmlFor="exampleFormControlTextarea1"
+                                            className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
+                                        >
+                                            Ghi chú
+                                        </label>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <div
+                                        className="relative mb-3 mt-2 px-2"
+                                        data-te-input-wrapper-init
+                                    >
+                                        <select
+                                            className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your message"
+                                            style={{ resize: 'none' }}
+                                            value={selectedClass}
+                                            onChange={handleClassSelect}
+                                        >
+                                            <option value="" disabled selected hidden>
+                                                Chọn Lớp
+                                            </option>
+                                            <option value="Lớp 1">Lớp 1</option>
+                                            <option value="Lớp 2">Lớp 2</option>
+                                            <option value="Lớp 3">Lớp 3</option>
+                                        </select>
+                                    </div>
+                                </Col>
+                                <Col span={24}>
+                                    <div
+                                        className="relative mb-3 mt-2 px-2"
+                                        data-te-input-wrapper-init
+                                    >
+                                        <select
+                                            className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                                            id="exampleFormControlTextarea1"
+                                            placeholder="Your message"
+                                            style={{ resize: 'none' }}
+                                            value={selectedSubject}
+                                            onChange={handleSelectSubject}
+                                        >
+                                            <option value="" disabled selected hidden>
+                                                Chọn Môn
+                                            </option>
+                                            <option value="Nhập Môn Lập Trình">
+                                                Nhập Môn Lập Trình
+                                            </option>
+                                            <option value="Mạng Máy Tính">Mạng Máy Tính</option>
+                                            <option value="Anh văn Chuyên Ngành">
+                                                Anh văn Chuyên Ngành
+                                            </option>
+                                        </select>
+                                    </div>
+                                </Col>
+                                <Col className="flex justify-center mt-5" span={24}>
+                                    <div className="flex gap-x-4 ">
+                                        <div>
+                                            <button
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                                onClick={handleCreateRoom}
+                                            >
+                                                Tạo
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick={handlePopupCancelCreateClass}
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                            >
+                                                Hủy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </div>
+                    </Modal>
+                </div>
             </div>
         </>
     );
