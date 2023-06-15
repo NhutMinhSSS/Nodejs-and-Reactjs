@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const responseMiddleware = require('../middlewares/response_middleware');
-const authenticateToken = require('../middlewares/authenticate_middleware');
+const responseMiddleware = require('../middlewares/response.middleware');
+const authenticateToken = require('../middlewares/authenticate.middleware');
 const LoginController = require('../controllers/login.controller');
-const ClassroomController = require('../controllers/classroom.controller');
-const postService = require('../services/post_services/post.service');
+const classroomRouter = require('./classroom.route');
+const postRouter = require('./post.route');
 
 
 
@@ -16,10 +16,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', LoginController.login);
-router.post('/create-class', ClassroomController.createClassroom);
-
-router.get('/classroom', async(req, res) => {
-    const a = await postService.findPostsByClassroomIdAndAccountId(1,1);
-    return res.json(a);
-})
+router.use('/classrooms', /* authenticateToken, */ classroomRouter);
+router.use('/posts', /* authenticateToken, */ postRouter);
+//post check detail, edit, delete, send exam
 module.exports = router;

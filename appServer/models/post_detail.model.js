@@ -19,6 +19,11 @@ PostDetail.init({
             key: 'id'
         }
     },
+    start_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
     finish_date: {
         type: DataTypes.DATE,
         allowNull: true
@@ -33,6 +38,16 @@ PostDetail.init({
         allowNull: false,
         defaultValue: 0
     },
+    is_public: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    },
+    status: {
+        type: DataTypes.SMALLINT,
+        allowNull: false,
+        defaultValue: 1
+    }
 }, {
     sequelize,
     modelName: 'PostDetail',

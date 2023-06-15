@@ -42,6 +42,14 @@ Classroom.init({
             key: 'id'
         }
     },
+    teacher_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'teachers',
+            key: 'id'
+        }
+    },
     subject_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

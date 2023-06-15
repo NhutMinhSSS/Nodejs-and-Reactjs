@@ -8,10 +8,17 @@ class EnumServerDefinitions {
         ACTIVE: 1,
         NO_ACTIVE: 0
     };
+    //
     static ROLE = {
         STUDENT: 0,
         TEACHER: 1
     };
+    //
     static EMPTY = 0;
+    //
+    static POST_CATEGORY = {
+        NEWS: 1,
+        EXAM: 3
+    }
 }
 module.exports = EnumServerDefinitions;

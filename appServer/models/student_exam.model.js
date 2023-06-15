@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const StudentFileSubmission = require('./student_file_submission.model');
 const sequelize = db.getPool();
 
 class StudentExam extends Model{}
@@ -38,7 +39,7 @@ StudentExam.init({
         defaultValue: 0
     },
     submission: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.SMALLINT,
         allowNull: false,
         defaultValue: 0
     },
@@ -55,5 +56,7 @@ StudentExam.init({
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
+
+StudentExam.hasMany(StudentFileSubmission, { foreignKey: 'student_exam_id', as: 'student_file_submissions'});
 
 module.exports = StudentExam;

@@ -1,6 +1,6 @@
 class SystemConst {
     static PORT = 3000;
-    static DOMAIN = '192.168.1.7';
+    static DOMAIN = '192.168.1.15';
     static STATUS_CODE = {
         SUCCESS: 200,
         BAD_REQUEST: 400,
@@ -14,6 +14,9 @@ class SystemConst {
     // time token
     static EXPIRES_IN = '5d';
     // Số lượng vòng lặp mã hóa
-    static SALTROUNDS = 8;
+    static SALT_ROUNDS = 8;
+    //time Zone
+    static TIME_ZONE = 'Asia/Ho_Chi_Minh';
+    static KB = 1024;
 }
 module.exports = SystemConst;

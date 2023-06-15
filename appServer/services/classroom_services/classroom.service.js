@@ -1,6 +1,11 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+const CommonService = require("../../common/utils/common_service");
 const generateCode = require("../../common/utils/generate_class_code");
 const Classroom = require("../../models/classroom.model");
+const Student = require("../../models/student.model");
+const StudentList = require("../../models/student_list.model");
+const Teacher = require("../../models/teacher.model");
+const TeacherList = require("../../models/teacher_list.model");
 
 
 class ClassroomService {
@@ -17,19 +22,10 @@ class ClassroomService {
             throw error;
         }
     }
-    async findAllClassroomsByIds(classroomIds, excludedColumn = '') {
+    async findAllMembersByClassroomId(classroomId) {
         try {
-            if (classroomIds.length === EnumServerDefinitions.EMPTY) {
-                return []
-            }
-            const classrooms = await Classroom.findAll({
-                where: {
-                    id: classroomIds,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
-                attributes: { exclude: [excludedColumn] }
-            });
-            return classrooms;
+            const members = await CommonService.findMembersByClassroomId(classroomId);
+            return members;
         } catch (error) {
             throw error;
         }
@@ -47,6 +43,21 @@ class ClassroomService {
             throw error;
         }
     }
+    async checkRoomMember(classroomId, userId, role) {
+        try {
+            const userRole = role === EnumServerDefinitions.ROLE.TEACHER ? {model: TeacherList, filed: 'teacher_id'} : {model: StudentList, filed: 'student_id'};
+            const isClassroom = await (userRole.model).findOne({
+               where: {
+                classroom_id: classroomId,
+                [userRole.filed]: userId,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+               },
+            });
+            return !!isClassroom;
+        } catch (error) {
+            throw error;
+        }
+    }
     async createClassroom(className, title, note, regularClassId, subjectId, transaction) {
         try {
             const classCode = await this.generateCodeWithCheck();
@@ -56,6 +67,7 @@ class ClassroomService {
                 title: title,
                 note: note,
                 regular_class_id: regularClassId,
+                //teacher_id: teacherId,
                 subject_id: subjectId
             }, { transaction: transaction});
             return newClassroom;
