@@ -3,19 +3,19 @@ const Department = require("../models/department.model");
 const Subject = require("../models/subject.model");
 
 class SubjectService {
-    async findSubjectByDepartmentId(subjectId ,departmentId) {
+    async findSubjectByDepartmentId(subjectId, departmentId) {
         try {
             const subject = await Subject.findOne({
-               where: {
-                id: subjectId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-               }, include: [{
-                model: Department,
                 where: {
-                    id: departmentId,
+                    id: subjectId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
-               }]
+                }, include: [{
+                    model: Department,
+                    where: {
+                        id: departmentId,
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    }
+                }]
             });
             return subject;
         } catch (error) {
@@ -47,7 +47,7 @@ class SubjectService {
     }
     async updateSubject(id, subjectName, departmentId, credit) {
         try {
-            return await Subject.update({
+            const subject = await Subject.update({
                 subject_name: subjectName,
                 department_id: departmentId,
                 credit: credit
@@ -56,7 +56,8 @@ class SubjectService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
-            })
+            });
+            return subject > 0;
         } catch (error) {
             throw error;
         }
@@ -71,14 +72,15 @@ class SubjectService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return await Subject.update({
+            const subject = await Subject.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
-            })
+            });
+            return subject > 0;
         } catch (error) {
             throw error;
         }
@@ -91,7 +93,7 @@ class SubjectService {
                 credit: credit || 1
             });
             return newSubject;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     }

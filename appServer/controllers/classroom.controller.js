@@ -24,17 +24,17 @@ class ClassroomController {
             let listClassroom;
             if (role === EnumServerDefinitions.ROLE.STUDENT) {
                 user = await StudentService.findStudentByAccountId(accountId);
-                if (!user) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                        EnumMessage.STUDENT_NOT_EXISTS);
-                }
+                // if (!user) {
+                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                //         EnumMessage.STUDENT_NOT_EXISTS);
+                // }
                 listClassroom = await ClassroomStudentService.findClassroomsByStudentId(user.id);
             } else if (role === EnumServerDefinitions.ROLE.TEACHER) {
                 user = await TeacherService.findTeacherByAccountId(accountId);
-                if (!user) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                        EnumMessage.TEACHER_NOT_EXISTS);
-                }
+                // if (!user) {
+                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                //         EnumMessage.TEACHER_NOT_EXISTS);
+                // }
                 listClassroom = await ClassroomTeacherService.findClassroomsByTeacherId(user.id);
             } else {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
@@ -69,10 +69,10 @@ class ClassroomController {
             }
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
                 const teacher = await TeacherService.findTeacherByAccountId(accountId);
-                if (!teacher) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                        EnumMessage.TEACHER_NOT_EXISTS);
-                }
+                // if (!teacher) {
+                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                //         EnumMessage.TEACHER_NOT_EXISTS);
+                // }
                 const isJoined = await ClassroomTeacherService.isTeacherJoined(classroom.id, teacher.id);
                 if (isJoined) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
@@ -81,10 +81,10 @@ class ClassroomController {
                 await ClassroomTeacherService.addTeacherToClassroom(classroom.id, teacher.id, transaction);
             } else {
                 const student = await StudentService.findStudentByAccountId(accountId);
-                if (!student) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                        EnumMessage.STUDENT_NOT_EXISTS);
-                }
+                // if (!student) {
+                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                //         EnumMessage.STUDENT_NOT_EXISTS);
+                // }
                 const isJoined = await ClassroomStudentService.isStudentJoined(classroom.id, student.id);
                 if (isJoined) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
@@ -122,10 +122,10 @@ class ClassroomController {
                     EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
             }
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
-            if (!teacher) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.TEACHER_NOT_EXISTS);
-            }
+            // if (!teacher) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+            //         EnumMessage.TEACHER_NOT_EXISTS);
+            // }
             const checkSubjectAndRegularClass = await Promise.all([
                 SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
                 RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)

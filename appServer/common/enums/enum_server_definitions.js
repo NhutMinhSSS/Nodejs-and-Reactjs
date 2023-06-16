@@ -20,5 +20,10 @@ class EnumServerDefinitions {
         NEWS: 1,
         EXAM: 3
     }
+    static SUBMISSION = {
+        UNSENT: 0,
+        NOT_SCORED: 1,
+        SUBMITTED: 2,
+    }
 }
 module.exports = EnumServerDefinitions;

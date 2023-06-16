@@ -50,7 +50,7 @@ class RegularClassService {
     }
     async updateRegularClass(id, className, departmentId) {
         try {
-            return await RegularClass.update( {
+            const regularClass = await RegularClass.update({
                 class_name: className,
                 department_id: departmentId
             }, {
@@ -58,7 +58,8 @@ class RegularClassService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
-            } );
+            });
+            return regularClass > 0;
         } catch (error) {
             throw error;
         }
@@ -73,7 +74,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return await RegularClass.update({
+            const regularClass = await RegularClass.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -81,6 +82,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
+            return regularClass > 0;
         } catch (error) {
             throw error;
         }

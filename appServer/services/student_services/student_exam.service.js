@@ -43,6 +43,21 @@ class StudentExamService {
             throw error;
         }
     }
+    async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
+        try {
+            const studentExam = await StudentExam.update({
+                finish_date: finishDate,
+                total_score: totalScore,
+                submission: submission
+            }, { where: {
+                id: id,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, transaction});
+            return studentExam > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = new StudentExamService;

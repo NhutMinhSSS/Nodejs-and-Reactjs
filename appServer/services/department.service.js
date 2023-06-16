@@ -20,7 +20,7 @@ class DepartmentService {
     }
     async updateDepartment(id, departmentName, facultyId) {
         try {
-            return await Department.update( {
+            const department = await Department.update({
                 department_name: departmentName,
                 faculty_id: facultyId
             }, {
@@ -28,7 +28,8 @@ class DepartmentService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
-            } );
+            });
+            return department > 0;
         } catch (error) {
             throw error;
         }
@@ -66,7 +67,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return await Department.update({
+            const department = await Department.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -74,20 +75,21 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
+            return department > 0;
         } catch (error) {
             throw error;
         }
     }
     async addDepartment(departmentName, facultyId) {
-       try {
-        const newDepartment = Department.create({
-            department_name: departmentName,
-            faculty_id: facultyId
-        });
-        return newDepartment;
-       } catch(error) {
-        throw error;
-       }
+        try {
+            const newDepartment = Department.create({
+                department_name: departmentName,
+                faculty_id: facultyId
+            });
+            return newDepartment;
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
