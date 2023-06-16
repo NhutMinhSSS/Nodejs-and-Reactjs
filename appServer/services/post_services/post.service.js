@@ -63,6 +63,13 @@ class PostService {
                 },
                 include: [
                     {
+                        model: Classroom,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        as: 'classrooms',
+                        attributes: [],
+                    }, {
                         model: PostCategory,
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
@@ -251,13 +258,13 @@ class PostService {
               }
             const postDetails = await Post.findOne({
                 where : whereCondition,
-                include: [/* {
+                include: [ /* {
                     model: Classroom,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     as: 'classrooms',
-                    attributes: ['id'],
+                    attributes: [],
                 }, */ {
                     model: PostFile,
                     required: false,
@@ -392,7 +399,14 @@ class PostService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id','classroom_id']
+                attributes: ['id','classroom_id'],
+                include: [{
+                    model: Classroom,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: []
+                }]
             });
             return post;
         } catch (error) {
