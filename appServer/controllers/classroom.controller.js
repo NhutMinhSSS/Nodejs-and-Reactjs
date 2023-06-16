@@ -115,8 +115,8 @@ class ClassroomController {
             const title = req.body.title || null;
             const note = req.body.note || null;
             const accountId = req.user.account_id;
-            //const regularClassId = req.body.selectedClass;
-            //const subjectId = req.body.selectedSubject;
+            const regularClassId = req.body.selectedClass;
+            const subjectId = req.body.selectedSubject;
             if (!className) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
@@ -138,7 +138,7 @@ class ClassroomController {
             if (checkRegularClass) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
-            const newClassroom = await ClassroomService.createClassroom(className, title, note, 1, 1, transaction);
+            const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);

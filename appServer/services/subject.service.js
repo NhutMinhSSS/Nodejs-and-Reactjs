@@ -35,6 +35,54 @@ class SubjectService {
             throw error;
         }
     }
+    async findAllSubject() {
+        try {
+            const subjects = await Subject.findAll({
+                status: EnumServerDefinitions.STATUS
+            });
+            return subjects;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateSubject(id, subjectName, departmentId, credit) {
+        try {
+            return await Subject.update({
+                subject_name: subjectName,
+                department_id: departmentId,
+                credit: credit
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
+    async deleteSubject(id, transaction) {
+        try {
+            await Classroom.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    subject_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return await Subject.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            })
+        } catch (error) {
+            throw error;
+        }
+    }
     async addSubject(subjectName, departmentId, credit) {
         try {
             const newSubject = await Subject.create({

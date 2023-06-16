@@ -19,6 +19,11 @@ PostDetail.init({
             key: 'id'
         }
     },
+    create_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
     start_date: {
         type: DataTypes.DATE,
         allowNull: false,

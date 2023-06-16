@@ -1,6 +1,7 @@
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const RegularClass = require("../models/regular_class.model");
 const Department = require("../models/department.model");
+const Classroom = require("../models/classroom.model");
 
 class RegularClassService {
     async findRegularClassByDepartmentId(regularClassId, departmentId) {
@@ -31,6 +32,55 @@ class RegularClassService {
                 }
             });
             return listRegularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findAllRegularClass() {
+        try {
+            const faculty = await RegularClass.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return faculty;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateRegularClass(id, className, departmentId) {
+        try {
+            return await RegularClass.update( {
+                class_name: className,
+                department_id: departmentId
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            } );
+        } catch (error) {
+            throw error;
+        }
+    }
+    async deleteRegularClass(id, transaction) {
+        try {
+            await Classroom.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    regular_class_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return await RegularClass.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
         } catch (error) {
             throw error;
         }
