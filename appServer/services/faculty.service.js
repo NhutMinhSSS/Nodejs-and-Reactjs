@@ -33,7 +33,7 @@ class FacultyService {
     }
     async updateFaculty(id, facultyName) {
         try {
-            return await Faculty.update({
+            const faculty =  await Faculty.update({
                 faculty_name: facultyName
             }, {
                 where: {
@@ -41,6 +41,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
+            return faculty > 0;
         } catch (error) {
             throw error;
         }
@@ -80,7 +81,7 @@ class FacultyService {
                     { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
                     { where: { subject_id: subjectIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
                 );
-                return await Faculty.update({
+                const faculty =  await Faculty.update({
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }, {
                     where: {
@@ -88,6 +89,7 @@ class FacultyService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }
                 });
+                return faculty > 0;
         } catch (error) {
             throw error;
         }

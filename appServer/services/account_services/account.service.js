@@ -3,6 +3,20 @@ const BcryptUtils = require("../../config/bcrypt_utils.config");
 const Account = require("../../models/account.model");
 
 class AccountService {
+    async findAccountById(id) {
+        try {
+            const account = await Account.findOne({
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return account;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findAccountByEmail(email) {
         try {
             const account = await Account.findOne({

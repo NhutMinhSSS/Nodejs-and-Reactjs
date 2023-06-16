@@ -23,11 +23,11 @@ const checkPostBelongToClassroom = async(req, res, next) => {
         let user;
        if (role === EnumServerDefinitions.ROLE.TEACHER) {
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
-            user = await ClassroomTeacherService.isTeacherJoined(post.classrooms_id, teacher.id)
+            user = await ClassroomTeacherService.isTeacherJoined(post.classrooms_id, teacher.id);
        } else {
             const student = await StudentService.findStudentByAccountId(accountId);
-            req.student_id = student.id;
             user = await ClassroomStudentService.isStudentJoined(post.classrooms_id, student.id);
+            req.student_id = student.id;
        }
        if (!user) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,

@@ -1,3 +1,4 @@
+const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const PostDetail = require("../../models/post_detail.model");
 
 
@@ -16,6 +17,25 @@ class PostDetailService {
         } catch (error) {
             throw error;
         } 
+    }
+    async updatePostDetail(postId, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, transaction) {
+        try {
+            const postDetail =  await PostDetail.update({
+                start_date: startDate,
+                finish_date: finishDate,
+                inverted_question: invertedQuestion,
+                inverted_answer: invertedAnswer,
+                is_public: isPublic
+            }, {
+                where: {
+                    post_id: postId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return postDetail > 0;
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
