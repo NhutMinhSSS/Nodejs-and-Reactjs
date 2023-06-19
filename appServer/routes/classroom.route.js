@@ -9,6 +9,7 @@ const checkRoomMember = require('../middlewares/check_room_member.middleware');
 
 
 classroomRouter.get('/', classroomController.showJoinedClassrooms);
+classroomRouter.get('/init', authorize(EnumServerDefinitions.ROLE.TEACHER), classroomController);
 classroomRouter.get('/:classroom_id', checkRoomMember, PostController.showPostsByUser);
 classroomRouter.post('/create-classroom', authorize(EnumServerDefinitions.ROLE.TEACHER), classroomController.createClassroom);
 classroomRouter.post('/join-classroom', classroomController.joinClassroom);
