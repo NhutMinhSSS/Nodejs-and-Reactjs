@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', LoginController.login);
-router.use('/classrooms', /* authenticateToken, */ classroomRouter);
+router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', /* authenticateToken, */ postRouter);
 //post check detail, edit, delete, send exam
 module.exports = router;
