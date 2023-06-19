@@ -5,7 +5,7 @@ const logger = require('../config/logger.config');
 const sequelize = db.getPool();
 const ServerResponse = require('../common/utils/server_response');
 const AccountService = require('../services/account_service/account.service');
-const StudentService = require('../services/student_service/student.service');
+const StudentService = require('../services/student_services/student.service');
 class UserManager {
     async addStudentOrTeacher(req, res) {
         const transaction = await sequelize.transaction();
@@ -27,7 +27,8 @@ class UserManager {
             }
             const newAccount = await AccountService.addAccount(email, password, role, transaction);
             if (role == 0) {
-                await StudentService.addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, newAccount.id, address, transaction);
+                const regularClassId = req.body.regular_class_id;
+                await StudentService.addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, newAccount.id, regularClassId, address, transaction);
             } else {
                 //addTeacher
             }
