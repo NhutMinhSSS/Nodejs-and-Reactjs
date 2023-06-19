@@ -29,16 +29,13 @@ class ClassroomController {
                 //         EnumMessage.STUDENT_NOT_EXISTS);
                 // }
                 listClassroom = await ClassroomStudentService.findClassroomsByStudentId(user.id);
-            } else if (role === EnumServerDefinitions.ROLE.TEACHER) {
+            } else {
                 user = await TeacherService.findTeacherByAccountId(accountId);
                 // if (!user) {
                 //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                 //         EnumMessage.TEACHER_NOT_EXISTS);
                 // }
                 listClassroom = await ClassroomTeacherService.findClassroomsByTeacherId(user.id);
-            } else {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ROLE_INVALID);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, listClassroom);
         } catch (error) {
@@ -58,10 +55,10 @@ class ClassroomController {
                 return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
             }
-            if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ROLE_INVALID);
-            }
+            // if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+            //         EnumMessage.ROLE_INVALID);
+            // }
             const classroom = await ClassroomService.findClassroomByClassCode(classCode);
             if (!classroom) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,

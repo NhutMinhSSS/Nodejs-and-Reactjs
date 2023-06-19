@@ -28,11 +28,8 @@ class UserManager {
             const newAccount = await AccountService.addAccount(email, password, role, transaction);
             if (role == 0) {
                 await StudentService.addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, newAccount.id, address, transaction);
-            } else if (role == 1) {
-                //addTeacher
             } else {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ROLE_INVALID);
+                //addTeacher
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);

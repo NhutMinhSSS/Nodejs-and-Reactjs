@@ -13,11 +13,11 @@ StudentFileSubmission.init({
         autoIncrement: true,
         allowNull: false
     },
-    exam_id: {
+    student_exam_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'posts',
+            model: 'student_exams',
             key: 'id'
         }
     },
@@ -26,14 +26,6 @@ StudentFileSubmission.init({
         allowNull: false,
         references: {
             model: 'files',
-            key: 'id'
-        }
-    },
-    student_exam_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'student_exams',
             key: 'id'
         }
     },

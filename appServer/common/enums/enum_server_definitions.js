@@ -18,7 +18,9 @@ class EnumServerDefinitions {
     //
     static POST_CATEGORY = {
         NEWS: 1,
-        EXAM: 3
+        DOCUMENT: 2,
+        EXERCISE: 3,
+        EXAM: 4,
     }
     static SUBMISSION = {
         UNSENT: 0,

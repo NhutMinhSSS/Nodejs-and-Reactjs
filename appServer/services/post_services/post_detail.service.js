@@ -3,6 +3,19 @@ const PostDetail = require("../../models/post_detail.model");
 
 
 class PostDetailService {
+    async findDetailByPostId(postId) {
+        try {
+            const postDetail = await PostDetail.findOne({
+                where: {
+                    post_id: postId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return postDetail;
+        } catch (error) {
+            throw error;
+        }
+    }
     async createPostDetail(postId, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, transaction) {
         try {
             const newPostDetails = PostDetail.create({
