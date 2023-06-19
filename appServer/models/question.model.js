@@ -1,8 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
-
 const db = require('../config/connect_database.config');
 const sequelize = db.getPool();
-
+const Answer = require('./answer.model');
 class Question extends Model{}
 
 Question.init({
@@ -50,4 +49,5 @@ Question.init({
     updatedAt: 'update_at'
 });
 
+Question.hasMany(Answer, { foreignKey: 'question_id', as: 'answers'});
 module.exports = Question;

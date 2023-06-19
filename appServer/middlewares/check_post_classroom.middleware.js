@@ -28,6 +28,10 @@ const checkPostBelongToClassroom = async(req, res, next) => {
             const student = await StudentService.findStudentByAccountId(accountId);
             user = await ClassroomStudentService.isStudentJoined(post.classrooms_id, student.id);
             req.student_id = student.id;
+            req.post = {
+                post_id:  post.id,
+                post_category_id: post.post_category_id
+            };
        }
        if (!user) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,

@@ -44,13 +44,21 @@ class EnumMessage{
     //No permission 
     static NO_PERMISSION = 'No permission';
     //Is not belong department
-    static TEACHER_NOT_REGULAR_CLASS = `Teacher don't teach this regular class`;
-    static TEACHER_NOT_SUBJECT = `Teacher don't teach this subject`;
+    static TEACHER_NOT_REGULAR_CLASS = `Teacher not assigned to class`;
+    static TEACHER_NOT_SUBJECT = `Teacher not assigned to subject`;
+    //File not exists
+    static FILE_NOT_EXISTS = 'File not exists';
     //Error post
     static ERROR_POST = {
         //Post Not exists
         POST_NOT_EXISTS: 'Post not exists',
         POST_NOT_CLASSROOM: 'Post not classroom'
+    }
+    //Error submission by student
+    static ERROR_SUBMISSION = {
+        NOT_SUBMISSION: 'Not submission',
+        DEADLINE_EXCEEDED: 'Deadline exceeded',
+        BEFORE_START_TIME: 'Before start time'
     }
 }
 module.exports = EnumMessage;

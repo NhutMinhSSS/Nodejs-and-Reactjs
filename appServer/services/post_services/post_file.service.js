@@ -8,7 +8,7 @@ class PostFileService {
                 post_id: postId,
                 file_id: fileId 
             }));
-            const newPostFile = await PostFile.bulkCreate(listPostFile, {transaction: transaction});
+            const newPostFile = await PostFile.bulkCreate(listPostFile, {transaction});
             return newPostFile;
         } catch (error) {
             throw error;

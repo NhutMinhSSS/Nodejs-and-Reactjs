@@ -113,3 +113,32 @@ Json initial classroom
         "comments": []
     }
 ]
+
+//question
+const questions = [
+    {
+      content: 'Câu hỏi 1',
+      ...
+      answers: [
+        { content: 'Đáp án 1.1', isCorrect: true },
+        { content: 'Đáp án 1.2', isCorrect: false },
+        { content: 'Đáp án 1.3', isCorrect: false }
+      ]
+    },
+    {
+      content: 'Câu hỏi 2',
+      answers: [
+        { content: 'Đáp án 2.1', isCorrect: true },
+        { content: 'Đáp án 2.2', isCorrect: false },
+        { content: 'Đáp án 2.3', isCorrect: false }
+      ]
+    },
+    {
+      content: 'Câu hỏi 3',
+      answers: [
+        { content: 'Đáp án 3.1', isCorrect: true },
+        { content: 'Đáp án 3.2', isCorrect: false },
+        { content: 'Đáp án 3.3', isCorrect: false }
+      ]
+    }
+  ];

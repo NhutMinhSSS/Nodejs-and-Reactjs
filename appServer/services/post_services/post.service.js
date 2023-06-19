@@ -13,6 +13,7 @@ const PostCategory = require("../../models/post_category.model");
 const Classroom = require("../../models/classroom.model");
 const StudentFileSubmission = require("../../models/student_file_submission.model");
 const EnumMessage = require("../../common/enums/enum_message");
+const FormatUtils = require("../../common/utils/format.utils");
 
 class PostService {
     async findPostById(id) {
@@ -186,7 +187,7 @@ class PostService {
                 attributes: ['id', 'title', 'content', 'post_category_id'],
                 order: [['create_date', 'DESC']]
             });
-            return this.formatPost(listPost);
+            return FormatUtils.formatPost(listPost);
         } catch (error) {
             throw error;
         }
@@ -281,124 +282,10 @@ class PostService {
                     }],
                 attributes: ['id']
             });
-            return this.formatPostDetail(postDetails);
+            return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {
             throw error;
         }
-    }
-    formatPost(listPost) {
-        const formattedListPost = listPost.map(post => {
-            // const formattedPostFiles = post.post_files.map(postFile => ({
-            //     post_file_id: postFile.id,
-            //     file_name: postFile.File.file_name,
-            //     physical_name: postFile.File.physical_name,
-            //     file_path: postFile.File.file_path
-            // }));
-            const formattedPostFiles = this.formatFile(post.post_files);
-
-            // const formatComments = post.comments.map(comment => {
-            //     const account = this.formatAccount(comment.Account);
-            //     return {
-            //         id: comment.id,
-            //         content: comment.content,
-            //         comment_date: comment.comment_date,
-            //         first_name: account.first_name,
-            //         last_name: account.last_name
-            //     }
-            // });
-            const formatComments = this.formatComments(post.comments);
-            const account = this.formatAccount(post.accounts)
-            const formattedPost = {
-                id: post.id,
-                title: post.title,
-                content: post.content,
-                create_date: post.create_date,
-                category: post.post_categories.category_name,
-                classroom_id: post.classroom_id,
-                last_name: account.last_name,
-                first_name: account.first_name,
-                // topic_id: post.topic_id,
-                files: formattedPostFiles,
-                comments: formatComments
-            };
-            if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
-                formattedPost.finish_date = post.post_details.finish_date;
-            }
-            return formattedPost;
-        });
-        return formattedListPost;
-    }
-    formatComments(listComments) {
-        return listComments.map(comment => {
-            const account = this.formatAccount(comment.Account);
-            return {
-                id: comment.id,
-                content: comment.content,
-                comment_date: comment.comment_date,
-                first_name: account.first_name,
-                last_name: account.last_name
-            }
-        });
-    }
-    formatAccount(account) {
-        if (account.role === EnumServerDefinitions.ROLE.TEACHER) {
-            // Nếu là giáo viên (role = 1)
-            return {
-                last_name: account.Teacher.last_name,
-                first_name: account.Teacher.first_name
-            };
-        } else {
-            // Nếu là học sinh (role = 2)
-            return {
-                last_name: account.Student.last_name,
-                first_name: account.Student.first_name
-            };
-        }
-    }
-    formatFile(listFile) {
-        return listFile.map(postFile => ({
-            post_file_id: postFile.id,
-            file_name: postFile.File.file_name,
-            physical_name: postFile.File.physical_name,
-            file_path: postFile.File.file_path
-        }));
-    }
-    formatPostDetail(postDetail) {
-
-        // const formatComments = postDetail.comments.map(comment => {
-        //     const account = this.formatAccount(comment.Account);
-        //     return {
-        //         id: comment.id,
-        //         content: comment.content,
-        //         comment_date: comment.comment_date,
-        //         first_name: account.first_name,
-        //         last_name: account.last_name
-        //     }
-        // });
-        const formatComments = this.formatComments(postDetail.comments);
-        //const account = this.formatAccount(postDetail.accounts);
-        const studentExams = postDetail.student_exams.map(item => ({
-            id: item.id,
-            finish_date: item.finish_date,
-            total_score: item.total_score,
-            submission: item.submission,
-            file: this.formatFile(item.student_file_submissions)
-        }));
-        const formattedPost = {
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            create_date: post.create_date,
-            //category: post.post_categories.category_name,
-            //classroom_id: post.classroom_id,
-            //last_name: account.last_name,
-            //first_name: account.first_name,
-            // topic_id: post.topic_id,
-            files: this.formatFile(post.post_files),
-            comments: formatComments,
-            student_exams: studentExams
-        };
-        return formattedPost;
     }
     async checkPostBelongTo(id) {
         try {
@@ -407,7 +294,7 @@ class PostService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'classroom_id'],
+                attributes: ['id', 'classroom_id', 'post_category_id'],
                 include: [{
                     model: Classroom,
                     where: {
