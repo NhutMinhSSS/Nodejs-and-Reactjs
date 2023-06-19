@@ -14,6 +14,7 @@ const customCorsOptions = (req, res, next) => {
       cors()(req, res, next);
     } else {
       // Nếu địa chỉ IP không nằm trong danh sách, từ chối CORS
+      logger.error(`ip: ${clientIP} not allow by CORS`);
       return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
         EnumMessage.NOT_ALLOW_BY_CORS)
     }
