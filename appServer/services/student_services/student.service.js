@@ -98,7 +98,7 @@ class StudentService {
             throw error;
         }
     }
-    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address, transaction) {
+    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, regularClassId, address, transaction) {
         try {
             const newStudent = await Student.create({
                 student_code: studentCode,
@@ -109,6 +109,7 @@ class StudentService {
                 phone_number: phoneNumber,
                 CCCD: CCCD,
                 account_id: accountId,
+                regular_class_id: regularClassId,
                 address: address
             }, { transaction: transaction});
             return newStudent;
