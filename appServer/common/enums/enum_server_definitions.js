@@ -2,7 +2,7 @@ class EnumServerDefinitions {
     static OK = 'OK';
     static ERROR = 'error';
     static FINISH = 'finish';
-    static AUTHORIZATION = 'Authorization';
+    static AUTHORIZATION = 'authorization';
     //
     static STATUS = {
         ACTIVE: 1,
