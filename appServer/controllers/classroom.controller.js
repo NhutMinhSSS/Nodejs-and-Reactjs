@@ -16,6 +16,31 @@ const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
 
 class ClassroomController {
+    async getSubjectAndRegularClass(req, res) {
+        try {
+            const accountId = req.user.account_id;
+            const teacher = await TeacherService.findTeacherByAccountId(accountId);
+            const subjects = await SubjectService.findAllSubjectByDepartmentId(teacher.department_id);
+            const regularClass = await RegularClassService.findAllRegularClassByDepartmentId(teacher.department_idr);
+            const listSubject = subjects.map(item => ({
+                subject_id: item.id,
+                subject_name: item.subject_name
+            }));
+            const listRegularClass = regularClass.map(item => ({
+                regular_class_id: item.id,
+                class_name: item.class_name
+            }));
+            const response = {
+                subjects: listSubject,
+                regular_class: listRegularClass
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, response);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async showJoinedClassrooms(req, res) {
         try {
             const role = req.user.role;
