@@ -6,7 +6,7 @@ class ServerResponse {
             result_message: EnumMessage.RESPONSE.SUCCESS
         };
         if (data) {
-            response.data = data;
+            response.response_data = data;
         }
         return res.status(statusCode).json(response);
     }
