@@ -4,7 +4,7 @@ const db = require('../config/connect_database.config');
 const logger = require('../config/logger.config');
 const sequelize = db.getPool();
 const ServerResponse = require('../common/utils/server_response');
-const AccountService = require('../services/account_service/account.service');
+const AccountService = require('../services/account_services/account.service');
 const StudentService = require('../services/student_services/student.service');
 class UserManager {
     async addStudentOrTeacher(req, res) {
