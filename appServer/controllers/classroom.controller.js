@@ -21,7 +21,7 @@ class ClassroomController {
             const accountId = req.user.account_id;
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
             const subjects = await SubjectService.findAllSubjectByDepartmentId(teacher.department_id);
-            const regularClass = await RegularClassService.findAllRegularClassByDepartmentId(teacher.department_idr);
+            const regularClass = await RegularClassService.findAllRegularClassByDepartmentId(teacher.department_id);
             const listSubject = subjects.map(item => ({
                 subject_id: item.id,
                 subject_name: item.subject_name
