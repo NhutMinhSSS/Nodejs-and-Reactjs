@@ -15,7 +15,7 @@ const domain = SystemConst.DOMAIN;
 
 //global._io = io;
 // Sử dụng middleware cors
-app.use(cors(corsOptions));
+app.use(cors());
 app.use('/api', routes);
 const start = async () => {
     try {
