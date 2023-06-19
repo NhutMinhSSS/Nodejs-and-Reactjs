@@ -5,8 +5,10 @@ class TeacherService {
     async findTeacherByAccountId(accountId) {
         try {
             const teacher = await Teacher.findOne({
-                account_id: accountId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                where: {
+                    account_id: accountId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
             });
             return teacher;
         } catch (error) {
