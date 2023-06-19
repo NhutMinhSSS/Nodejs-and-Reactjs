@@ -1,4 +1,6 @@
 class EnumMessage{
+    //Not allow by cors
+    static NOT_ALLOW_BY_CORS = 'Not allowed by CORS';
     //Response
     static RESPONSE = {
         //Success
