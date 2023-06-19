@@ -13,7 +13,7 @@ const app = express();
 const port = SystemConst.PORT;
 const domain = SystemConst.DOMAIN;
 
-global._io = io;
+//global._io = io;
 // Sử dụng middleware cors
 app.use(cors(corsOptions));
 app.use('/api', routes);
