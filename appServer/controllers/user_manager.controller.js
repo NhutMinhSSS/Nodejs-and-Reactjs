@@ -39,10 +39,13 @@ class UserManager {
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
         }
     }
 }
 
-module.exports = new UserManager;
+module.exports = new UserManager();

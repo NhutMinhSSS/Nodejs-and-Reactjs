@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Menu, Modal } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import './style.css';
+import './style.scss';
 import { MdAccountCircle, MdOutlineAdd, MdOutlineAssignment } from 'react-icons/md';
 import PopupCreateExercise from '../Popup/PopupCreateExercise';
 import PopupCreateTest from '../Popup/PopupCreateTest';
@@ -112,12 +112,7 @@ const ClassroomExercisesTeacher: React.FC = () => {
                     <div></div>
                 </div>
                 <div>
-                    <Modal
-                        visible={isPopupVisible}
-                        onCancel={handlePopupCancel}
-                        width="100%"
-                        footer={null}
-                    >
+                    <Modal visible={isPopupVisible} onCancel={handlePopupCancel} width="100%" footer={null}>
                         <PopupCreateExercise />
                     </Modal>
                 </div>
