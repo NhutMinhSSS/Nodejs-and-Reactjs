@@ -70,16 +70,16 @@ class ClassroomController {
         }
     }
     async joinClassroom(req, res) {
+        const role = req.user.role;
+        const accountId = req.user.accountId;
+        const classCode = req.body.classCode;
+        if (!classCode) {
+            //Cần sửa nội dung lỗi
+            return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_CODE);
+        }
         const transaction = await sequelize.transaction();
         try {
-            const role = req.user.role;
-            const accountId = req.user.accountId;
-            const classCode = req.body.classCode;
-            if (!classCode) {
-                //Cần sửa nội dung lỗi
-                return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
-            }
             // if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
             //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
             //         EnumMessage.ROLE_INVALID);
@@ -131,6 +131,16 @@ class ClassroomController {
         }
     }
     async createClassroom(req, res) {
+        const className = req.body.nameClass;
+        const title = req.body.title || null;
+        const note = req.body.note || null;
+        const accountId = req.user.account_id;
+        const regularClassId = req.body.selectedClass;
+        const subjectId = req.body.selectedSubject;
+        if (!className || !regularClassId || !subjectId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
+        }
         const transaction = await sequelize.transaction();
         try {
             const className = req.body.nameClass;
