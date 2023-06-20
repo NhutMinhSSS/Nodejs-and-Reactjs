@@ -32,8 +32,9 @@ class EnumMessage{
     static ERROR_COMPARING_PASSWORDS = 'Error comparing passwords';
     //Error classroom
     static ERROR_CLASSROOM = {
-        REQUIRED_CLASS_NAME: 'Required class name',
+        REQUIRED_INFORMATION: 'Request more information ',
         CLASSROOM_NOT_EXISTS: 'Classroom no exist',
+        REQUIRED_CLASS_CODE: 'Request class code'
     };
     //Teacher no exists
     static TEACHER_NOT_EXISTS = 'Teacher no exists';
