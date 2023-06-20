@@ -8,13 +8,15 @@ import {
     MdKeyboardArrowDown,
     MdOutlineAssignment,
     MdOutlineFileUpload,
+    MdOutlineInsertDriveFile,
     MdOutlineUpload,
 } from 'react-icons/md';
-import { Button, Dropdown, Menu } from 'antd';
+import { Button, Dropdown, Menu, Space, Typography, Upload } from 'antd';
 import CheckBoxMenu from '../components/CheckBoxMenu';
 import CheckBoxAll from '../components/CheckBoxAll';
 import CardExercise from '../components/CardExercise';
 import FileUpload from '../components/FileUpload';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 const listExercise = [
     {
         id: 1,
@@ -63,10 +65,8 @@ const AddCard = () => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
-    const [selectedOptions, setSelectedOptions] = useState<string[]>(
-        ListStudent.map((student) => student.label),
-    );
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedOptions, setSelectedOptions] = useState<string[]>(ListStudent.map((student) => student.label));
+    // const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const [displayedOption, setDisplayedOption] = useState<string | JSX.Element>('0 học viên');
 
@@ -97,8 +97,43 @@ const AddCard = () => {
     //     const file = event.target.files?.[0];
     //     setSelectedFile(file || null);
     // };
-    const handleFileChange = (file: File) => {
-        setSelectedFile(file);
+    // const handleFileChange = (file: File) => {
+    //     setSelectedFile(file);
+    // };
+    // const handleFileUpload = (options: any) => {
+    //     const { file, onSuccess, onError } = options;
+
+    //     // Tạo đối tượng FormData để chứa file
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+    //     console.log(file);
+    //     // Gửi yêu cầu tải lên bằng cách sử dụng API fetch hoặc thư viện khác
+    //     fetch('URL_Tải_lên', {
+    //         method: 'POST',
+    //         body: formData,
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             // Xử lý khi tải lên thành công
+    //             onSuccess(data);
+    //         })
+    //         .catch((error) => {
+    //             // Xử lý khi có lỗi xảy ra
+    //             onError(error);
+    //         });
+    // };
+    const [files, setFiles] = useState({});
+    const handleFileUpload = (file: any) => {
+        console.log(file);
+        setFiles((pre) => {
+            return { ...pre, [file.uid]: file };
+        });
+
+        axios.post('http://localhost:3000/fileUpload', file, {
+            onUploadProgress: (event) => {
+                console.log(event);
+            },
+        });
     };
 
     useEffect(() => {
@@ -196,22 +231,37 @@ const AddCard = () => {
                             )} */}
 
                             <div className="flex justify-between">
+                                <div>
+                                    <Space direction="vertical">
+                                        <Upload multiple customRequest={handleFileUpload}>
+                                            <Button>Upload</Button>
+                                        </Upload>
+                                        {Object.values(files).map((file: any, index) => {
+                                            return (
+                                                <Space>
+                                                    <MdOutlineInsertDriveFile />
+                                                    <Typography>{file.name}</Typography>
+                                                </Space>
+                                            );
+                                        })}
+                                    </Space>
+                                </div>
+
                                 {/* <div>
                                     <MdOutlineFileUpload size={28} />
                                 </div> */}
-                                <div className="bg-slate-300 hover:bg-slate-400 transition-all duration-200 rounded-full p-1 ml-4">
-                                    {/* <input
+                                {/* <div className="bg-slate-300 hover:bg-slate-400 transition-all duration-200 rounded-full p-1 ml-4">
+                                    <input
                                         type="file"
                                         name="file"
                                         onChange={handleFileChange}
                                         style={{ display: 'none' }}
                                         id="file-input"
-                                    /> */}
-                                    {/* <label htmlFor="file-input" className="file-input-label">
+                                    />
+                                    <label htmlFor="file-input" className="file-input-label">
                                         <MdOutlineFileUpload size={28} />
-                                    </label> */}
-                                    <FileUpload onFileSelect={handleFileChange} />
-                                </div>
+                                    </label>
+                                </div> */}
                                 <div className=" mr-4">
                                     <button
                                         type="submit"

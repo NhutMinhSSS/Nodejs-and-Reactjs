@@ -44,4 +44,4 @@ class Database {
         return this.pool;
     }
 }
-module.exports = new Database;
+module.exports = new Database();
