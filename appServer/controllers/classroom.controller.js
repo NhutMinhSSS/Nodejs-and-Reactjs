@@ -143,29 +143,31 @@ class ClassroomController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
             }
-            const teacher = await TeacherService.findTeacherByAccountId(accountId);
-            // if (!teacher) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-            //         EnumMessage.TEACHER_NOT_EXISTS);
-            // }
-            const checkSubjectAndRegularClass = await Promise.all([
-                SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
-                RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
-            ]);
-            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+            console.log(req.body);
+            // const teacher = await TeacherService.findTeacherByAccountId(accountId);
+            // // if (!teacher) {
+            // //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+            // //         EnumMessage.TEACHER_NOT_EXISTS);
+            // // }
+            // const checkSubjectAndRegularClass = await Promise.all([
+            //     SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
+            //     RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
+            // ]);
+            // const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
 
-            if (checkSubject) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
-            }
-            if (checkRegularClass) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
-            }
-            const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
-            await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
-            await transaction.commit();
+            // if (checkSubject) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
+            // }
+            // if (checkRegularClass) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
+            // }
+            // const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
+            // await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
+            // await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             await transaction.rollback();
+            console.log(error);
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
