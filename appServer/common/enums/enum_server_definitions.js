@@ -2,7 +2,7 @@ class EnumServerDefinitions {
     static OK = 'OK';
     static ERROR = 'error';
     static FINISH = 'finish';
-    static AUTHORIZATION = 'Authorization';
+    static AUTHORIZATION = 'authorization';
     //
     static STATUS = {
         ACTIVE: 1,
@@ -18,7 +18,14 @@ class EnumServerDefinitions {
     //
     static POST_CATEGORY = {
         NEWS: 1,
-        EXAM: 3
+        DOCUMENT: 2,
+        EXERCISE: 3,
+        EXAM: 4,
+    }
+    static SUBMISSION = {
+        UNSENT: 0,
+        NOT_SCORED: 1,
+        SUBMITTED: 2,
     }
 }
 module.exports = EnumServerDefinitions;

@@ -3,19 +3,19 @@ const Department = require("../models/department.model");
 const Subject = require("../models/subject.model");
 
 class SubjectService {
-    async findSubjectByDepartmentId(subjectId ,departmentId) {
+    async findSubjectByDepartmentId(subjectId, departmentId) {
         try {
             const subject = await Subject.findOne({
-               where: {
-                id: subjectId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-               }, include: [{
-                model: Department,
                 where: {
-                    id: departmentId,
+                    id: subjectId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
-               }]
+                }, include: [{
+                    model: Department,
+                    where: {
+                        id: departmentId,
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    }
+                }]
             });
             return subject;
         } catch (error) {
@@ -35,6 +35,56 @@ class SubjectService {
             throw error;
         }
     }
+    async findAllSubject() {
+        try {
+            const subjects = await Subject.findAll({
+                status: EnumServerDefinitions.STATUS
+            });
+            return subjects;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateSubject(id, subjectName, departmentId, credit) {
+        try {
+            const subject = await Subject.update({
+                subject_name: subjectName,
+                department_id: departmentId,
+                credit: credit
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return subject > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async deleteSubject(id, transaction) {
+        try {
+            await Classroom.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    subject_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            const subject = await Subject.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return subject > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
     async addSubject(subjectName, departmentId, credit) {
         try {
             const newSubject = await Subject.create({
@@ -43,7 +93,7 @@ class SubjectService {
                 credit: credit || 1
             });
             return newSubject;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     }

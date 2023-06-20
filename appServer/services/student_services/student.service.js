@@ -1,5 +1,6 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const Student = require("../../models/student.model");
+const StudentList = require("../../models/student_list.model"); 
 
 class StudentService {
     async findStudentById(id) {
@@ -11,6 +12,59 @@ class StudentService {
                 }
             });
             return student;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findAllStudent() {
+        try {
+            const students = await Student.findAll({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            });
+            return students;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateStudent(id, studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address, transaction) {
+        try {
+            return await Student.update({
+                student_code: studentCode,
+                first_name: firstName,
+                last_name: lastName,
+                date_of_birth: dateOfBirth,
+                gender: gender,
+                phone_number: phoneNumber,
+                CCCD: CCCD,
+                account_id: accountId,
+                address: address
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction: transaction
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+    async deleteStudent(id, transaction) {
+        try {
+            await StudentList.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    student_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return await Student.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: id
+                }, transaction
+            })
         } catch (error) {
             throw error;
         }
@@ -44,7 +98,7 @@ class StudentService {
             throw error;
         }
     }
-    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address, transaction) {
+    async addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, regularClassId, address, transaction) {
         try {
             const newStudent = await Student.create({
                 student_code: studentCode,
@@ -55,6 +109,7 @@ class StudentService {
                 phone_number: phoneNumber,
                 CCCD: CCCD,
                 account_id: accountId,
+                regular_class_id: regularClassId,
                 address: address
             }, { transaction: transaction});
             return newStudent;

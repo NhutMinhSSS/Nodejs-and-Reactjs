@@ -50,6 +50,14 @@ Student.init({
             key: 'id'
         }
     },
+    regular_class_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'regular_class',
+            key: 'id'
+        }
+    },
     address: {
         type: DataTypes.TEXT,
         allowNull: false

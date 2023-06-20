@@ -1,7 +1,6 @@
 const SystemConst = require("../common/consts/system_const");
 const fs = require('fs-extra');
 const EnumMessage = require("../common/enums/enum_message");
-const CommonService = require("../common/utils/common_service");
 const ServerResponse = require("../common/utils/server_response");
 const logger = require("../config/logger.config");
 const PostService = require("../services/post_services/post.service");
@@ -12,6 +11,8 @@ const FileService = require("../services/file_service/file.service");
 const PostFileService = require("../services/post_services/post_file.service");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
+const FormatUtils = require("../common/utils/format.utils");
+const QuestionService = require("../services/question_services/question.service");
 const sequelize = db.getPool();
 
 class PostController {
@@ -31,7 +32,7 @@ class PostController {
             }
             let postDeadlines; // Di chuyển khai báo biến ra khỏi khối if
             if (listPost.length > 0) {
-                const posts = listPost.filter(item => item.category !== "Bảng tin" && CommonService.checkPostsDeadline(item.finish_date));
+                const posts = listPost.filter(item => item.category !== "Bảng tin" && FormatUtils.checkPostsDeadline(item.finish_date));
                 postDeadlines = posts.map(post => ({
                     id: post.id,
                     title: post.title
@@ -47,9 +48,22 @@ class PostController {
     //get post detail
     async getPostDetail(req, res) {
         try {
-            const postId = req.params.post_id;
-            const studentId = req.student_id
+            const postId = req.post.post_id;
+            const role = req.user.role;
+            const studentId = req.student_id || null;
             const postDetail = await PostService.getDetailPost(postId, studentId);
+            if (role === EnumServerDefinitions.ROLE.TEACHER) {
+                const { delivered, submitted } = student_exams.reduce((counts, exam) => {
+                    if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
+                      counts.delivered++;
+                    } else {
+                      counts.submitted++;
+                    }
+                    return counts;
+                  }, { delivered: 0, submitted: 0 });
+                  postDetail.delivered = delivered;
+                  postDetail.submitted = submitted;
+            }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {
             logger.error(error);
@@ -91,25 +105,20 @@ class PostController {
                     const listStudents = req.body.list_student || [];
                     studentIds = listStudents.map(item => item.id);
                 }
+                if ( postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
+                    //create question
+                    const listQuestionAndAnswers = req.body.list_questions_and_answers;
+                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction);
+                }
                 await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
             if (files.length > EnumServerDefinitions.EMPTY) {
-                const listFiles = files.map(item => {
-                    const data = fs.readFileSync(item.path);
-                    const base64 = data.toString('base64');
-                    return {
-                        file_name: item.originalname,
-                        physical_name: item.filename,
-                        file_path: base64,
-                        file_type: item.mimetype,
-                        account_id: accountId,
-                        file_data: item.size / SystemConst.KB
-                    }
-                }).filter(item => item !== null);;
-                const listFileNew = await FileService.createFiles(listFiles, transaction);
-                const fileIds = listFileNew.map(item => item.id);
+                const listFiles = FormatUtils.formatFileRequest(files);
+                const newFiles = await FileService.createFiles(listFiles, transaction);
+                const fileIds = newFiles.map(item => item.id);
                 await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
             }
+            await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             await transaction.rollback();

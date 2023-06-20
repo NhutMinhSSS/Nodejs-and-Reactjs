@@ -3,6 +3,21 @@ const StudentExam = require("../../models/student_exam.model");
 const StudentList = require("../../models/student_list.model");
 
 class StudentExamService {
+    async checkStudentExamByIdAndStudentId(id, studentId) {
+        try {
+            const studentExam = await StudentExam.findOne({
+                where: {
+                    id: id,
+                    student_id: studentId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return studentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
     async checkStudentExamNoActive(postId, studentId) {
         try {
             const student = await StudentList.findOne({
@@ -21,7 +36,7 @@ class StudentExamService {
         try {
             const studentExam = this.checkStudentExamNoActive(postId, studentId);
             if (studentExam) {
-                await StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE}, {
+                await StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
                     where: {
                         id: studentExam.id
                     }, transaction: transaction
@@ -37,8 +52,25 @@ class StudentExamService {
                 exam_id: postId,
                 student_id: item
             }));
-            const newStudentExams = await StudentExam.bulkCreate(listStudentExams, {transaction: transaction});
+            const newStudentExams = await StudentExam.bulkCreate(listStudentExams, { transaction: transaction });
             return newStudentExams;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
+        try {
+            const studentExam = await StudentExam.update({
+                finish_date: finishDate,
+                total_score: totalScore,
+                submission: submission ?? undefined
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            return studentExam > 0;
         } catch (error) {
             throw error;
         }
