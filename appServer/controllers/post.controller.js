@@ -55,14 +55,14 @@ class PostController {
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
                 const { delivered, submitted } = student_exams.reduce((counts, exam) => {
                     if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
-                      counts.delivered++;
+                        counts.delivered++;
                     } else {
-                      counts.submitted++;
+                        counts.submitted++;
                     }
                     return counts;
-                  }, { delivered: 0, submitted: 0 });
-                  postDetail.delivered = delivered;
-                  postDetail.submitted = submitted;
+                }, { delivered: 0, submitted: 0 });
+                postDetail.delivered = delivered;
+                postDetail.submitted = submitted;
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {
@@ -73,25 +73,26 @@ class PostController {
     }
     //Create Post
     async createPost(req, res) {
-        const transaction = await sequelize.transaction();
+        const accountId = req.user.account_id;
+        const role = req.user.role;
+        const title = req.body.title;
+        const content = req.body.content || null;
+        const classroomId = req.body.classroom_id;
+        const topicId = req.body.topic_id || null;
+        const startDate = req.body.start_date || null;//moment().tz(SystemConst.TIME_ZONE).format();
+        const finishDate = req.body.finish_date || null;
+        const invertedQuestion = req.body.inverted_question || 0;
+        const invertedAnswer = req.body.inverted_answer || 0;
+        const isPublic = req.body.is_public || false;
+        const postCategoryId = req.body.post_category_id;
+        if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                EnumMessage.NO_PERMISSION)
+        }
         const files = req.files || [];
+        const transaction = await sequelize.transaction();
         try {
-            const accountId = req.user.account_id;
-            const role = req.user.role;
-            const title = req.body.title;
-            const content = req.body.content || null;
-            const classroomId = req.body.classroom_id;
-            const topicId = req.body.topic_id || null;
-            const startDate = req.body.start_date || null;//moment().tz(SystemConst.TIME_ZONE).format();
-            const finishDate = req.body.finish_date || null;
-            const invertedQuestion = req.body.inverted_question || 0;
-            const invertedAnswer = req.body.inverted_answer || 0;
-            const isPublic = req.body.is_public || false;
-            const postCategoryId = req.body.post_category_id;
-            if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
-                    EnumMessage.NO_PERMISSION)
-            }
+
             const newPost = await PostService.createPost(title, content, postCategoryId, accountId, classroomId, topicId, transaction);
             if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 //PostDetail
@@ -105,7 +106,7 @@ class PostController {
                     const listStudents = req.body.list_student || [];
                     studentIds = listStudents.map(item => item.id);
                 }
-                if ( postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
+                if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                     //create question
                     const listQuestionAndAnswers = req.body.list_questions_and_answers;
                     await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction);
@@ -123,9 +124,9 @@ class PostController {
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
-           if (req.directoryPath) {
-               fs.removeSync(req.directoryPath);
-           }
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }

@@ -8,6 +8,14 @@ import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
 import { Route, Routes } from 'react-router-dom';
 import DetailExcercise from './screens/DetailExercise/DetailExcercise';
+import Dashboard from './page/Dashboard/Dashboard';
+import AppClass from './page/Dashboard/AppClass';
+import AppClassSection from './page/Dashboard/AppClassSection';
+import AppFaculty from './page/Dashboard/AppFaculty';
+import AppGenre from './page/Dashboard/AppGenre';
+import AppStudent from './page/Dashboard/AppStudent';
+import AppSubject from './page/Dashboard/AppSubject';
+import AppTeacher from './page/Dashboard/AppTeacher';
 
 function App() {
     const TeacherRoutes = [
@@ -19,6 +27,71 @@ function App() {
     return (
         <>
             <Routes>
+                <Route
+                    path="/admin"
+                    element={
+                        <div>
+                            <Dashboard />
+                        </div>
+                    }
+                >
+                    <Route
+                        path="/admin/app-class"
+                        element={
+                            <div>
+                                <AppClass />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-class-section"
+                        element={
+                            <div>
+                                <AppClassSection />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-faculty"
+                        element={
+                            <div>
+                                <AppFaculty />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-genre"
+                        element={
+                            <div>
+                                <AppGenre />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-student"
+                        element={
+                            <div>
+                                <AppStudent />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-subject"
+                        element={
+                            <div>
+                                <AppSubject />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-teacher"
+                        element={
+                            <div>
+                                <AppTeacher />
+                            </div>
+                        }
+                    ></Route>
+                </Route>
                 <Route
                     path="/"
                     element={
