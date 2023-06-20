@@ -21,28 +21,59 @@ class UserManager {
             const phoneNumber = req.body.phone_number;
             const CCCD = req.body.CCCD;
             const address = req.body.address;
-            if (!email || !password || !role || !studentCode || !firstName || !lastName || !dateOfBirth || !gender || !CCCD || !address) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    "Required information");
+            if (
+                !email ||
+                !password ||
+                !role ||
+                !studentCode ||
+                !firstName ||
+                !lastName ||
+                !dateOfBirth ||
+                !gender ||
+                !CCCD ||
+                !address
+            ) {
+                return ServerResponse.createErrorResponse(
+                    res,
+                    SystemConst.STATUS_CODE.BAD_REQUEST,
+                    'Required information',
+                );
             }
             const newAccount = await AccountService.addAccount(email, password, role, transaction);
             if (role == 0) {
-                await StudentService.addStudent(studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, newAccount.id, address, transaction);
+                await StudentService.addStudent(
+                    studentCode,
+                    firstName,
+                    lastName,
+                    dateOfBirth,
+                    gender,
+                    phoneNumber,
+                    CCCD,
+                    newAccount.id,
+                    address,
+                    transaction,
+                );
             } else if (role == 1) {
                 //addTeacher
             } else {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ROLE_INVALID);
+                return ServerResponse.createErrorResponse(
+                    res,
+                    SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ROLE_INVALID,
+                );
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
         }
     }
 }
 
-module.exports = new UserManager;
+module.exports = new UserManager();

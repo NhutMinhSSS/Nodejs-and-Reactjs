@@ -4,8 +4,9 @@ import bgLogin from '../../img/backgoundhoctap.jpg';
 import HomeScreen from '../Main/HomeScreen';
 import logoTruong from '../../img/Logotruong.png';
 import { useNavigate } from 'react-router-dom';
-
+import systemConst from '../../common/consts/system_const';
 const Login: React.FC = () => {
+    const BASE_URL = `${systemConst.DOMAIN}`;
     const email = useRef<HTMLInputElement>(null);
     const password = useRef<HTMLInputElement>(null);
     const [message, setMessage] = useState<string>('');
@@ -20,7 +21,7 @@ const Login: React.FC = () => {
             return setMessage('Vui lòng nhập đầy đủ thông tin tài khoản và mật khẩu.');
         }
         try {
-            const response = await axios.post('http://192.168.31.18:3000/api/login', {
+            const response = await axios.post(`${BASE_URL}/login`, {
                 email: userEmail,
                 password: userPassword,
             });
@@ -45,16 +46,16 @@ const Login: React.FC = () => {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (
-                    error.response?.status === 404 &&
+                    error.response?.status === systemConst.STATUS_CODE.NOT_FOUND &&
                     error.response.data.result_message === 'Failed'
                 ) {
                     setMessage('Tài khoản không tồn tại');
                 } else if (
-                    error.response?.status === 401 &&
+                    error.response?.status === systemConst.STATUS_CODE.FORBIDDEN_REQUEST &&
                     error.response.data.result_message === 'Invalid password'
                 ) {
                     setMessage('Sai mật khẩu');
-                } else if (error.response?.status === 400) {
+                } else if (error.response?.status === systemConst.STATUS_CODE.BAD_REQUEST) {
                     setMessage('Cần Nhập tài khoản và mật khẩu');
                 } else {
                     setMessage('Không thể kết nối máy chủ');
@@ -117,9 +118,7 @@ const Login: React.FC = () => {
                                                         Đăng nhập
                                                     </button>
                                                 </div>
-                                                {message && (
-                                                    <div className="text-red-500">{message}</div>
-                                                )}
+                                                {message && <div className="text-red-500">{message}</div>}
                                             </div>
                                         </div>
                                     </form>
