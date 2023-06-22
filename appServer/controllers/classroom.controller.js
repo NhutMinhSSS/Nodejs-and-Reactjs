@@ -76,8 +76,8 @@ class ClassroomController {
         if (!classCode) {
             //Cần sửa nội dung lỗi
             return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_CODE);
-            }
+                EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_CODE);
+        }
         const transaction = await sequelize.transaction();
         try {
             // if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
@@ -137,34 +137,33 @@ class ClassroomController {
         const accountId = req.user.account_id;
         const regularClassId = req.body.selectedClass;
         const subjectId = req.body.selectedSubject;
-        if (!className) {
+        if (!className || !regularClassId || !subjectId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_NAME);
+                EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
         }
         const transaction = await sequelize.transaction();
         try {
-            console.log(req.body);
-            // const teacher = await TeacherService.findTeacherByAccountId(accountId);
-            // // if (!teacher) {
-            // //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-            // //         EnumMessage.TEACHER_NOT_EXISTS);
-            // // }
-            // const checkSubjectAndRegularClass = await Promise.all([
-            //     SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
-            //     RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
-            // ]);
-            // const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+            const teacher = await TeacherService.findTeacherByAccountId(accountId);
+            if (!teacher) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.TEACHER_NOT_EXISTS);
+            }
+            const checkSubjectAndRegularClass = await Promise.all([
+                SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
+                RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
+            ]);
+            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
 
-            // if (checkSubject) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
-            // }
-            // if (checkRegularClass) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
-            // }
-            // const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
-            // await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
-            // await transaction.commit();
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+            if (checkSubject) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
+            }
+            if (checkRegularClass) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
+            }
+            const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
+            await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newClassroom);
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
