@@ -79,6 +79,5 @@ Classroom.init({
     ]
 });
 
-Classroom.belongsTo(Teacher, {foreignKey: 'teacher_id', as: 'teachers'});
 
 module.exports = Classroom;

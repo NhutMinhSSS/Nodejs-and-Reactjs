@@ -1,6 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
 const db = require('../config/connect_database.config');
-const AccountClassroom = require('./account.model');
 const Classroom = require('./classroom.model');
 const sequelize = db.getPool();
 
@@ -76,5 +75,7 @@ Teacher.init({
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
+
+Classroom.belongsTo(Teacher, {foreignKey: 'teacher_id', as: 'teachers'});
 
 module.exports = Teacher;
