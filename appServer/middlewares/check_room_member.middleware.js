@@ -29,6 +29,7 @@ const checkRoomMember = async (req, res, next) => {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION);
         }
+        req.classroom = classroom;
         next();
     } catch (error) {
         logger.error(error);

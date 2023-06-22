@@ -22,12 +22,16 @@ class PostController {
             const accountId = req.user.account_id;
             const classroomId = req.params.classroom_id;
             const role = req.user.role;
+            const classroom = req.classroom;
             let user;
             if (role === EnumServerDefinitions.ROLE.STUDENT) {
                 user = await StudentService.findStudentByAccountId(accountId);   
             }
             const listPost = await PostService.findPostsByClassroomIdAndAccountId(classroomId, user ? user.id : null);
             const data = {
+                class_name: classroom.class_name,
+                title: classroom.title,
+                class_code: role === EnumServerDefinitions.ROLE.STUDENT ? null : classroom.class_code,
                 list_post: listPost
             }
             let postDeadlines; // Di chuyển khai báo biến ra khỏi khối if
