@@ -1,6 +1,7 @@
 const {DataTypes, Model, DATE} = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Department = require('./department.model');
 const sequelize = db.getPool();
 
 class RegularClass extends Model{}
@@ -42,5 +43,7 @@ RegularClass.init({
     createdAt: 'create_at',
     updatedAt: 'update_at'
 });
+
+RegularClass.belongsTo(Department, {foreignKey: 'department_id'});
 
 module.exports = RegularClass;
