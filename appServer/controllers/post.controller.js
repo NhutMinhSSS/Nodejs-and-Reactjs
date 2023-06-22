@@ -19,14 +19,14 @@ class PostController {
     //Show posts 
     async showPostsByUser(req, res) {
         try {
-            // const accountId = req.user.account_id;
-            // const classroomId = req.params.classroom_id;
-            // const role = req.user.role;
+            const accountId = req.user.account_id;
+            const classroomId = req.params.classroom_id;
+            const role = req.user.role;
             let user;
-            // if (role === EnumServerDefinitions.ROLE.STUDENT) {
-            //     user = await StudentService.findStudentByAccountId(accountId);   
-            // }
-            const listPost = await PostService.findPostsByClassroomIdAndAccountId(1);
+            if (role === EnumServerDefinitions.ROLE.STUDENT) {
+                user = await StudentService.findStudentByAccountId(accountId);   
+            }
+            const listPost = await PostService.findPostsByClassroomIdAndAccountId(classroomId, user ? user.id : null);
             const data = {
                 list_post: listPost
             }
