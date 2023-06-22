@@ -144,10 +144,6 @@ class ClassroomController {
         const transaction = await sequelize.transaction();
         try {
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
-            if (!teacher) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.TEACHER_NOT_EXISTS);
-            }
             const checkSubjectAndRegularClass = await Promise.all([
                 SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
                 RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
