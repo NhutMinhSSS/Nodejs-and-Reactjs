@@ -150,10 +150,10 @@ class ClassroomController {
             ]);
             const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
 
-            if (checkSubject) {
+            if (!checkSubject) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
             }
-            if (checkRegularClass) {
+            if (!checkRegularClass) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
             const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
