@@ -52,7 +52,7 @@ class ClassroomTeacherService {
                const  newTeacherToClassroom = await TeacherList.create({
                     classroom_id: classroomId,
                     teacher_id: teacherId
-                }, { transaction: transaction});ư
+                }, { transaction: transaction});
                 return newTeacherToClassroom;
             } 
         } catch(error) {
