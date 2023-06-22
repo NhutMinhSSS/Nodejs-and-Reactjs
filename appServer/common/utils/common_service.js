@@ -29,7 +29,8 @@ class CommonService {
                                 }
                             }
                         }
-                    ]
+                    ],
+                    attributes: ['id', 'class_name', 'class_code', 'title']
                 });
             } else {
                 listClassroomUser = await Classroom.findAll({
@@ -50,14 +51,31 @@ class CommonService {
                                     status: EnumServerDefinitions.STATUS.ACTIVE
                                 }
                             }
+                        },
+                        {
+                            model: Teacher,
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            as: 'teachers',
+                            attributes: ['first_name' ,'last_name']
                         }
-                    ]
+                    ],
+                    attributes: ['id', 'class_name', 'title']
                 });
+                listClassroomUser = this.getListClassroomForStudent(listClassroomUser);
             }
             return listClassroomUser;
         } catch (error) {
             throw error;
         }
+    }
+    getListClassroomForStudent(listClassroomUser) {
+        return listClassroomUser.map(({ teachers, ...item }) => ({
+            teacher_first_name: item.teachers.first_name,
+            teacher_last_name: item.teachers.last_name,
+            ...item
+        }));
     }
     async findMembersByClassroomId(classroomId) {
         try {
