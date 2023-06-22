@@ -18,7 +18,7 @@ class CommonService {
                         {
                             model: Teacher,
                             where: {
-                                teacher_id: userId,
+                                id: userId,
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
                             attributes: [],
@@ -40,7 +40,7 @@ class CommonService {
                         {
                             model: Student,
                             where: {
-                                student_id: userId,
+                                id: userId,
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
                             attributes: [],
