@@ -8,16 +8,17 @@ const allowedIPs = ['192.168.1.15', '192.168.1.7', '171.245.160.248', '113.182.4
 
 const customCorsOptions = (req, res, next) => {
   try {
-    const clientIP = req.ip; // Lấy địa chỉ IP của client
-    if (allowedIPs.includes(clientIP)) {
-      // Nếu địa chỉ IP nằm trong danh sách, cho phép CORS
-      cors()(req, res, next);
-    } else {
-      // Nếu địa chỉ IP không nằm trong danh sách, từ chối CORS
-      logger.error(`ip: ${clientIP} not allow by CORS`);
-      return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
-        EnumMessage.NOT_ALLOW_BY_CORS)
-    }
+    // const clientIP = req.ip; // Lấy địa chỉ IP của client
+    // if (allowedIPs.includes(clientIP)) {
+    //   // Nếu địa chỉ IP nằm trong danh sách, cho phép CORS
+      
+    // } else {
+    //   // Nếu địa chỉ IP không nằm trong danh sách, từ chối CORS
+    //   logger.error(`ip: ${clientIP} not allow by CORS`);
+    //   return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+    //     EnumMessage.NOT_ALLOW_BY_CORS)
+    // }
+    cors()(req, res, next);
   } catch (error) {
       logger.error(error);
       return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
