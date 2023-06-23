@@ -1,17 +1,15 @@
 const multer = require('multer');
 const fs = require('fs');
-const moment = require('moment-timezone');
 const CommonService = require('../common/utils/common_service');
 const FormatUtils = require('../common/utils/format.utils');
 const StudentService = require('../services/student_services/student.service');
-const SystemConst = require('../common/consts/system_const');
 const uploadStorage = multer.diskStorage({
     destination: async (req, file, cb) => {
         if (!req.directoryPath) {
             let studentCode;
             if (!req.user.student_code) {
-                const Student = await StudentService.findStudentByAccountId(req.user.account_id);
-                studentCode = studentCode.student_code;
+                const student = await StudentService.findStudentByAccountId(req.user.account_id);
+                studentCode = student.student_code;
             } else {
                 studentCode = req.user.student_code;
             }

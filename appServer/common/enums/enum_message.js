@@ -36,6 +36,8 @@ class EnumMessage{
         CLASSROOM_NOT_EXISTS: 'Classroom no exist',
         REQUIRED_CLASS_CODE: 'Request class code'
     };
+    //Error post
+    static REQUIRED_POST_TITLE = 'Required content';
     //Teacher no exists
     static TEACHER_NOT_EXISTS = 'Teacher no exists';
     //Student no exists

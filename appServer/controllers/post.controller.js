@@ -78,7 +78,7 @@ class PostController {
     //Create Post
     async createPost(req, res) {
         const accountId = req.user.account_id;
-        const role = req.user.role;
+        // const role = req.user.role;
         const title = req.body.title;
         const content = req.body.content || null;
         const classroomId = req.body.classroom_id;
@@ -89,10 +89,10 @@ class PostController {
         const invertedAnswer = req.body.inverted_answer || 0;
         const isPublic = req.body.is_public || false;
         const postCategoryId = req.body.post_category_id;
-        if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
-                EnumMessage.NO_PERMISSION)
-        }
+        // if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+        //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+        //         EnumMessage.NO_PERMISSION)
+        // }
         const files = req.files || [];
         const transaction = await sequelize.transaction();
         try {
