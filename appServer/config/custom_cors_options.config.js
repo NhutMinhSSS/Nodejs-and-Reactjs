@@ -4,7 +4,7 @@ const ServerResponse = require("../common/utils/server_response");
 const logger = require("./logger.config");
 const cors = require('cors');
 
-const allowedIPs = ['192.168.1.15', '192.168.1.7', '171.245.160.248', '113.182.41.54', '103.249.21.111'];
+const allowedIPs = ['192.168.1.15', '192.168.1.7', '171.245.160.248', '113.182.41.54', '103.249.21.117'];
 
 const customCorsOptions = (req, res, next) => {
   try {
