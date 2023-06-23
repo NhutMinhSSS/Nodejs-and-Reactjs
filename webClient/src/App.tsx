@@ -6,7 +6,7 @@ import JoinClassedTeacher from './page/JoinClassed/JoinClassedTeacher';
 
 import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import DetailExcercise from './screens/DetailExercise/DetailExcercise';
 import Dashboard from './page/Dashboard/Dashboard';
 import AppClass from './page/Dashboard/AppClass';
@@ -17,13 +17,9 @@ import AppStudent from './page/Dashboard/AppStudent';
 import AppSubject from './page/Dashboard/AppSubject';
 import AppTeacher from './page/Dashboard/AppTeacher';
 
+import HomeScreenStudent from './page/Main/HomeScreenStudent';
+
 function App() {
-    const TeacherRoutes = [
-        {
-            path: '/',
-            element: <Login />,
-        },
-    ];
     return (
         <>
             <Routes>
@@ -100,6 +96,9 @@ function App() {
                         </div>
                     }
                 />
+                {/* <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
+                <Route path="/" element={isLoggedIn ? <HomeScreen /> : <Navigate to="/giang-vien" />} />
+                <Route path="*" element={<NotFound />} /> */}
                 <Route
                     path="/giang-vien"
                     element={
@@ -109,7 +108,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/giang-vien/class/:id"
+                    path="/giang-vien/class/:classroom_id"
                     element={
                         <div>
                             <JoinClassedTeacher />
@@ -121,7 +120,7 @@ function App() {
                     path="/sinh-vien"
                     element={
                         <div>
-                            <HomeScreen />
+                            <HomeScreenStudent />
                         </div>
                     }
                 />

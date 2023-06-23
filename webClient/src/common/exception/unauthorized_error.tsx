@@ -1,42 +1,32 @@
-import { Modal } from 'antd';
-import ErrorModal from '../Screens/ErrorModal';
-import { useNavigate } from 'react-router-dom';
-import '../exception/style.scss';
-interface UnauthorizedErrorProps {
-    response: {
-        data: any;
-        status: number;
-    };
-    navigate: (path: string) => void;
-}
+import showUnauthorizedPopup from '../Screens/ErrorAlertLogout';
 
-const UnauthorizedError: React.FC<UnauthorizedErrorProps> = ({ response, navigate }) => {
-    // const handleLogout = () => {
-    //     // Thực hiện đăng xuất token tại đây
-    //     // Xóa token từ lưu trữ hoặc thực hiện các bước đăng xuất khác
-    //     localStorage.removeItem('token');
-    //     navigate('/');
-
-    //     // Chuyển hướng đến trang login
-    // };
-
-    if (response && response.status === 401) {
-        const tokenError = ['Token is not provided', 'Token is invalid', 'Token is expired'];
-        if (tokenError.includes(response.data.error_message)) {
-            // Hiển thị thông báo lỗi
-            const errorMessage = response.data.error_message;
-            Modal.error({
-                title: 'Error',
-                content: errorMessage,
-                okText: 'OK',
-                className: 'custom-modal-alert',
-                // onOk: handleLogout, // Gọi hàm handleLogout khi người dùng nhấp vào nút "OK"
-            });
-            return <ErrorModal errorMessage={errorMessage} />;
+class UnauthorizedError {
+    static checkError(error: { response: { status: any; data: { error_message: any } } }): boolean {
+        if (!error.response) {
+            return false;
         }
-    }
+        const {
+            status,
+            data: { error_message: errorMessage },
+        } = error.response;
+        let flag = false;
 
-    return null;
-};
+        if (status === 401) {
+            if (
+                errorMessage === 'Token is not provided' ||
+                errorMessage === 'Token is invalid' ||
+                errorMessage === 'Token is expired'
+            ) {
+                flag = true;
+            }
+        } else if (status === 404) {
+            if (errorMessage === 'Teacher no exists' || errorMessage === 'Student no exists') {
+                flag = true;
+            }
+        }
+
+        return flag;
+    }
+}
 
 export default UnauthorizedError;

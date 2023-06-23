@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import HeaderHome from '../HeaderHome/HeaderHome';
+import list from '../../data';
+import iconUserSquare from '../../img/user.png';
+import iconFolder from '../../img/folder.png';
 import { Link } from 'react-router-dom';
-import Logout from '../../common/utils/logoutToken';
-import axios from 'axios';
-import SystemConst from '../../common/consts/system_const';
+import HeaderHomeStudent from '../HeaderHome/HeaderHomeStudent';
 import HeaderToken from '../../common/utils/headerToken';
-import { MdAccountCircle } from 'react-icons/md';
+import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
+import Logout from '../../common/utils/logoutToken';
 import { Spin } from 'antd';
+import { MdAccountCircle } from 'react-icons/md';
+import SystemConst from '../../common/consts/system_const';
 
-const HomeScreen: React.FC = () => {
+interface Item {
+    id: number;
+    title: string;
+    school_year: string;
+    teacher: string;
+    img: string;
+}
+
+const HomeScreenStudent: React.FC = () => {
     const config = HeaderToken.token();
     const [screenClass, setScreenClass] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
     useEffect(() => {
         setIsLoading(true);
         axios
@@ -40,37 +50,34 @@ const HomeScreen: React.FC = () => {
                 setIsLoading(false);
             });
     }, []);
-
     return (
         <>
             {SystemConst.TOKEN ? (
                 <div>
-                    <HeaderHome />
-
-                    {/* grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 container mx-auto gap-x-8 gap-y-12 m-auto mt-8 p-4 */}
+                    <HeaderHomeStudent />
                     <div>
                         <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
                             {screenClass.map((item) => (
                                 <div
-                                    className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300  w-auto max-h-80 h-[25rem] relative"
+                                    className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300 w-auto max-h-80 h-[25rem]"
                                     key={item['id']}
                                 >
-                                    <div className="p-5 h-[6.5rem] bg-gray-400 rounded-t-md overflow-hidden truncate ...">
+                                    <div className="p-5 bg-gray-400 rounded-t-md">
                                         <Link
                                             className="text-xl font-semibold hover:underline underline-offset-[5px]"
                                             to={`class/${item['id']}`}
                                         >
-                                            <span className="">{item['class_name']}</span>
+                                            {item['class_name']}
                                             <br />
-                                            <span className="text-base truncate">{item['title']}</span>
+                                            {item['title']}
                                         </Link>
+
+                                        <div className="w-14 h-14 float-right">
+                                            <MdAccountCircle size={40} />
+                                        </div>
                                     </div>
 
-                                    <div className=" absolute right-6 top-[4.33rem]">
-                                        <MdAccountCircle size={52} />
-                                    </div>
-
-                                    {/* <div className="mt-8 p-5 flex justify-between items-center"></div> */}
+                                    <div className="mt-8 p-5 flex justify-between items-center"></div>
                                 </div>
                             ))}
                         </section>
@@ -86,4 +93,4 @@ const HomeScreen: React.FC = () => {
     );
 };
 
-export default HomeScreen;
+export default HomeScreenStudent;
