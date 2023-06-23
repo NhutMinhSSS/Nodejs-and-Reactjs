@@ -11,7 +11,8 @@ const Login: React.FC = () => {
     const password = useRef<HTMLInputElement>(null);
     const [message, setMessage] = useState<string>('');
     const navigate = useNavigate();
-    const getToken = localStorage.getItem('token');
+    const [isToken, setIsToken] = useState();
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const userEmail = email.current?.value;
@@ -21,53 +22,58 @@ const Login: React.FC = () => {
             return setMessage('Vui lòng nhập đầy đủ thông tin tài khoản và mật khẩu.');
         }
         try {
-            const response = await axios.post(`${BASE_URL}/login`, {
-                email: userEmail,
-                password: userPassword,
-            });
-            if (response.status === 200) {
-                const { token, role } = response.data;
-                localStorage.setItem('token', token);
-                localStorage.setItem('role', role);
+            axios
+                .post(`${BASE_URL}/login`, {
+                    email: userEmail,
+                    password: userPassword,
+                })
+                .then((response) => {
+                    if (response.status === 200) {
+                        const { token, role } = response.data;
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('role', role);
+                        setIsToken(token);
 
-                if (role === 1) {
-                    setMessage('Đăng nhập thành công');
-                    navigate('giang-vien');
-                } else if (role === 0) {
-                    setMessage('Đăng nhập thành công');
-                    navigate('/sinh-vien');
-                } else {
-                    setMessage('Không hợp lệ');
-                    console.log('Invalid');
-                }
-            } else {
-                alert('Đã xảy ra lỗi');
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (
-                    error.response?.status === systemConst.STATUS_CODE.NOT_FOUND &&
-                    error.response.data.result_message === 'Failed'
-                ) {
-                    setMessage('Tài khoản không tồn tại');
-                } else if (
-                    error.response?.status === systemConst.STATUS_CODE.FORBIDDEN_REQUEST &&
-                    error.response.data.result_message === 'Invalid password'
-                ) {
-                    setMessage('Sai mật khẩu');
-                } else if (error.response?.status === systemConst.STATUS_CODE.BAD_REQUEST) {
-                    setMessage('Cần Nhập tài khoản và mật khẩu');
-                } else {
-                    setMessage('Không thể kết nối máy chủ');
-                }
-            } else {
-                console.error(error);
-            }
-        }
+                        if (role === 1) {
+                            setMessage('Đăng nhập thành công');
+                            navigate('/giang-vien');
+                        } else if (role === 0) {
+                            setMessage('Đăng nhập thành công');
+                            navigate('/sinh-vien');
+                        } else {
+                            setMessage('Không hợp lệ');
+                            console.log('Invalid');
+                        }
+                    } else {
+                        alert('Đã xảy ra lỗi');
+                    }
+                })
+                .catch((error) => {
+                    if (axios.isAxiosError(error)) {
+                        if (
+                            error.response?.status === systemConst.STATUS_CODE.NOT_FOUND &&
+                            error.response.data.result_message === 'Failed'
+                        ) {
+                            setMessage('Tài khoản không tồn tại');
+                        } else if (
+                            error.response?.status === systemConst.STATUS_CODE.FORBIDDEN_REQUEST &&
+                            error.response.data.result_message === 'Invalid password'
+                        ) {
+                            setMessage('Sai mật khẩu');
+                        } else if (error.response?.status === systemConst.STATUS_CODE.BAD_REQUEST) {
+                            setMessage('Cần Nhập tài khoản và mật khẩu');
+                        } else {
+                            setMessage('Không thể kết nối máy chủ');
+                        }
+                    } else {
+                        console.error(error);
+                    }
+                });
+        } catch (error) {}
     };
     return (
         <>
-            {getToken ? (
+            {isToken ? (
                 <HomeScreen />
             ) : (
                 <div className="bg-slate-100 h-screen">
@@ -134,94 +140,94 @@ const Login: React.FC = () => {
 
 export default Login;
 
-const Loading: React.FC<{ success: boolean; onClose: () => void }> = ({ success, onClose }) => {
-    const [showSuccess, setShowSuccess] = useState(false);
+// const Loading: React.FC<{ success: boolean; onClose: () => void }> = ({ success, onClose }) => {
+//     const [showSuccess, setShowSuccess] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowSuccess(true);
-        }, 5000);
-    }, []);
+//     useEffect(() => {
+//         const timer = setTimeout(() => {
+//             setShowSuccess(true);
+//         }, 5000);
+//     }, []);
 
-    const handleOverlayClick = () => {
-        onClose();
-    };
+//     const handleOverlayClick = () => {
+//         onClose();
+//     };
 
-    if (showSuccess) {
-        return (
-            <div
-                className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50"
-                onClick={handleOverlayClick}
-            >
-                <div className="bg-white p-10  rounded-lg">
-                    <div className="flex items-center mb-4">
-                        {success ? (
-                            <svg
-                                className="h-5 w-5 mr-3 text-green-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
-                        ) : (
-                            <svg
-                                className="h-5 w-5 mr-3 text-red-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
-                        )}
-                        <span className="font-medium">{success ? 'Thành công!' : 'Thất bại!'}</span>
-                    </div>
-                    {success ? <p>Đăng nhập thành công.</p> : <p>Đăng nhập thất bại.</p>}
-                </div>
-            </div>
-        );
-    }
+//     if (showSuccess) {
+//         return (
+//             <div
+//                 className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50"
+//                 onClick={handleOverlayClick}
+//             >
+//                 <div className="bg-white p-10  rounded-lg">
+//                     <div className="flex items-center mb-4">
+//                         {success ? (
+//                             <svg
+//                                 className="h-5 w-5 mr-3 text-green-500"
+//                                 xmlns="http://www.w3.org/2000/svg"
+//                                 fill="none"
+//                                 viewBox="0 0 24 24"
+//                             >
+//                                 <path
+//                                     stroke="currentColor"
+//                                     strokeWidth="2"
+//                                     strokeLinecap="round"
+//                                     strokeLinejoin="round"
+//                                     d="M5 13l4 4L19 7"
+//                                 />
+//                             </svg>
+//                         ) : (
+//                             <svg
+//                                 className="h-5 w-5 mr-3 text-red-500"
+//                                 xmlns="http://www.w3.org/2000/svg"
+//                                 fill="none"
+//                                 viewBox="0 0 24 24"
+//                             >
+//                                 <path
+//                                     stroke="currentColor"
+//                                     strokeWidth="2"
+//                                     strokeLinecap="round"
+//                                     strokeLinejoin="round"
+//                                     d="M6 18L18 6M6 6l12 12"
+//                                 />
+//                             </svg>
+//                         )}
+//                         <span className="font-medium">{success ? 'Thành công!' : 'Thất bại!'}</span>
+//                     </div>
+//                     {success ? <p>Đăng nhập thành công.</p> : <p>Đăng nhập thất bại.</p>}
+//                 </div>
+//             </div>
+//         );
+//     }
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-10 rounded-lg">
-                <div className="flex items-center mb-4">
-                    <svg
-                        className="animate-spin h-5 w-5 mr-3 text-blue-500"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                        ></circle>
-                        <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                    <span className="font-medium">Đang xử lý...</span>
-                </div>
-                <p>Vui lòng đợi trong giây lát.</p>
-            </div>
-        </div>
-    );
-};
+//     return (
+//         <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+//             <div className="bg-white p-10 rounded-lg">
+//                 <div className="flex items-center mb-4">
+//                     <svg
+//                         className="animate-spin h-5 w-5 mr-3 text-blue-500"
+//                         xmlns="http://www.w3.org/2000/svg"
+//                         fill="none"
+//                         viewBox="0 0 24 24"
+//                     >
+//                         <circle
+//                             className="opacity-25"
+//                             cx="12"
+//                             cy="12"
+//                             r="10"
+//                             stroke="currentColor"
+//                             strokeWidth="4"
+//                         ></circle>
+//                         <path
+//                             className="opacity-75"
+//                             fill="currentColor"
+//                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+//                         ></path>
+//                     </svg>
+//                     <span className="font-medium">Đang xử lý...</span>
+//                 </div>
+//                 <p>Vui lòng đợi trong giây lát.</p>
+//             </div>
+//         </div>
+//     );
+// };
