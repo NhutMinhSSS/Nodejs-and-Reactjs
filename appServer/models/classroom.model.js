@@ -27,12 +27,12 @@ Classroom.init({
         allowNull: false,
         defaultValue: DataTypes.NOW
     },
-    title: {
-        type: DataTypes.STRING,
+    semester: {
+        type: DataTypes.SMALLINT,
         allowNull: true
     },
-    note: {
-        type: DataTypes.STRING,
+    school_year: {
+        type: DataTypes.INTEGER,
         allowNull: true
     },
     regular_class_id: {

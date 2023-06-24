@@ -1,30 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import logoTruong from '../../img/Logotruong.png';
 import { MenuOutlined } from '@ant-design/icons';
 import iconUser from '../../img/iconUser.svg';
-import { Col, Dropdown, Input, MenuProps, Modal, Row, Space, Spin } from 'antd';
+import { Col, Dropdown, Input, MenuProps, Modal, Row, Space, Spin, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { MdAdd } from 'react-icons/md';
 import './style.scss';
-import { Content, Header } from 'antd/es/layout/layout';
+import { Header } from 'antd/es/layout/layout';
 import axios from 'axios';
 import data from '../../data';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
+import showUnauthorizedPopup from '../../common/Screens/ErrorAlertLogout';
+import ErrorCommon from '../../common/Screens/ErrorCommon';
+import HeaderToken from '../../common/utils/headerToken';
 
 const HeaderHome: React.FC = () => {
     const navigate = useNavigate();
-
     const [nameClass, setNameClass] = useState('');
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
+    const [isPopupVisibleCreateClass, setIsPopupVisibleCreateClass] = useState(false);
     const [selectedClass, setSelectedClass] = useState('');
     const [selectedSubject, setSelectedSubject] = useState('');
-    const [error, setError] = useState(false);
+    const [errorClass, setErrorClass] = useState(false);
+    const [errorSelectedClass, setErrorSelectedClass] = useState(false);
+    const [errorSelectedSubject, setErrorSelectedSubject] = useState(false);
     const [subjects, setSubjects] = useState([]);
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(false);
     const handleNameClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedValue = e.target.value;
         setNameClass(e.target.value);
+        if (selectedValue !== '') {
+            setErrorClass(false);
+        }
     };
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -33,10 +42,18 @@ const HeaderHome: React.FC = () => {
         setNote(e.target.value);
     };
     const handleClassSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectValue = e.target.value;
         setSelectedClass(e.target.value);
+        if (selectValue !== '') {
+            setErrorSelectedClass(false);
+        }
     };
     const handleSelectSubject = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = e.target.value;
         setSelectedSubject(e.target.value);
+        if (selectedValue !== '') {
+            setErrorSelectedSubject(false);
+        }
     };
     const handleCreateRoom = () => {
         const roomData = {
@@ -47,52 +64,64 @@ const HeaderHome: React.FC = () => {
             selectedSubject,
         };
         console.log('Data', roomData);
-        const token = localStorage.getItem('token');
-        const config = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        };
+        const config = HeaderToken.getTokenConfig();
         axios
             .post('http://20.39.197.125:3000/api/classrooms/create-classroom', roomData, config)
             .then((response) => {
-                console.log(response.data);
+                //Đặt lại giá trị của các ô đầu vào sau khi tạo lớp học thành công
+                setNameClass('');
+                setTitle('');
+                setNote('');
+                setSelectedClass('');
+                setSelectedSubject('');
+                setIsPopupVisibleCreateClass(false);
+                const data = response.data.response_data;
+                //Chuyển dữ liệu khi tạo mới phòng
+                navigate(`/giang-vien/class/${data.id}`, { state: { data } });
             })
             .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+                    const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400) {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 403 && errorMessage === 'Teacher not assigned to subject') {
+                        content = 'Giáo viên không có quyền tạo môn học này';
+                    } else if (status === 403 && errorMessage === 'Teacher not assigned to class') {
+                        content = 'Giáo viên không được phân công lớp này';
+                    } else if (status === 403 && errorMessage === 'Access denied') {
+                        content = 'Sinh viên không có quyền tạo phòng';
+                        setIsPopupVisibleCreateClass(false);
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
                 console.error(error);
             });
-
-        //Đặt lại giá trị của các ô đầu vào sau khi tạo lớp học thành công
-        setNameClass('');
-        setTitle('');
-        setNote('');
-        setSelectedClass('');
-        setSelectedSubject('');
     };
     const handleSubmitCreateRoom = () => {
         if (nameClass.length === 0) {
-            setError(true);
+            setErrorClass(true);
         }
         if (!selectedClass) {
-            setError(true);
-            return;
+            setErrorSelectedClass(true);
         }
-        if (!!selectedSubject) {
-            setError(true);
+        if (!selectedSubject) {
+            setErrorSelectedSubject(true);
         }
         if (selectedClass && selectedSubject && nameClass) {
             handleCreateRoom();
         }
     };
     const handleOnchangFlusCreateRoom = () => {
-        const token = localStorage.getItem('token');
-        const config = {
-            headers: {
-                authorization: `Bearer ${token}`,
-            },
-        };
+        const config = HeaderToken.getTokenConfig();
         setLoading(true);
-
         axios
             .get('http://20.39.197.125:3000/api/classrooms/init', config)
             .then((response) => {
@@ -100,9 +129,26 @@ const HeaderHome: React.FC = () => {
                 setSubjects(response.data.response_data.subjects);
             })
             .catch((error) => {
-                const flag = UnauthorizedError(error);
-                console.log(error.response.data.error_message);
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 403 && errorMessage === 'Access denied') {
+                        content = 'Sinh viên không có quyền tạo phòng';
+                        setIsPopupVisibleCreateClass(false);
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+                // Xử lý UnauthorizedError ở đây
             })
+
             .finally(() => {
                 setLoading(false);
             });
@@ -110,7 +156,9 @@ const HeaderHome: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/');
+        window.location.reload(); // Tải lại trang web
+        window.location.replace('/')
+        //navigate('/');
     };
     //State Class Code
     const [isInputValueClassCode, setIsInputValueClassCode] = useState('');
@@ -125,7 +173,6 @@ const HeaderHome: React.FC = () => {
     const handlePopupCancel = () => {
         setIsPopupVisibleJoin(false);
     };
-    const [isPopupVisibleCreateClass, setIsPopupVisibleCreateClass] = useState(false);
 
     const handlePopupCancelCreateClass = () => {
         setIsPopupVisibleCreateClass(false);
@@ -302,7 +349,7 @@ const HeaderHome: React.FC = () => {
                                             >
                                                 Tên lớp học
                                             </label>
-                                            {error && nameClass.length <= 0 ? (
+                                            {errorClass && nameClass.length <= 0 ? (
                                                 <label className="text-red-500 font-normal">
                                                     Vui lòng nhập tên lớp học
                                                 </label>
@@ -369,7 +416,7 @@ const HeaderHome: React.FC = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                            {error && (
+                                            {errorSelectedClass && (
                                                 <div className="text-red-500 font-normal">Vui lòng chọn dữ liệu.</div>
                                             )}
                                         </div>
@@ -396,7 +443,7 @@ const HeaderHome: React.FC = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                            {error && (
+                                            {errorSelectedSubject && (
                                                 <div className="text-red-500 font-normal">Vui lòng chọn dữ liệu.</div>
                                             )}
                                         </div>
