@@ -2,6 +2,18 @@ const Teacher = require('../../models/teacher.model');
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const TeacherList = require("../../models/teacher_list.model");
 class TeacherService {
+    async findTeacherByTeacherCode(teacherCode) {
+        try {
+            const teacher = await Teacher.findOne({
+                where: {
+                    teacher_code: teacherCode
+                }
+            });
+            return teacher;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findTeacherByAccountId(accountId) {
         try {
             const teacher = await Teacher.findOne({
@@ -81,7 +93,22 @@ class TeacherService {
                 id: id,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             } ,transaction });
-            return newTeacher;
+            return !!newTeacher;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async activeTeacher(id, transaction) {
+        try  {
+            const teacher = await Teacher.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, transaction
+            });
+            return !!teacher;
         } catch (error) {
             throw error;
         }

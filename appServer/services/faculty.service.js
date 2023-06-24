@@ -11,10 +11,9 @@ class FacultyService {
             const faculty = await Faculty.findOne({
                 where: {
                     faculty_name: facultyName,
-                    status: EnumServerDefinitions.STATUS
                 }
             });
-            return !!faculty;
+            return faculty;
         } catch (error) {
             throw error;
         }
@@ -41,7 +40,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return faculty > 0;
+            return !!faculty;
         } catch (error) {
             throw error;
         }
@@ -89,17 +88,28 @@ class FacultyService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }
                 });
-                return faculty > 0;
+                return !!faculty;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async activeFaculty(id, transaction) {
+        try {
+            const faculty = await Faculty.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, transaction
+            });
+            return !!faculty;
         } catch (error) {
             throw error;
         }
     }
     async addFaculty(facultyName) {
         try {
-            // const checkExist = await this.findFacultyByName(facultyName);
-            // if (checkExist) {
-            //     throw new Error('Faculty name exits')
-            // }
             const newFaculty = await Faculty.create({
                 faculty_name: facultyName
             });
