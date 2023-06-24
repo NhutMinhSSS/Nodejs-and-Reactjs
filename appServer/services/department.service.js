@@ -6,6 +6,18 @@ const Subject = require("../models/subject.model");
 
 
 class DepartmentService {
+    async findDepartmentByName(departmentName) {
+        try {
+            const department = await Department.findOne({
+                where: {
+                    department_name: departmentName
+                } 
+            });
+            return department;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findAllDepartment() {
         try {
             const department = await Department.findAll({
@@ -29,7 +41,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return department > 0;
+            return !!department;
         } catch (error) {
             throw error;
         }
@@ -75,7 +87,22 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return department > 0;
+            return !!department;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async activeDepartment(id, transaction) {
+        try {
+            const department = await Department.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, transaction
+            });
+            return !!department;
         } catch (error) {
             throw error;
         }

@@ -3,6 +3,18 @@ const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model"); 
 
 class StudentService {
+    async findStudentByStudentCode(studentCode) {
+        try {
+            const student = await Student.findOne({
+                where: {
+                    student_code: studentCode
+                }
+            });
+            return student;
+        } catch (error) {
+            throw error
+        }
+    }
     async findStudentById(id) {
         try {
             const student = await Student.findOne({
@@ -94,6 +106,21 @@ class StudentService {
                 }
             });
             return students;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async activeStudent(id, transaction) {
+        try {
+            const student = await Student.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, transaction
+            });
+            return !!student;
         } catch (error) {
             throw error;
         }

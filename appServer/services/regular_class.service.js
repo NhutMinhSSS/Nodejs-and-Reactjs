@@ -4,6 +4,18 @@ const Department = require("../models/department.model");
 const Classroom = require("../models/classroom.model");
 
 class RegularClassService {
+    async findRegularClassByName(regularClassName) {
+        try {
+            const regularClass = await RegularClass.findOne({
+                where: {
+                    class_name: regularClassName
+                }
+            });
+            return regularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findRegularClassByDepartmentId(regularClassId, departmentId) {
         try {
             const regularClass = await RegularClass.findOne({
@@ -59,7 +71,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return regularClass > 0;
+            return !!regularClass;
         } catch (error) {
             throw error;
         }
@@ -82,7 +94,22 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return regularClass > 0;
+            return !!regularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async activeRegularClass(id, transaction) {
+        try {
+            const regularClass = await RegularClass.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, transaction
+            });
+            return !!regularClass;
         } catch (error) {
             throw error;
         }

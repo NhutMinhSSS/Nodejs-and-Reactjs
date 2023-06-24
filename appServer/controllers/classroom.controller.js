@@ -132,8 +132,8 @@ class ClassroomController {
     }
     async createClassroom(req, res) {
         const className = req.body.nameClass;
-        const title = req.body.title || null;
-        const note = req.body.note || null;
+        const semester = req.body.semester || null;
+        const schoolYear = req.body.school_year || null;
         const accountId = req.user.account_id;
         const regularClassId = req.body.selectedClass;
         const subjectId = req.body.selectedSubject;
@@ -158,7 +158,7 @@ class ClassroomController {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
-            const newClassroom = await ClassroomService.createClassroom(className, title, note, regularClassId, teacher.id, subjectId, transaction);
+            const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, teacher.id, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
