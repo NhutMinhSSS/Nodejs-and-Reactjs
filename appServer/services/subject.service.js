@@ -15,6 +15,23 @@ class SubjectService {
             throw error;
         }
     }
+    async findAllSubjects() {
+        try {
+            const subjects = await Subject.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'subject_name', 'credit', 'department_id'],
+                order: [
+                    ['created_at', 'ASC'],
+                    ['updated_at', 'ASC']
+                ]
+            });
+            return subjects;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findSubjectByDepartmentId(subjectId, departmentId) {
         try {
             const subject = await Subject.findOne({
@@ -97,15 +114,17 @@ class SubjectService {
             throw error;
         }
     }
-    async activeSubject(id, transaction) {
+    async activeSubject(id, departmentId, credit) {
         try {
             const subject = await Subject.update({
+                department_id: departmentId,
+                credit: credit,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }, transaction
+                }
             });
             return !!subject;
         } catch (error) {

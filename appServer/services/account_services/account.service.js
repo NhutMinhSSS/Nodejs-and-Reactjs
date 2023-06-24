@@ -30,6 +30,18 @@ class AccountService {
             throw error;
         }
     }
+    async checkEmailExist(email) {
+        try {
+            const isCheck = await Account.findOne({
+                where: {
+                    email: email
+                }
+            });
+            return !!isCheck;
+        } catch (error) {
+            throw error;
+        }
+    }
     async addAccount(email, password, role, transaction) {
         try {
             const hashedPassword = await BcryptUtils.hashPassword(password);

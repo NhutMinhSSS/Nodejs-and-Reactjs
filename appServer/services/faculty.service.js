@@ -6,6 +6,20 @@ const RegularClass = require('../models/regular_class.model');
 const Subject = require("../models/subject.model");
 
 class FacultyService {
+    async checkExistFacultyById(id) {
+        try {
+            const isExist = await Faculty.findOne({
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return !!isExist;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findFacultyByName(facultyName) {
         try {
             const faculty = await Faculty.findOne({
@@ -23,7 +37,12 @@ class FacultyService {
             const faculty = await Faculty.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id', 'faculty_name', 'status'],
+                order: [
+                    ['created_at', 'ASC'],
+                    ['updated_at', 'ASC']
+                ]
             });
             return faculty;
         } catch (error) {
@@ -93,7 +112,7 @@ class FacultyService {
             throw error;
         }
     }
-    async activeFaculty(id, transaction) {
+    async activeFaculty(id) {
         try {
             const faculty = await Faculty.update({
                 status: EnumServerDefinitions.STATUS.ACTIVE
@@ -101,7 +120,7 @@ class FacultyService {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }, transaction
+                }
             });
             return !!faculty;
         } catch (error) {
