@@ -13,7 +13,7 @@ const validateUploadFile = (req, res, next) => {
     }
     if (!title) {
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-            EnumMessage.REQUIRED_POST_TITLE);
+            EnumMessage.REQUIRED_INFORMATION);
     }
     next();
 }

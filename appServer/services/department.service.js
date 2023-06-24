@@ -23,7 +23,12 @@ class DepartmentService {
             const department = await Department.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+             attributes: ['id', 'faculty_name'],
+             order: [
+                ['created_at', 'ASC'],
+                ['updated_at', 'ASC']
+            ]
             });
             return department;
         } catch (error) {
@@ -92,17 +97,31 @@ class DepartmentService {
             throw error;
         }
     }
-    async activeDepartment(id, transaction) {
+    async activeDepartment(id, facultyId) {
         try {
             const department = await Department.update({
+                faculty_id: facultyId,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }, transaction
+                }
             });
             return !!department;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async checkDepartmentExist(id) {
+        try {
+            const isCheck = await Department.findOne({
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return !!isCheck;
         } catch (error) {
             throw error;
         }

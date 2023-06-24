@@ -94,16 +94,13 @@ class StudentService {
             throw error;
         }
     }
-    async findAllUsersByIds(studentIds) {
+    async findAllStudents() {
         try {
-            if (studentIds.length === EnumServerDefinitions.EMPTY) {
-                return [];
-            }
             const students = await Student.findAll({
                 where: {
-                    id: studentIds,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                order: ['student_code', 'ASC']
             });
             return students;
         } catch (error) {

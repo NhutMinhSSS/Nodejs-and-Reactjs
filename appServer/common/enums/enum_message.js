@@ -37,7 +37,17 @@ class EnumMessage{
         REQUIRED_CLASS_CODE: 'Request class code'
     };
     //Error post
-    static REQUIRED_POST_TITLE = 'Required content';
+    static REQUIRED_INFORMATION = 'Required more information';
+    //Already exist
+    static ALREADY_EXIST = 'Already exist';
+    //Not exists
+    static NOT_EXIST = 'Not exist';
+    //Error create
+    static ERROR_CREATE = 'Create not success';
+    //Error update
+    static ERROR_UPDATE = 'Update not success';
+    //Error delete
+    static ERROR_DELETE = 'Delete not success';
     //Teacher no exists
     static TEACHER_NOT_EXISTS = 'Teacher no exists';
     //Student no exists

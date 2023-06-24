@@ -7,10 +7,9 @@ const ServerResponse = require('../common/utils/server_response');
 const AccountService = require('../services/account_services/account.service');
 const StudentService = require('../services/student_services/student.service');
 const TeacherService = require('../services/teacher_services/teacher.service');
+const AccountService = require('../services/account_services/account.service');
 class UserManager {
     async addStudentOrTeacher(req, res) {
-        const email = req.body.email;
-        const password = req.body.password;
         const role = req.body.role;
         const userCode = req.body.user_code;
         const firstName = req.body.first_name;
@@ -20,13 +19,20 @@ class UserManager {
         const phoneNumber = req.body.phone_number;
         const CCCD = req.body.CCCD;
         const address = req.body.address;
-        if (!email || !password || role === null || !userCode || !firstName || !lastName || !dateOfBirth || gender === null || !CCCD || !address) {
+        if (role === null || !userCode || !firstName || !lastName || !dateOfBirth || gender === null || !CCCD || !address) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 "Required information");
         }
+        const email = `${userCode}@caothang.edu.vn`;
         const transaction = await sequelize.transaction();
         try {
-            const newAccount = await AccountService.addAccount(email, password, role, transaction);
+            const checkAccount = await AccountService.checkEmailExist(email);
+            if (checkAccount) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
+                    EnumMessage.ALREADY_EXIST);
+            }
+            const newAccount = await AccountService.addAccount(email, CCCD, role, transaction);
             if (role == 0) {
                 const regularClassId = req.body.regular_class_id;
                 await StudentService.addStudent(userCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, newAccount.id, regularClassId, address, transaction);

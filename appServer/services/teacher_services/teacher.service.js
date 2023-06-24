@@ -27,16 +27,13 @@ class TeacherService {
             throw error;
         }
     }
-    async findAllUsersByIds(teacherIds) {
+    async findAllTeacher() {
         try {
-            if (teacherIds.length === EnumServerDefinitions.EMPTY) {
-                return [];
-            }
             const teachers = await Teacher.findAll({
                 where: {
-                    id: teacherIds,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                order: ['teacher_code', 'ASC']
             });
             return teachers;
         } catch (error) {

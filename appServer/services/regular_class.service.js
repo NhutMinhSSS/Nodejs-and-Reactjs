@@ -2,8 +2,23 @@ const EnumServerDefinitions = require("../common/enums/enum_server_definitions")
 const RegularClass = require("../models/regular_class.model");
 const Department = require("../models/department.model");
 const Classroom = require("../models/classroom.model");
+const moment = require('moment-timezone');
+const SystemConst = require("../common/consts/system_const");
 
 class RegularClassService {
+    async findAllRegularClass() {
+        try {
+            const regularClass = await RegularClass.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'class_name', 'department_id']
+            });
+            return regularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findRegularClassByName(regularClassName) {
         try {
             const regularClass = await RegularClass.findOne({
@@ -53,7 +68,12 @@ class RegularClassService {
             const faculty = await RegularClass.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id', 'class_name', 'create_date', 'department_id'],
+                order: [
+                    ['created_at', 'ASC'],
+                    ['updated_at', 'ASC']
+                ]
             });
             return faculty;
         } catch (error) {
@@ -99,15 +119,18 @@ class RegularClassService {
             throw error;
         }
     }
-    async activeRegularClass(id, transaction) {
+    async activeRegularClass(id, departmentId) {
         try {
+            const createDate = moment.tz(SystemConst.TIME_ZONE).toDate();
             const regularClass = await RegularClass.update({
+                create_date: createDate,
+                department_id: departmentId,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }, transaction
+                }
             });
             return !!regularClass;
         } catch (error) {
