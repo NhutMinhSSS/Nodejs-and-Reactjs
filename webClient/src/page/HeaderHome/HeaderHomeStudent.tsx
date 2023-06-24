@@ -119,7 +119,8 @@ const HeaderHomeStudent: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/');
+        window.location.reload(); // Tải lại trang web
+        window.location.replace('/');
     };
     //State Class Code
     const [isInputValueClassCode, setIsInputValueClassCode] = useState('');

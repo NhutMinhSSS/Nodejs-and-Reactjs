@@ -22,7 +22,7 @@ interface Item {
 }
 
 const HomeScreenStudent: React.FC = () => {
-    const config = HeaderToken.token();
+    const config = HeaderToken.getTokenConfig();
     const [screenClass, setScreenClass] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
@@ -52,7 +52,6 @@ const HomeScreenStudent: React.FC = () => {
     }, []);
     return (
         <>
-            {SystemConst.TOKEN ? (
                 <div>
                     <HeaderHomeStudent />
                     <div>
@@ -86,9 +85,7 @@ const HomeScreenStudent: React.FC = () => {
                         <Spin size="large" className="" spinning={isLoading} />
                     </div>
                 </div>
-            ) : (
-                Logout()
-            )}
+            )
         </>
     );
 };

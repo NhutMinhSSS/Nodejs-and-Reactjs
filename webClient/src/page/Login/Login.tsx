@@ -5,13 +5,15 @@ import HomeScreen from '../Main/HomeScreen';
 import logoTruong from '../../img/Logotruong.png';
 import { useNavigate } from 'react-router-dom';
 import systemConst from '../../common/consts/system_const';
+import SystemConst from '../../common/consts/system_const';
+import HomeScreenStudent from '../Main/HomeScreenStudent';
 const Login: React.FC = () => {
     const BASE_URL = `${systemConst.DOMAIN}`;
     const email = useRef<HTMLInputElement>(null);
     const password = useRef<HTMLInputElement>(null);
     const [message, setMessage] = useState<string>('');
     const navigate = useNavigate();
-    const [isToken, setIsToken] = useState();
+    const [isToken, setIsToken] = useState(Boolean(localStorage.getItem('token')));
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -44,6 +46,7 @@ const Login: React.FC = () => {
                             setMessage('Không hợp lệ');
                             console.log('Invalid');
                         }
+                        return;
                     } else {
                         alert('Đã xảy ra lỗi');
                     }
@@ -69,12 +72,13 @@ const Login: React.FC = () => {
                         console.error(error);
                     }
                 });
-        } catch (error) {}
+        } catch (error) { }
     };
     return (
         <>
-            {isToken ? (
-                <HomeScreen />
+            {isToken ? (localStorage.getItem('role') == '1' ?
+               window.location.replace('/giang-vien')
+                 : window.location.replace('/sinh-vien')
             ) : (
                 <div className="bg-slate-100 h-screen">
                     <div className="bg-blue-300 h-16 items-center fixed w-full">

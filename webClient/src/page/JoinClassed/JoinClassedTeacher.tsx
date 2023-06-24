@@ -34,7 +34,7 @@ const JoinClassedTeacher: React.FC = () => {
     };
 
     useEffect(() => {
-        const config = headerToken.token();
+        const config = headerToken.getTokenConfig();
         if (!data) {
             setIsLoading(true);
             axios

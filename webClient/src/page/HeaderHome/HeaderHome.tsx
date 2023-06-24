@@ -64,7 +64,7 @@ const HeaderHome: React.FC = () => {
             selectedSubject,
         };
         console.log('Data', roomData);
-        const config = HeaderToken.token();
+        const config = HeaderToken.getTokenConfig();
         axios
             .post('http://20.39.197.125:3000/api/classrooms/create-classroom', roomData, config)
             .then((response) => {
@@ -120,7 +120,7 @@ const HeaderHome: React.FC = () => {
         }
     };
     const handleOnchangFlusCreateRoom = () => {
-        const config = HeaderToken.token();
+        const config = HeaderToken.getTokenConfig();
         setLoading(true);
         axios
             .get('http://20.39.197.125:3000/api/classrooms/init', config)
@@ -156,7 +156,9 @@ const HeaderHome: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/');
+        window.location.reload(); // Tải lại trang web
+        window.location.replace('/')
+        //navigate('/');
     };
     //State Class Code
     const [isInputValueClassCode, setIsInputValueClassCode] = useState('');

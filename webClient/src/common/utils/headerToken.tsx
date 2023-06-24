@@ -1,13 +1,13 @@
-import SystemConst from '../consts/system_const';
-
 class HeaderToken {
-    token() {
-        const config = {
-            headers: {
-                authorization: `Bearer ${SystemConst.TOKEN}`,
-            },
-        };
-        return config;
+    static getTokenConfig() {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+      return config;
     }
-}
-export default new HeaderToken();
+  }
+  
+  export default HeaderToken;
