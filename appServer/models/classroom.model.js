@@ -28,7 +28,7 @@ Classroom.init({
         defaultValue: DataTypes.NOW
     },
     semester: {
-        type: DataTypes.SMALLINT,
+        type: DataTypes.STRING(20),
         allowNull: true
     },
     school_year: {
