@@ -28,8 +28,8 @@ Faculty.init({
     modelName: 'Faculty',
     tableName: 'faculties',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 Faculty.hasMany(Department, { foreignKey: 'faculty_id'});

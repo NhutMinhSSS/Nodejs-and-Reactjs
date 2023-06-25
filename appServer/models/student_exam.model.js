@@ -53,8 +53,8 @@ StudentExam.init({
     modelName: 'StudentExam',
     tableName: 'student_exams',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 StudentExam.hasMany(StudentFileSubmission, { foreignKey: 'student_exam_id', as: 'student_file_submissions'});

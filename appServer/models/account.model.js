@@ -48,8 +48,8 @@ Account.init({
     modelName: 'Account',
     tableName: 'accounts',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
         {
             unique: true,

@@ -40,8 +40,8 @@ RegularClass.init({
     modelName: 'RegularClass',
     tableName: 'regular_class',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 RegularClass.belongsTo(Department, {foreignKey: 'department_id'});

@@ -50,6 +50,6 @@ StudentRandomizedAnswerList.init({
     modelName: 'StudentRandomizedAnswerList',
     tableName: 'Student_randomized_answer_lists',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });

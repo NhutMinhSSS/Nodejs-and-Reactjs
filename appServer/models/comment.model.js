@@ -48,8 +48,8 @@ Comment.init({
     modelName: 'Comment',
     tableName: 'comments',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 Comment.belongsTo(Account, { foreignKey: 'account_id'});

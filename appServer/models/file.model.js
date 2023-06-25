@@ -56,8 +56,8 @@ File.init({
     modelName: 'File',
     tableName: 'files',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 module.exports = File;
