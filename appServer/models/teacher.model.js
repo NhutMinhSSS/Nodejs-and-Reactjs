@@ -72,8 +72,8 @@ Teacher.init({
     modelName: 'Teacher',
     tableName: 'teachers',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 Classroom.belongsTo(Teacher, {foreignKey: 'teacher_id', as: 'teachers'});

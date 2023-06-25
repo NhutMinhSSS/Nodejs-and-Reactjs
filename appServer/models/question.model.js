@@ -45,8 +45,8 @@ Question.init({
     modelName: 'Question',
     tableName: 'questions',
     timestamps: true,
-    createdAt: 'create_at',
-    updatedAt: 'update_at'
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
 });
 
 Question.hasMany(Answer, { foreignKey: 'question_id', as: 'answers'});
