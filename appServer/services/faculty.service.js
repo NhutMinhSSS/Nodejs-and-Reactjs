@@ -49,7 +49,7 @@ class FacultyService {
                     }
                 ],
                 attributes: ['id', 'faculty_name', 
-                [Faculty.sequelize.fn('COUNT', Sequelize.col('departments.id')), 'department_quantity'], 'status'],
+                [Faculty.sequelize.fn('COUNT', Faculty.sequelize.col('departments.id')), 'department_quantity'], 'status'],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']
