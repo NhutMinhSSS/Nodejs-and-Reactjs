@@ -38,7 +38,18 @@ class FacultyService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'faculty_name', 'status'],
+                include: [
+                    {
+                        model: Department,
+                        required: false,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    }
+                ],
+                attributes: ['id', 'faculty_name', 
+                [Faculty.sequelize.fn('COUNT', Sequelize.col('departments.id')), 'department_quantity'], 'status'],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']
