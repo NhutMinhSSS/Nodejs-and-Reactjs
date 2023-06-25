@@ -10,21 +10,33 @@ class UnauthorizedError {
             data: { error_message: errorMessage },
         } = error.response;
         let flag = false;
-
+        let content = '';
         if (status === 401) {
-            if (
-                errorMessage === 'Token is not provided' ||
-                errorMessage === 'Token is invalid' ||
-                errorMessage === 'Token is expired'
-            ) {
+            // Thông báo lỗi không có Token
+            if (errorMessage === 'Token is not provided') {
+                content = 'Không có Token. Xin vui lòng đăng nhập lại!';
+                flag = true;
+            }
+            // Thông báo lỗi Token không hợp lệ
+            else if (errorMessage === 'Token is invalid') {
+                content = 'Token không hợp lệ. Xin vui lòng đăng nhập lại!';
+                flag = true;
+            }
+            // Thông báo lỗi Token hết hạn
+            else if (errorMessage === 'Token is expired') {
+                content = 'Phiên này đã hết hạn. Xin vui lòng đăng nhập lại!';
                 flag = true;
             }
         } else if (status === 404) {
             if (errorMessage === 'Teacher no exists' || errorMessage === 'Student no exists') {
+                content = 'Tài khoản của bạn đã bị xóa.';
                 flag = true;
             }
         }
 
+        if (flag) {
+            showUnauthorizedPopup('Lỗi', content);
+        }
         return flag;
     }
 }

@@ -60,7 +60,9 @@ const HomeScreen: React.FC = () => {
                                 >
                                     <span className="">{item['class_name']}</span>
                                     <br />
-                                    <span className="text-base truncate">{item['title']}</span>
+                                    <span className="text-base truncate">
+                                        Học kỳ {item['semester']} <span> - Năm học {item['school_year']}</span>
+                                    </span>
                                 </Link>
                             </div>
 
@@ -77,7 +79,7 @@ const HomeScreen: React.FC = () => {
                 <Spin size="large" className="" spinning={isLoading} />
             </div>
         </div>
-    )
+    );
 };
 
 export default HomeScreen;

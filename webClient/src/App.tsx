@@ -96,9 +96,6 @@ function App() {
                         </div>
                     }
                 />
-                {/* <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
-                <Route path="/" element={isLoggedIn ? <HomeScreen /> : <Navigate to="/giang-vien" />} />
-                <Route path="*" element={<NotFound />} /> */}
                 <Route
                     path="/giang-vien"
                     element={

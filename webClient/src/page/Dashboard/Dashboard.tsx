@@ -1,12 +1,31 @@
-import { Layout, Menu } from 'antd';
-import React from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Dropdown, Layout, Menu, Space } from 'antd';
+import React, { useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import logoTruong from '../../img/Logotruong.png';
-
+import './scss/styleDashboard.scss';
 import { MdAccountCircle } from 'react-icons/md';
 const { Sider, Content, Header } = Layout;
 const Dashboard: React.FC = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (location.pathname === '/admin') {
+            navigate('/admin/app-faculty');
+        }
+    }, []);
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        window.location.reload(); // Tải lại trang web
+        window.location.replace('/');
+    };
+    const items = [
+        {
+            label: <button onClick={handleLogout}>Đăng xuất</button>,
+            key: 1,
+        },
+    ];
     return (
         <>
             <Layout className="min-h-screen">
@@ -16,13 +35,26 @@ const Dashboard: React.FC = () => {
                             <img src={logoTruong} className="w-48" alt="Error" />
                         </div>
                         <div>
-                            <MdAccountCircle size={32} />
+                            <div>
+                                <Dropdown
+                                    className="w-24"
+                                    menu={{
+                                        items,
+                                    }}
+                                    trigger={['click']}
+                                    overlayClassName="w-[10rem] z-50 mt-2 bg-white border border-gray-200 rounded-md shadow-md text-center cursor-pointer"
+                                >
+                                    <a onClick={(e) => e.preventDefault()}>
+                                        <MdAccountCircle size={40} />
+                                    </a>
+                                </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </Header>
                 <Layout>
                     <Sider width={200} theme="dark" className="bg-blue-400">
-                        <Menu mode="inline" selectedKeys={[location.pathname]} className="h-full bg-slate-200">
+                        <Menu mode="vertical" selectedKeys={[location.pathname]} className="h-full bg-slate-300">
                             <Menu.Item key="admin/app-faculty">
                                 <Link to="/admin/app-faculty">Khoa</Link>
                             </Menu.Item>
@@ -46,7 +78,7 @@ const Dashboard: React.FC = () => {
                             </Menu.Item>
                         </Menu>
                     </Sider>
-                    <Content className="p-4">
+                    <Content className="custom-main p-5">
                         <Outlet />
                     </Content>
                 </Layout>

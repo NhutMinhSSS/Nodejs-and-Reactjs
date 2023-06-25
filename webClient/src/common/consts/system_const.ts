@@ -10,7 +10,6 @@ class SystemConst {
         CONFLICT: 409,
         INTERNAL_SERVER: 500,
     };
-    static TOKEN = localStorage.getItem('token')
 
 
 }
