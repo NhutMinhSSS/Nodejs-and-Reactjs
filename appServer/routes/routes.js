@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', LoginController.login);
-router.use('/admin', authenticateToken,AdminRouter);
+router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', /* authenticateToken, */ postRouter);
 

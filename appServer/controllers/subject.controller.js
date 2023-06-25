@@ -110,3 +110,5 @@ class SubjectController {
         }
     }
 }
+
+module.exports = new SubjectController;

@@ -63,8 +63,9 @@ class UserManager {
         const dateOfBirth = req.body.date_of_birth;
         const gender = req.body.gender;
         const phoneNumber = req.body.phone_number;
+        const CCCD = req.body.CCCD;
         const address = req.body.address;
-        if (!role === null || !userId || !firstName || !lastName || !dateOfBirth || gender === null || !phoneNumber || !address) {
+        if (!role === null || !userId || !firstName || !lastName || !dateOfBirth || gender === null || !phoneNumber || !CCCD || !address) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
@@ -81,7 +82,7 @@ class UserManager {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                         EnumMessage.NOT_EXIST);
                 }
-                isUpdate = await StudentService.updateStudent(studentId, firstName, lastName, dateOfBirth, gender, phoneNumber, regularClassId, address);
+                isUpdate = await StudentService.updateStudent(studentId, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, regularClassId, address);
             } else {
                 const departmentId = req.body.department_id;
                 if (!departmentId) {
@@ -93,7 +94,7 @@ class UserManager {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                         EnumMessage.NOT_EXIST);
                 }
-                isUpdate = await TeacherService.updateTeacher(userId, firstName, lastName, dateOfBirth, gender, phoneNumber, departmentId, address);
+                isUpdate = await TeacherService.updateTeacher(userId, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, departmentId, address);
             }
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
