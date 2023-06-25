@@ -38,7 +38,7 @@ class StudentService {
             throw error;
         }
     }
-    async updateStudent(id, firstName, lastName, dateOfBirth, gender, phoneNumber, regularClassId, address) {
+    async updateStudent(id, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, regularClassId, address) {
         try {
             const isUpdate = await Student.update({
                 first_name: firstName,
@@ -46,6 +46,7 @@ class StudentService {
                 date_of_birth: dateOfBirth,
                 gender: gender,
                 phone_number: phoneNumber,
+                CCCD: CCCD,
                 regular_class_id: regularClassId,
                 address: address
             }, {

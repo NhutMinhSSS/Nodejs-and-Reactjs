@@ -73,7 +73,7 @@ class TeacherService {
             throw error;
         }
     }
-    async updateTeacher(id, firstName, lastName, dateOfBirth, gender, phoneNumber, departmentId, address) {
+    async updateTeacher(id, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, departmentId, address) {
         try {
             const newTeacher = await Teacher.update({
                 first_name: firstName,
@@ -81,6 +81,7 @@ class TeacherService {
                 date_of_birth: dateOfBirth,
                 gender: gender,
                 phone_number: phoneNumber,
+                CCCD: CCCD,
                 department_id: departmentId,
                 address: address
             }, { where: {
