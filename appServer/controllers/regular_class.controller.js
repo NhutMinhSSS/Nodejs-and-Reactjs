@@ -83,7 +83,7 @@ class RegularClassController {
         }
     }
     async deleteRegularClass(req, res) {
-        const regularClassId = req.body.regular_class_id;
+        const regularClassId = req.params.regular_class_id;
         if (!regularClassId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);

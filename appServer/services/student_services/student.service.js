@@ -38,24 +38,23 @@ class StudentService {
             throw error;
         }
     }
-    async updateStudent(id, studentCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, address, transaction) {
+    async updateStudent(id, firstName, lastName, dateOfBirth, gender, phoneNumber, regularClassId, address) {
         try {
-            return await Student.update({
-                student_code: studentCode,
+            const isUpdate = await Student.update({
                 first_name: firstName,
                 last_name: lastName,
                 date_of_birth: dateOfBirth,
                 gender: gender,
                 phone_number: phoneNumber,
-                CCCD: CCCD,
-                account_id: accountId,
+                regular_class_id: regularClassId,
                 address: address
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }, transaction: transaction
+                }
             });
+            return !!isUpdate;
         } catch (error) {
             throw error;
         }
@@ -70,13 +69,14 @@ class StudentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return await Student.update({
+            const isDelete =  await Student.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
                     id: id
                 }, transaction
-            })
+            });
+            return !!isDelete;
         } catch (error) {
             throw error;
         }

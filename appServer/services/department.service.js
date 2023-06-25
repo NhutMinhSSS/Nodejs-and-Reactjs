@@ -119,7 +119,8 @@ class DepartmentService {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id']
             });
             return !!isCheck;
         } catch (error) {

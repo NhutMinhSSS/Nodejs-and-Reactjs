@@ -80,6 +80,20 @@ class RegularClassService {
             throw error;
         }
     }
+    async checkRegularClassExist(id) {
+        try {
+            const regularClass = await RegularClass.findOne({
+               where: {
+                id: id,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+               },
+               attributes: ['id']
+            });
+            return !!regularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
     async updateRegularClass(id, className, departmentId) {
         try {
             const regularClass = await RegularClass.update({

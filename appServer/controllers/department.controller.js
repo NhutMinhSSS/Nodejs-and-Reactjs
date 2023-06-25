@@ -84,7 +84,7 @@ class DepartmentController {
         }
     }
     async deleteDepartment(req, res) {
-        const departmentId = req.body.department_id;
+        const departmentId = req.params.department_id;
         if (!departmentId) {
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);

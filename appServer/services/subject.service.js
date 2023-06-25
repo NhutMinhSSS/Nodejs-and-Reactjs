@@ -74,6 +74,20 @@ class SubjectService {
             throw error;
         }
     }
+    async checkSubjectExist(id) {
+        try {
+            const subject = await Subject.findOne({
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return !!subject;
+        } catch (error) {
+            throw error;
+        }
+    }
     async updateSubject(id, subjectName, departmentId, credit) {
         try {
             const subject = await Subject.update({

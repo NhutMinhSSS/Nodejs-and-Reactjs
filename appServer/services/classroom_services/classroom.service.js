@@ -34,22 +34,22 @@ class ClassroomService {
             throw error;
         }
     }
-    async updateClassroom(id, className, title, note, regularClassId, teacherId, subjectId, transaction){
+    async updateClassroom(id, className, semester, schoolYear, regularClassId, subjectId){
         try {
-            return await Classroom.update({
+            const isUpdate =  await Classroom.update({
                 class_code: classCode,
                 class_name: className,
-                title: title,
-                note: note,
+                semester: semester,
+                school_year: schoolYear,
                 regular_class_id: regularClassId,
-                teacher_id: teacherId,
                 subject_id: subjectId
             }, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }, transaction: transaction
+                }
             });
+            return !!isUpdate;
         } catch (error) {
             throw error;
         }
