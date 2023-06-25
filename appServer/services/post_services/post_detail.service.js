@@ -20,7 +20,7 @@ class PostDetailService {
         try {
             const newPostDetails = PostDetail.create({
                 post_id: postId,
-                start_date: startDate,
+                start_date: startDate || undefined,
                 finish_date: finishDate,
                 inverted_question: invertedQuestion,
                 inverted_answer: invertedAnswer,
