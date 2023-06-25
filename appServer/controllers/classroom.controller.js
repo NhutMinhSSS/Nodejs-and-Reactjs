@@ -161,7 +161,7 @@ class ClassroomController {
             const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, teacher.id, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
             await transaction.commit();
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newClassroom);
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
