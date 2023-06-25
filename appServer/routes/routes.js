@@ -5,7 +5,7 @@ const authenticateToken = require('../middlewares/authenticate.middleware');
 const LoginController = require('../controllers/login.controller');
 const classroomRouter = require('./classroom.route');
 const postRouter = require('./post.route');
-const AdminRouter = require('./admin.route');
+const AdminRouter = require('./admin/admin.route');
 
 
 
