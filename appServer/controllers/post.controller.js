@@ -20,14 +20,14 @@ class PostController {
     async showPostsByUser(req, res) {
         try {
             const accountId = req.user.account_id;
-            const classroomId = req.params.classroom_id;
+            //const classroomId = req.params.classroom_id;
             const role = req.user.role;
             const classroom = req.classroom;
             let user;
             if (role === EnumServerDefinitions.ROLE.STUDENT) {
                 user = await StudentService.findStudentByAccountId(accountId);   
             }
-            const listPost = await PostService.findPostsByClassroomIdAndAccountId(classroomId, user ? user.id : null);
+            const listPost = await PostService.findPostsByClassroomIdAndAccountId(classroom.id, user ? user.id : null);
             const data = {
                 class_name: classroom.class_name,
                 title: classroom.title,
@@ -81,9 +81,9 @@ class PostController {
         // const role = req.user.role;
         const title = req.body.title;
         const content = req.body.content || null;
-        const classroomId = req.body.classroom_id;
+        const classroomId = req.classroom.classroom_id;
         const topicId = req.body.topic_id || null;
-        const startDate = req.body.start_date || null;//moment().tz(SystemConst.TIME_ZONE).format();
+        const startDate = req.body.start_date || null;
         const finishDate = req.body.finish_date || null;
         const invertedQuestion = req.body.inverted_question || 0;
         const invertedAnswer = req.body.inverted_answer || 0;

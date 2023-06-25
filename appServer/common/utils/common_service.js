@@ -30,7 +30,7 @@ class CommonService {
                             }
                         }
                     ],
-                    attributes: ['id', 'class_name', 'class_code', 'semester', 'school_year']
+                    attributes: ['id', 'class_name', 'semester', 'school_year']
                 });
             } else {
                 listClassroomUser = await Classroom.findAll({
