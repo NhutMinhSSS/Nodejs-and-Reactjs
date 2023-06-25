@@ -34,32 +34,39 @@ class FacultyService {
     }
     async findAllFaculty() {
         try {
-            const faculty = await Faculty.findAll({
+          const faculty = await Faculty.findAll({
+            where: {
+              status: EnumServerDefinitions.STATUS.ACTIVE
+            },
+            include: [
+              {
+                model: Department,
+                required: false,
                 where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                  status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: [
-                    {
-                        model: Department,
-                        required: false,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        attributes: []
-                    }
-                ],
-                order: [
-                    ['created_at', 'ASC'],
-                    ['updated_at', 'ASC']
-                ],
-                attributes: ['id', 'faculty_name', 
-                [Faculty.sequelize.fn('COUNT', Faculty.sequelize.col('departments.id')), 'department_quantity']]
-            });
-            return faculty;
+                attributes: []
+              }
+            ],
+            attributes: [
+              'id',
+              'faculty_name',
+              [
+                Faculty.sequelize.literal('(SELECT COUNT(*) FROM departments WHERE departments.faculty_id = Faculty.id)'),
+                'department_quantity'
+              ]
+            ],
+            order: [
+              ['created_at', 'ASC'],
+              ['updated_at', 'ASC']
+            ]
+          });
+      
+          return faculty;
         } catch (error) {
-            throw error;
+          throw error;
         }
-    }
+      }
     async updateFaculty(id, facultyName) {
         try {
             const faculty =  await Faculty.update({
