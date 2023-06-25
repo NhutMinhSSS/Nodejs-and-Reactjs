@@ -119,6 +119,7 @@ const HeaderHomeStudent: React.FC = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         window.location.reload(); // Tải lại trang web
         window.location.replace('/');
     };
@@ -143,7 +144,7 @@ const HeaderHomeStudent: React.FC = () => {
 
     const items = [
         {
-            label: <button onClick={handleLogout}>Logout</button>,
+            label: <button onClick={handleLogout}>Đăng xuất</button>,
             key: 1,
         },
     ];

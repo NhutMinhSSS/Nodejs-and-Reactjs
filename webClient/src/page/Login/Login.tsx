@@ -15,6 +15,23 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const [isToken, setIsToken] = useState(Boolean(localStorage.getItem('token')));
 
+    // Điều hướng trang đến giang viên và sinh viên và không thể back ra lại login trừ khi nhấn đăng xuất
+    const handleRouteTeacher = () => {
+        setTimeout(() => {
+            navigate('/giang-vien', { replace: true });
+        }, 0);
+    };
+    const handleRouteStudent = () => {
+        setTimeout(() => {
+            navigate('/sinh-vien', { replace: true });
+        }, 0);
+    };
+    const handleRouteAdmin = () => {
+        setTimeout(() => {
+            navigate('/admin', { replace: true });
+        }, 0);
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const userEmail = email.current?.value;
@@ -42,6 +59,9 @@ const Login: React.FC = () => {
                         } else if (role === 0) {
                             setMessage('Đăng nhập thành công');
                             navigate('/sinh-vien');
+                        } else if (role === 3) {
+                            setMessage('Đăng nhập thành công');
+                            navigate('/admin');
                         } else {
                             setMessage('Không hợp lệ');
                             console.log('Invalid');
@@ -72,13 +92,25 @@ const Login: React.FC = () => {
                         console.error(error);
                     }
                 });
-        } catch (error) { }
+        } catch (error) {}
     };
+
+    if (localStorage.getItem('role') == '1') {
+        handleRouteTeacher();
+    } else if (localStorage.getItem('role') == '0') {
+        handleRouteStudent();
+    } else if (localStorage.getItem('role') == '3') {
+        handleRouteAdmin();
+    }
+
     return (
         <>
-            {isToken ? (localStorage.getItem('role') == '1' ?
-               window.location.replace('/giang-vien')
-                 : window.location.replace('/sinh-vien')
+            {isToken ? (
+                localStorage.getItem('role') == '1' ? (
+                    handleRouteTeacher()
+                ) : (
+                    handleRouteStudent()
+                )
             ) : (
                 <div className="bg-slate-100 h-screen">
                     <div className="bg-blue-300 h-16 items-center fixed w-full">

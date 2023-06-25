@@ -9,6 +9,7 @@ const showUnauthorizedPopup = (title: any, content: any) => {
         onOk: () => {
             // Xử lý đăng xuất và chuyển về trang login
             localStorage.removeItem('token');
+            localStorage.removeItem('role');
             window.location.replace('/'); // Chuyển hướng về trang login
         },
     });
