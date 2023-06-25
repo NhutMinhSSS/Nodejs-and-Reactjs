@@ -71,7 +71,7 @@ class FacultyController {
         }
     }
     async deleteFaculty(req, res) {
-        const facultyId = req.body.faculty_id;
+        const facultyId = req.params.faculty_id;
         if (!facultyId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);

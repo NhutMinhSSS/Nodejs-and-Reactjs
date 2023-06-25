@@ -5,6 +5,8 @@ const ServerResponse = require("../common/utils/server_response");
 const logger = require("../config/logger.config");
 const DepartmentService = require("../services/department.service");
 const SubjectService = require("../services/subject.service");
+const db = require("../config/connect_database.config");
+const sequelize = db.getPool();
 
 class SubjectController {
     async getAllSubjects(req, res) {
@@ -79,6 +81,29 @@ class SubjectController {
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async deleteSubject(req, res) {
+        const subjectId = req.params.subject_id;
+        if (!subjectId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        const transaction = await sequelize.transaction();
+        try {
+            const isDelete = await SubjectService.deleteSubject(subjectId, transaction);
+            if (!isDelete) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            await transaction.rollback();
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);

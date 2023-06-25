@@ -42,6 +42,11 @@ class EnumMessage{
     static ALREADY_EXIST = 'Already exist';
     //Not exists
     static NOT_EXIST = 'Not exist';
+    //Not exist
+    static ERROR_NOT_EXIST = {
+        SUBJECT_NOT_EXIST: 'Subject not exist',
+        REGULAR_CLASS_NOT_EXIST: 'Regular class not exist'
+    }
     //Error create
     static ERROR_CREATE = 'Create not success';
     //Error update

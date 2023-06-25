@@ -132,12 +132,12 @@ class ClassroomController {
     }
     async createClassroom(req, res) {
         const className = req.body.nameClass;
-        const semester = req.body.semester || null;
+        const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year || null;
         const accountId = req.user.account_id;
         const regularClassId = req.body.selectedClass;
         const subjectId = req.body.selectedSubject;
-        if (!className || !regularClassId || !subjectId) {
+        if (!className || !regularClassId || !subjectId || !schoolYear) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
         }
@@ -164,6 +164,62 @@ class ClassroomController {
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newClassroom);
         } catch (error) {
             await transaction.rollback();
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async updateClassroom(req, res) {
+        const classroomId = req.body.classroom_id;
+        const className = req.body.class_name;
+        const semester = req.body.semester || 1;
+        const schoolYear = req.body.school_year;
+        const regularClassId = req.body.selectedClass;
+        const subjectId = req.body.selectedSubject;
+        if (!className || !regularClassId || !subjectId || !schoolYear) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
+        }
+        try {
+            const checkSubjectAndRegularClass = await Promise.all([
+                SubjectService.checkSubjectExist(subjectId),
+                RegularClassService.checkRegularClassExist(regularClassId)
+            ]);
+            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+            if (!checkSubject) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, EnumMessage.ERROR_NOT_EXIST.SUBJECT_NOT_EXIST);
+            }
+            if (!checkRegularClass) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,  EnumMessage.ERROR_NOT_EXIST.REGULAR_CLASS_NOT_EXIST);
+            }
+            const isUpdate = await ClassroomService.updateClassroom(classroomId, className, semester, schoolYear, regularClassId, subjectId);
+            if (!isUpdate) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async deleteClassroom(req, res) {
+        const classroomId = req.params.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const isDelete = await ClassroomService.deleteClassroom(classroomId);
+            if (!isDelete) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);

@@ -73,23 +73,20 @@ class TeacherService {
             throw error;
         }
     }
-    async updateTeacher(id, teacherCode, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, accountId, departmentId, address, transaction) {
+    async updateTeacher(id, firstName, lastName, dateOfBirth, gender, phoneNumber, departmentId, address) {
         try {
             const newTeacher = await Teacher.update({
-                teacher_code: teacherCode,
                 first_name: firstName,
                 last_name: lastName,
                 date_of_birth: dateOfBirth,
                 gender: gender,
                 phone_number: phoneNumber,
-                CCCD: CCCD,
-                account_id: accountId,
                 department_id: departmentId,
                 address: address
             }, { where: {
                 id: id,
                 status: EnumServerDefinitions.STATUS.ACTIVE
-            } ,transaction });
+            }});
             return !!newTeacher;
         } catch (error) {
             throw error;
