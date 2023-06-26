@@ -3,8 +3,17 @@ const Teacher = require('../../models/teacher.model');
 const Student = require('../../models/student.model');
 const Classroom = require('../../models/classroom.model');
 const logger = require('../../config/logger.config');
+const FacultyService = require('../../services/faculty.service');
 
 class CommonService {
+    async getAllFaculty(isCount = false) {
+        try {
+            const faculties = await FacultyService.findAllFaculty(isCount);
+            return faculties;
+        } catch (error) {
+            throw error;
+        }
+    }
     //function find list classroom form student id or teacher id with condition role
     async findClassroomsByUser(userId, userRole) {
         try {

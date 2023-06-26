@@ -5,11 +5,12 @@ const logger = require("../config/logger.config");
 const FacultyService = require("../services/faculty.service");
 const db = require("../config/connect_database.config");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const CommonService = require("../common/utils/common_service");
 const sequelize = db.getPool();
 class FacultyController {
     async getAllFaculties(req, res) {
         try {
-            const faculties = await FacultyService.findAllFaculty(true);
+            const faculties = await CommonService.findAllFaculty(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
         } catch (error) {
             logger.error(error);
