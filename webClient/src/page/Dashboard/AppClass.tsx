@@ -1,5 +1,5 @@
 import Table, { ColumnsType } from 'antd/es/table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './scss/styleDashboard.scss';
 import { Button, Modal, Input } from 'antd';
 import { MdPersonAdd } from 'react-icons/md';
@@ -81,6 +81,98 @@ const AppClass = () => {
             nameclass: 'CĐ ÔTÔ 21A',
             subject: 'Công Nghệ Phần Mềm',
             numberofstudent: 20,
+            action: (
+                <>
+                    <div className="flex gap-x-1">
+                        <button
+                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                            onClick={() => handleEdit(data[0])}
+                        >
+                            Sửa
+                        </button>
+                        <button
+                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                            onClick={() => handleDelete(data[0])}
+                        >
+                            Xóa
+                        </button>
+                    </div>
+                </>
+            ),
+        },
+        {
+            nameclass: 'CĐ TH 18A',
+            subject: 'Công Nghệ Phần Mềm',
+            numberofstudent: 1,
+            action: (
+                <>
+                    <div className="flex gap-x-1">
+                        <button
+                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                            onClick={() => handleEdit(data[0])}
+                        >
+                            Sửa
+                        </button>
+                        <button
+                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                            onClick={() => handleDelete(data[0])}
+                        >
+                            Xóa
+                        </button>
+                    </div>
+                </>
+            ),
+        },
+        {
+            nameclass: 'CĐ TH 18A',
+            subject: 'Công Nghệ Phần Mềm',
+            numberofstudent: 1,
+            action: (
+                <>
+                    <div className="flex gap-x-1">
+                        <button
+                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                            onClick={() => handleEdit(data[0])}
+                        >
+                            Sửa
+                        </button>
+                        <button
+                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                            onClick={() => handleDelete(data[0])}
+                        >
+                            Xóa
+                        </button>
+                    </div>
+                </>
+            ),
+        },
+        {
+            nameclass: 'CĐ TH 18A',
+            subject: 'Công Nghệ Phần Mềm',
+            numberofstudent: 1,
+            action: (
+                <>
+                    <div className="flex gap-x-1">
+                        <button
+                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                            onClick={() => handleEdit(data[0])}
+                        >
+                            Sửa
+                        </button>
+                        <button
+                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                            onClick={() => handleDelete(data[0])}
+                        >
+                            Xóa
+                        </button>
+                    </div>
+                </>
+            ),
+        },
+        {
+            nameclass: 'CĐ TH 18A',
+            subject: 'Công Nghệ Phần Mềm',
+            numberofstudent: 1,
             action: (
                 <>
                     <div className="flex gap-x-1">
@@ -215,7 +307,6 @@ const AppClass = () => {
         // Xử lý logic khi xóa dữ liệu
         setDeleteModalVisible(false); // Đóng Modal sau khi xóa
     };
-
     return (
         <>
             <div className="container mt-5">
@@ -224,7 +315,15 @@ const AppClass = () => {
                         <MdPersonAdd />
                     </Button>
                 </div>
-                <Table dataSource={data} columns={columns} />
+                <Table
+                    dataSource={data}
+                    columns={columns}
+                    pagination={{
+                        defaultPageSize: 6,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['4', '6', '8', '12'],
+                    }}
+                />
             </div>
             {/* Modal thêm lớp */}
             <>

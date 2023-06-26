@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Table, { ColumnsType } from 'antd/es/table';
 import { MdPersonAdd } from 'react-icons/md';
 import { Button, Input, Modal } from 'antd';
 import './scss/styleDashboard.scss';
 import SelectOption from '../../components/SelectOption';
+import { parse, format } from 'date-fns';
+import HeaderToken from '../../common/utils/headerToken';
+import axios from 'axios';
+import SystemConst from '../../common/consts/system_const';
+const BASE_URL = `${SystemConst.DOMAIN}`;
 interface DataType {
     code: string;
     surname: string;
@@ -151,6 +156,15 @@ const AppStudent = () => {
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
+    const [selectedOptionClass, setSelectedOptionClass] = useState<number | null>(null);
+    const [selectedOptionSubject, setSelectedOptionSubject] = useState<number | null>(null);
+    const [isValueMSSV, setIsValueMSSV] = useState('');
+    const [isValueSurname, setIsValueSurname] = useState('');
+    const [isValueName, setIsValueName] = useState('');
+    const [isValueDateOfBirth, setIsValueDateOfBirth] = useState<Date | null>(null);
+    const [isValuePhone, setIsValuePhone] = useState('');
+    const [isValueCCCD, setIsValueCCCD] = useState('');
+    const [isValueAddress, setIsValueAddress] = useState('');
     const hanleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newName = data.filter((row) => {
             return row.name.toLowerCase().includes(event.target.value.toLowerCase());
@@ -181,27 +195,11 @@ const AppStudent = () => {
         setSelectedDeleteData(row);
         setDeleteModalVisible(true);
     };
-    // const handleAddTeacher = () => {
-    //     const randomNumber: number = Math.floor(Math.random() * 10000000000);
-
-    //     const newStudent = {
-    //         code: String(randomNumber),
-    //         surname: 'Họ giảng viên ' + randomNumber,
-    //         name: 'Tên giảng viên ' + randomNumber,
-    //         class: 'CĐ TH' + randomNumber,
-    //         dateofbirth: 'ngày sinh' + randomNumber,
-    //     };
-
-    //     setRecords((prevRecords) => [...prevRecords, newStudent]);
-    // };
-    const [selectedOptionClass, setSelectedOptionClass] = useState<number | null>(null);
-    const [selectedOptionSubject, setSelectedOptionSubject] = useState<number | null>(null);
-
     const handleOptionChangeClass = (value: number | null) => {
         setSelectedOptionClass(value);
     };
     const handleOptionChangeSubject = (value: number | null) => {
-        setSelectedOptionClass(value);
+        setSelectedOptionSubject(value);
     };
     const handleShowModal = () => {
         setOpenModal(true);
@@ -210,11 +208,81 @@ const AppStudent = () => {
         console.log('Clicked cancel button');
         setOpenModal(false);
     };
+
+    const handleCreateStudent = () => {
+        const roomData = {
+            isValueMSSV,
+            isValueSurname,
+            isValueName,
+            isValuePhone,
+            isValueCCCD,
+            isValueDateOfBirth,
+            isValueAddress,
+            selectedOptionClass,
+            selectedOptionSubject,
+        };
+        console.log('RoomData: ', roomData);
+        const config = HeaderToken.getTokenConfig();
+        axios.post(BASE_URL, config).then((response) => {
+            setIsValueMSSV('');
+            setIsValueCCCD('');
+            setIsValueName('');
+            setIsValueSurname('');
+            setIsValuePhone('');
+            setIsValueAddress('');
+            setIsValueDateOfBirth(null);
+        });
+    };
+    const handleSubmitCreateModalStudent = () => {
+        setOpenModal(false);
+    };
     const handleSubmitEditModalStudent = () => {
         setOpenModalEdit(false);
     };
     const handleSubmitDeleteModalStudent = () => {
         setDeleteModalVisible(false);
+    };
+
+    //Hàm xử lý Change Input chỉ được nhập tối đa 10 số và có thể nhập số 0 ở đầu
+    const handleChangeCodeStudent = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const formattedValue = inputValue
+            .replace(/^0+(?=\d{1,10})/, '')
+            .replace(/\D/g, '')
+            .slice(0, 10);
+        setIsValueMSSV(formattedValue);
+    };
+    //Hàm xử lý Change Input nhập Họ sinh viên
+    const handleChangeSurname = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueSurname(inputValue);
+    };
+    // //Hàm xử lý Change Input nhập Tên sinh viên
+    const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueName(inputValue);
+    };
+    // Hàm xử lý Change Input nhập ngày sinh
+    const handleChangeDateOfBirth = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        //Kiểm tra định dạng nhập vào (dd/mm/yyyy)
+        const dateFormat = 'dd/MM/yyyy';
+        //Parse chuỗi nhập vào thành đối tượng ngày tháng
+        const pasredDate = parse(inputValue, dateFormat, new Date());
+        //Kiểm tra xem pasredDate có hợp lệ không
+        if (!isNaN(pasredDate.getTime())) {
+            setIsValueDateOfBirth(pasredDate);
+        }
+    };
+    //Hàm xử lý Change Input chỉ được nhập tối đa 11 số và có thể số 0 ở đầu
+    const handleChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const formattedValue = inputValue.replace(/[^\d]/g, '').slice(0, 11);
+        setIsValuePhone(formattedValue);
+    };
+    const handleChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueAddress(inputValue);
     };
 
     return (
@@ -243,15 +311,19 @@ const AppStudent = () => {
                         <div className="grid grid-cols-2 gap-2 mt-10">
                             <div>
                                 <label htmlFor="">MSSV</label>
-                                <Input className="bg-slate-200" />
+                                <Input
+                                    onChange={handleChangeCodeStudent}
+                                    value={isValueMSSV}
+                                    className="bg-slate-200"
+                                />
                             </div>
                             <div>
                                 <label htmlFor="">Họ sinh viên</label>
-                                <Input className="bg-slate-200" />
+                                <Input onChange={handleChangeSurname} value={isValueSurname} className="bg-slate-200" />
                             </div>
                             <div>
                                 <label htmlFor="">Tên sinh viên</label>
-                                <Input className="bg-slate-200" />
+                                <Input onChange={handleChangeName} value={isValueName} className="bg-slate-200" />
                             </div>
                             <div>
                                 <label htmlFor="">Lớp sinh viên</label>
@@ -265,15 +337,19 @@ const AppStudent = () => {
                             </div>
                             <div>
                                 <label htmlFor="">Ngày sinh</label>
-                                <Input className="bg-slate-200" />
+                                <Input
+                                    onChange={handleChangeDateOfBirth}
+                                    value={isValueDateOfBirth ? format(isValueDateOfBirth, 'dd/MM/YYYY') : ''}
+                                    className="bg-slate-200"
+                                />
                             </div>
                             <div>
                                 <label htmlFor="">Số điện thoại</label>
-                                <Input className="bg-slate-200" />
+                                <Input onChange={handleChangePhone} value={isValuePhone} className="bg-slate-200" />
                             </div>
                             <div>
                                 <label htmlFor="">CCCD</label>
-                                <Input className="bg-slate-200" />
+                                <Input value={isValueCCCD} className="bg-slate-200" />
                             </div>
                             <div>
                                 <label htmlFor="">Bộ Môn</label>
@@ -288,10 +364,10 @@ const AppStudent = () => {
                         </div>
                         <div>
                             <label htmlFor="">Địa chỉ</label>
-                            <Input className="bg-slate-200" />
+                            <Input onChange={handleChangeAddress} value={isValueAddress} className="bg-slate-200" />
                         </div>
                         <div className="flex justify-end">
-                            <Button type="primary" className="mt-5">
+                            <Button onClick={handleSubmitCreateModalStudent} type="primary" className="mt-5">
                                 Lưu
                             </Button>
                         </div>
@@ -340,7 +416,7 @@ const AppStudent = () => {
                                 <label htmlFor="">Bộ Môn</label>
                                 <div className="flex flex-col">
                                     <SelectOption
-                                        value={selectedOptionSubject}
+                                        value={selectedOptionClass}
                                         onChange={handleOptionChangeSubject}
                                         apiUrl=""
                                     ></SelectOption>

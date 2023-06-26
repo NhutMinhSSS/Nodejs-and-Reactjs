@@ -12,6 +12,19 @@ class RegularClassService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
+                attributes: ['id', 'class_name']
+            });
+            return regularClass;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findAllRegularClassAndClassroomQuantity() {
+        try {
+            const regularClass = await RegularClass.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
                 include:[{
                     model: Classroom,
                     required: false,

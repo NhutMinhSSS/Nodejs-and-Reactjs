@@ -16,7 +16,7 @@ class SubjectService {
             throw error;
         }
     }
-    async findAllSubjects() {
+    async findAllSubjectsAndClassroomQuantity() {
         try {
             const subjects = await Subject.findAll({
                 where: {
