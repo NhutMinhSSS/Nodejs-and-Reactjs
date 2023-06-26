@@ -6,8 +6,19 @@ const DepartmentService = require("../services/department.service");
 const db = require("../config/connect_database.config");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const FacultyService = require("../services/faculty.service");
+const CommonService = require("../common/utils/common_service");
 const sequelize = db.getPool();
 class DepartmentController {
+    async getAllFaculty(req, res) {
+        try {
+            const faculties = await CommonService.getAllFaculty();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async getAllDepartments(req, res) {
         try {
             const departments = await DepartmentService.findAllDepartment(true);
