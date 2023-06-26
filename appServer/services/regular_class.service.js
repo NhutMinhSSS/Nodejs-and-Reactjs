@@ -2,8 +2,7 @@ const EnumServerDefinitions = require("../common/enums/enum_server_definitions")
 const RegularClass = require("../models/regular_class.model");
 const Department = require("../models/department.model");
 const Classroom = require("../models/classroom.model");
-const moment = require('moment-timezone');
-const SystemConst = require("../common/consts/system_const");
+const FormatUtils = require("../common/utils/format.utils");
 
 class RegularClassService {
     async findAllRegularClass() {
@@ -156,13 +155,16 @@ class RegularClassService {
             throw error;
         }
     }
-    async activeRegularClass(id, departmentId) {
+    async activeRegularClass(id, className, departmentId) {
         try {
-            const createDate = moment.tz(SystemConst.TIME_ZONE).toDate();
+            const dateNow = FormatUtils.formatDateNow();
             const regularClass = await RegularClass.update({
-                create_date: createDate,
+                class_name: className,
+                create_date: dateNow,
                 department_id: departmentId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: EnumServerDefinitions.STATUS.ACTIVE,
+                created_at: dateNow,
+                updated_at: dateNow
             }, {
                 where: {
                     id: id,

@@ -47,7 +47,7 @@ class DepartmentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
                 }
-                const isUpdate = await DepartmentService.activeDepartment(department.id, facultyId);
+                const isUpdate = await DepartmentService.activeDepartment(department.id, departmentName, facultyId);
                 if (!isUpdate) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_CREATE);

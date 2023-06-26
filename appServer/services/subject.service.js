@@ -1,4 +1,5 @@
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const FormatUtils = require("../common/utils/format.utils");
 const Classroom = require("../models/classroom.model");
 const Department = require("../models/department.model");
 const Subject = require("../models/subject.model");
@@ -139,12 +140,16 @@ class SubjectService {
             throw error;
         }
     }
-    async activeSubject(id, departmentId, credit) {
+    async activeSubject(id, subjectName, departmentId, credit) {
         try {
+            const dateNow = FormatUtils.formatDateNow();
             const subject = await Subject.update({
+                subject_name: subjectName,
                 department_id: departmentId,
                 credit: credit,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: EnumServerDefinitions.STATUS.ACTIVE,
+                created_at: dateNow,
+                updated_at: dateNow
             }, {
                 where: {
                     id: id,
