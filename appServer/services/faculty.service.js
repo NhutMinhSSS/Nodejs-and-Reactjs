@@ -1,9 +1,11 @@
+const SystemConst = require('../common/consts/system_const');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
 const Classroom = require('../models/classroom.model');
 const Department = require('../models/department.model');
 const Faculty = require('../models/faculty.model');
 const RegularClass = require('../models/regular_class.model');
 const Subject = require("../models/subject.model");
+const moment = require('moment-timezone');
 
 class FacultyService {
     async checkExistFacultyById(id) {
@@ -133,7 +135,8 @@ class FacultyService {
     async activeFaculty(id) {
         try {
             const faculty = await Faculty.update({
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: EnumServerDefinitions.STATUS.ACTIVE,
+                created_at: moment.tz(SystemConst.TIME_ZONE).date()
             }, {
                 where: {
                     id: id,
