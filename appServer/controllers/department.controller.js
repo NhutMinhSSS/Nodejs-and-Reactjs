@@ -22,6 +22,10 @@ class DepartmentController {
     async getAllDepartments(req, res) {
         try {
             const departments = await DepartmentService.findAllDepartment(true);
+            departments.forEach(item => {
+                item.faculty_name = item.Faculty.faculty_name;
+                delete item.Faculty;
+            });
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, departments);
         } catch (error) {
             logger.error(error);
