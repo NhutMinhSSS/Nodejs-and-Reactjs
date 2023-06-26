@@ -1,6 +1,7 @@
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const Classroom = require("../models/classroom.model");
 const Department = require("../models/department.model");
+const Faculty = require("../models/faculty.model");
 const RegularClass = require("../models/regular_class.model");
 const Subject = require("../models/subject.model");
 
@@ -24,14 +25,20 @@ class DepartmentService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: countSubject ? [{
+                include: [countSubject ? {
                     model: Subject,
                     required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
+                    attributes: []
+                } : [], {
+                    model: Faculty,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
                     attributes: ['faculty_name']
-                }] : [],
+                }],
                 attributes: ['id', 'faculty_name',
                     countSubject ? [Department.sequelize.literal(`(SELECT COUNT(*) FROM subjects WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
                         'subject_quantity'] : []],
