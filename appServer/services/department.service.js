@@ -11,7 +11,7 @@ class DepartmentService {
             const department = await Department.findOne({
                 where: {
                     department_name: departmentName
-                } 
+                }
             });
             return department;
         } catch (error) {
@@ -32,14 +32,13 @@ class DepartmentService {
                     },
                     attributes: []
                 }] : [],
-             attributes: ['id', 'faculty_name', 
-            countSubject ? [Department.sequelize.literal(`(SELECT COUNT(*) 
-                FROM subjects
-                WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`)] : []],
-             order: [
-                ['created_at', 'ASC'],
-                ['updated_at', 'ASC']
-            ]
+                attributes: ['id', 'faculty_name',
+                    countSubject ? [Department.sequelize.literal(`(SELECT COUNT(*) FROM subjects WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                        'subject_quantity'] : []],
+                order: [
+                    ['created_at', 'ASC'],
+                    ['updated_at', 'ASC']
+                ]
             });
             return department;
         } catch (error) {

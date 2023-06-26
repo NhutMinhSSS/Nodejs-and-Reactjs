@@ -31,9 +31,8 @@ class SubjectService {
                     attributes: []
                 }] : [],
                 attributes: ['id', 'subject_name', 'credit',
-                    countClassroom ? [Subject.sequelize.literal(`SELECT COUNT(*)
-                FROM classrooms
-                WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`)] : []],
+                    countClassroom ? [Subject.sequelize.literal(`SELECT COUNT(*) FROM classrooms WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`),
+                        'classroom_quantity'] : []],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']

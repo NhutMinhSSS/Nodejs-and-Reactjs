@@ -38,7 +38,7 @@ class FacultyController {
             } else {
                 await FacultyService.addFaculty(facultyName);
             }
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newFaculty);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

@@ -20,10 +20,9 @@ class RegularClassService {
                     },
                     attributes: []
                 }] : [],
-                attributes: ['id', 'class_name', 
-            countClassroom ? [RegularClass.sequelize.literal(`(SELECT COUNT(*)
-                FROM classrooms
-                WHERE classrooms.regular_class_id = RegularClass.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE})`)] : []]
+                attributes: ['id', 'class_name',
+                    countClassroom ? [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM classrooms WHERE classrooms.regular_class_id = RegularClass.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                        'classroom_quantity'] : []]
             });
             return regularClass;
         } catch (error) {
@@ -94,11 +93,11 @@ class RegularClassService {
     async checkRegularClassExist(id) {
         try {
             const regularClass = await RegularClass.findOne({
-               where: {
-                id: id,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-               },
-               attributes: ['id']
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
             });
             return !!regularClass;
         } catch (error) {
