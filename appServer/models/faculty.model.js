@@ -1,7 +1,6 @@
 const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
-const Department = require('./department.model');
 const sequelize = db.getPool();
 //Khoa
 class Faculty extends Model{}
@@ -31,7 +30,5 @@ Faculty.init({
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
-
-Faculty.hasMany(Department, { foreignKey: 'faculty_id'});
 
 module.exports = Faculty;
