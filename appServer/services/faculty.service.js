@@ -1,11 +1,10 @@
-const SystemConst = require('../common/consts/system_const');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
+const FormatUtils = require('../common/utils/format.utils');
 const Classroom = require('../models/classroom.model');
 const Department = require('../models/department.model');
 const Faculty = require('../models/faculty.model');
 const RegularClass = require('../models/regular_class.model');
 const Subject = require("../models/subject.model");
-const moment = require('moment-timezone');
 
 class FacultyService {
     async checkExistFacultyById(id) {
@@ -34,13 +33,26 @@ class FacultyService {
             throw error;
         }
     }
-    async findAllFaculty(countDepartment = false) {
+    async findAllFaculty() {
+        try {
+            const faculties = await Faculty.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'faculty_name']
+            });
+            return faculties;
+        } catch (error) {
+            throw error
+        }
+    }
+    async findAllFacultyAnDepartmentQuantity() {
         try {
             const faculty = await Faculty.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: countDepartment ? [
+                include:[
                     {
                         model: Department,
                         required: false,
@@ -49,14 +61,14 @@ class FacultyService {
                         },
                         attributes: []
                     }
-                ] : [],
+                ],
                 attributes: [
                     'id',
                     'faculty_name',
-                    countDepartment ? [
+                    [
                         Faculty.sequelize.literal(`(SELECT COUNT(*) FROM departments WHERE departments.faculty_id = Faculty.id and departments.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
                         'department_quantity'
-                    ] : []
+                    ]
                 ],
                 order: [
                     ['created_at', 'ASC'],
@@ -132,10 +144,11 @@ class FacultyService {
             throw error;
         }
     }
-    async activeFaculty(id) {
+    async activeFaculty(id, facultyName) {
         try {
-            const dateNow = moment.tz(SystemConst.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
+            const dateNow = FormatUtils.formatDateNow();
             const faculty = await Faculty.update({
+                faculty_name: facultyName,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
                 created_at: dateNow,
                 updated_at: dateNow
