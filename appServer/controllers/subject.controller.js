@@ -11,7 +11,7 @@ const sequelize = db.getPool();
 class SubjectController {
     async getAllSubjects(req, res) {
         try {
-            const subjects = await SubjectService.findAllSubjects();
+            const subjects = await SubjectService.findAllSubjects(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, subjects);
         } catch (error) {
             logger.error(error);
@@ -70,7 +70,7 @@ class SubjectController {
                     EnumMessage.NOT_EXIST);
             }
             const subject = await SubjectService.findSubjectByName(subjectName);
-            if (subject.id !== subjectId){
+            if (subject && subject.id !== subjectId){
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     EnumMessage.ALREADY_EXIST);
             }

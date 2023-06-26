@@ -18,13 +18,24 @@ class DepartmentService {
             throw error;
         }
     }
-    async findAllDepartment() {
+    async findAllDepartment(countSubject = false) {
         try {
             const department = await Department.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-             attributes: ['id', 'faculty_name'],
+                include: countSubject ? [{
+                    model: Subject,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: []
+                }] : [],
+             attributes: ['id', 'faculty_name', 
+            countSubject ? [Department.sequelize.literal(`(SELECT COUNT(*) 
+                FROM subjects
+                WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`)] : []],
              order: [
                 ['created_at', 'ASC'],
                 ['updated_at', 'ASC']

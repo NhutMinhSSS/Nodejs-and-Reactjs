@@ -9,7 +9,7 @@ const sequelize = db.getPool();
 class FacultyController {
     async getAllFaculties(req, res) {
         try {
-            const faculties = await FacultyService.findAllFaculty();
+            const faculties = await FacultyService.findAllFaculty(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
         } catch (error) {
             logger.error(error);
@@ -54,7 +54,7 @@ class FacultyController {
         }
         try {
             const faculty = await FacultyService.findFacultyByName(facultyName);
-            if (faculty.id !== facultyId) {
+            if (faculty && faculty.id !== facultyId) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     EnumMessage.ALREADY_EXIST);
             }

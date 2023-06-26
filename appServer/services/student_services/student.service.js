@@ -1,4 +1,5 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
+const CommonService = require("../../common/utils/common_service");
 const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model"); 
 
@@ -34,6 +35,14 @@ class StudentService {
                 status: EnumServerDefinitions.STATUS.ACTIVE
             });
             return students;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async checkCCDDExist(CCCD) {
+        try {
+            const isCheck = await CommonService.checkCCCDUserExist(CCCD, EnumServerDefinitions.ROLE.STUDENT);
+            return isCheck;
         } catch (error) {
             throw error;
         }

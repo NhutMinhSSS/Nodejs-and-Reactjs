@@ -82,7 +82,12 @@ class UserManager {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                         EnumMessage.NOT_EXIST);
                 }
-                isUpdate = await StudentService.updateStudent(studentId, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, regularClassId, address);
+                const isCheck = await StudentService.checkCCDDExist(CCCD);
+                if (isCheck && isCheck.id !== userId) {
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
+                        EnumMessage.ALREADY_EXIST);
+                }
+                isUpdate = await StudentService.updateStudent(userId, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, regularClassId, address);
             } else {
                 const departmentId = req.body.department_id;
                 if (!departmentId) {

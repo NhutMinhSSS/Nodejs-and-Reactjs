@@ -11,7 +11,7 @@ const sequelize = db.getPool();
 class RegularClassController {
     async getAllRegularClass(req, res) {
         try {
-            const regularClass = await RegularClassService.findAllRegularClass();
+            const regularClass = await RegularClassService.findAllRegularClass(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, regularClass);
         } catch (error) {
             logger.error(error);
@@ -66,7 +66,7 @@ class RegularClassController {
                     EnumMessage.NOT_EXIST);
             }
             const regularClass = await RegularClassService.findRegularClassByName(className);
-            if (regularClass.id !== regularClassId) {
+            if (regularClass && regularClass.id !== regularClassId) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     EnumMessage.ALREADY_EXIST);
             }

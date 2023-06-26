@@ -6,13 +6,24 @@ const moment = require('moment-timezone');
 const SystemConst = require("../common/consts/system_const");
 
 class RegularClassService {
-    async findAllRegularClass() {
+    async findAllRegularClass(countClassroom = false) {
         try {
             const regularClass = await RegularClass.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'class_name', 'department_id']
+                include: countClassroom ? [{
+                    model: Classroom,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: []
+                }] : [],
+                attributes: ['id', 'class_name', 
+            countClassroom ? [RegularClass.sequelize.literal(`(SELECT COUNT(*)
+                FROM classrooms
+                WHERE classrooms.regular_class_id = RegularClass.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE})`)] : []]
             });
             return regularClass;
         } catch (error) {
