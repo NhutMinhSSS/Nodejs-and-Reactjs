@@ -2,6 +2,8 @@ import { Button, Divider, Input, Modal } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
 import React, { useState } from 'react';
 import { MdPersonAdd } from 'react-icons/md';
+import { parse, format } from 'date-fns';
+import SelectOption from '../../components/SelectOption';
 
 interface DataType {
     code: string;
@@ -120,6 +122,15 @@ const AppTeacher: React.FC = () => {
     const [records, setRecords] = useState(data);
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
+    const [isValueTeacherCode, setIsValueTeacherCode] = useState('');
+    const [isValueSurname, setIsValueSurname] = useState('');
+    const [isValueName, setIsValueName] = useState('');
+    const [isValueDateOfBirth, setIsValueDateOfBirth] = useState<Date | null>(null);
+    const [isValuePhone, setIsValuePhone] = useState('');
+    const [isValueCCCD, setIsValueCCCD] = useState('');
+    const [isValueAddress, setIsValueAddress] = useState('');
+    const [selectedOptionClass, setSelectedOptionClass] = useState<number | null>(null);
+    const [selectedOptionSubject, setSelectedOptionSubject] = useState<number | null>(null);
     const handleShowModal = () => {
         setOpenModal(true);
     };
@@ -176,6 +187,53 @@ const AppTeacher: React.FC = () => {
         setDeleteModalVisible(false);
     };
 
+    const handleOptionChangeClass = (value: number | null) => {
+        setSelectedOptionClass(value);
+    };
+    const handleOptionChangeSubject = (value: number | null) => {
+        setSelectedOptionSubject(value);
+    };
+    //Hàm xử lý Change Input chỉ được nhập tối đa 10 số và có thể nhập số 0 ở đầu
+    const handleChangeCodeStudent = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const formattedValue = inputValue
+            .replace(/^0+(?=\d{1,10})/, '')
+            .replace(/\D/g, '')
+            .slice(0, 10);
+        setIsValueTeacherCode(formattedValue);
+    };
+    //Hàm xử lý Change Input nhập Họ sinh viên
+    const handleChangeSurname = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueSurname(inputValue);
+    };
+    // //Hàm xử lý Change Input nhập Tên sinh viên
+    const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueName(inputValue);
+    };
+    // Hàm xử lý Change Input nhập ngày sinh
+    const handleChangeDateOfBirth = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        //Kiểm tra định dạng nhập vào (dd/mm/yyyy)
+        const dateFormat = 'dd/MM/yyyy';
+        //Parse chuỗi nhập vào thành đối tượng ngày tháng
+        const pasredDate = parse(inputValue, dateFormat, new Date());
+        //Kiểm tra xem pasredDate có hợp lệ không
+        if (!isNaN(pasredDate.getTime())) {
+            setIsValueDateOfBirth(pasredDate);
+        }
+    };
+    //Hàm xử lý Change Input chỉ được nhập tối đa 11 số và có thể số 0 ở đầu
+    const handleChangePhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const formattedValue = inputValue.replace(/[^\d]/g, '').slice(0, 11);
+        setIsValuePhone(formattedValue);
+    };
+    const handleChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setIsValueAddress(inputValue);
+    };
     return (
         <>
             <div className="container mt-5">
@@ -195,7 +253,7 @@ const AppTeacher: React.FC = () => {
                 </div>
                 <Table columns={columns} dataSource={records} size="large" />
             </div>
-            <>
+            {/* <>
                 <Modal
                     className="custom-modal-teacher_create-edit "
                     open={openModal}
@@ -229,7 +287,75 @@ const AppTeacher: React.FC = () => {
                         </Button>
                     </div>
                 </Modal>
-            </>
+            </> */}
+            <Modal className="custom-modal-teacher_create-edit " open={openModal} onCancel={handleCancel} footer={null}>
+                <div className="p-5">
+                    <span className="text-base font-medium">Thêm giảng viên</span>
+                    <div className="grid grid-cols-2 gap-2 mt-5">
+                        <div>
+                            <label htmlFor="">MSSV</label>
+                            <Input
+                                onChange={handleChangeCodeStudent}
+                                value={isValueTeacherCode}
+                                className="bg-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="">Họ sinh viên</label>
+                            <Input onChange={handleChangeSurname} value={isValueSurname} className="bg-slate-200" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Tên sinh viên</label>
+                            <Input onChange={handleChangeName} value={isValueName} className="bg-slate-200" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Lớp sinh viên</label>
+                            <div className="flex flex-col">
+                                <SelectOption
+                                    value={selectedOptionClass}
+                                    onChange={handleOptionChangeClass}
+                                    apiUrl=""
+                                ></SelectOption>
+                            </div>
+                        </div>
+                        <div>
+                            <label htmlFor="">Ngày sinh</label>
+                            <Input
+                                onChange={handleChangeDateOfBirth}
+                                value={isValueDateOfBirth ? format(isValueDateOfBirth, 'dd/MM/YYYY') : ''}
+                                className="bg-slate-200"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="">Số điện thoại</label>
+                            <Input onChange={handleChangePhone} value={isValuePhone} className="bg-slate-200" />
+                        </div>
+                        <div>
+                            <label htmlFor="">CCCD</label>
+                            <Input value={isValueCCCD} className="bg-slate-200" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Bộ Môn</label>
+                            <div className="flex flex-col">
+                                <SelectOption
+                                    value={selectedOptionSubject}
+                                    onChange={handleOptionChangeSubject}
+                                    apiUrl=""
+                                ></SelectOption>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label htmlFor="">Địa chỉ</label>
+                        <Input onChange={handleChangeAddress} value={isValueAddress} className="bg-slate-200" />
+                    </div>
+                    <div className="flex justify-end">
+                        <Button onClick={handleSubmitCreateTeacher} type="primary" className="mt-5">
+                            Lưu
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
             {/* Modal sửa giảng viên  */}
             <>
                 <Modal
@@ -239,28 +365,70 @@ const AppTeacher: React.FC = () => {
                     footer={null}
                 >
                     <div className="p-5">
-                        <span>Sửa giáo viên</span>
-                        <div className="grid grid-cols-2 gap-2 mt-10">
+                        <span className="text-base font-medium">Sửa giảng viên</span>
+                        <div className="grid grid-cols-2 gap-2 mt-5">
                             <div>
-                                <label htmlFor="">Mã giảng viên</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">MSSV</label>
+                                <Input
+                                    onChange={handleChangeCodeStudent}
+                                    value={isValueTeacherCode}
+                                    className="bg-slate-200"
+                                />
                             </div>
                             <div>
-                                <label htmlFor="">Họ giảng viên</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Họ sinh viên</label>
+                                <Input onChange={handleChangeSurname} value={isValueSurname} className="bg-slate-200" />
                             </div>
                             <div>
-                                <label htmlFor="">Tên giảng viên</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Tên sinh viên</label>
+                                <Input onChange={handleChangeName} value={isValueName} className="bg-slate-200" />
                             </div>
                             <div>
-                                <label htmlFor="">Bộ môn</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Lớp sinh viên</label>
+                                <div className="flex flex-col">
+                                    <SelectOption
+                                        value={selectedOptionClass}
+                                        onChange={handleOptionChangeClass}
+                                        apiUrl=""
+                                    ></SelectOption>
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor="">Ngày sinh</label>
+                                <Input
+                                    onChange={handleChangeDateOfBirth}
+                                    value={isValueDateOfBirth ? format(isValueDateOfBirth, 'dd/MM/YYYY') : ''}
+                                    className="bg-slate-200"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="">Số điện thoại</label>
+                                <Input onChange={handleChangePhone} value={isValuePhone} className="bg-slate-200" />
+                            </div>
+                            <div>
+                                <label htmlFor="">CCCD</label>
+                                <Input value={isValueCCCD} className="bg-slate-200" />
+                            </div>
+                            <div>
+                                <label htmlFor="">Bộ Môn</label>
+                                <div className="flex flex-col">
+                                    <SelectOption
+                                        value={selectedOptionSubject}
+                                        onChange={handleOptionChangeSubject}
+                                        apiUrl=""
+                                    ></SelectOption>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div onClick={handleSubmitEditTeacher} className="flex justify-end px-5 ctmTeacher ">
-                        <Button type="primary">Lưu</Button>
+                        <div>
+                            <label htmlFor="">Địa chỉ</label>
+                            <Input onChange={handleChangeAddress} value={isValueAddress} className="bg-slate-200" />
+                        </div>
+                        <div className="flex justify-end">
+                            <Button onClick={handleSubmitEditTeacher} type="primary" className="mt-5">
+                                Lưu
+                            </Button>
+                        </div>
                     </div>
                 </Modal>
             </>

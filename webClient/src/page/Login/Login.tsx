@@ -59,7 +59,7 @@ const Login: React.FC = () => {
                         } else if (role === 0) {
                             setMessage('Đăng nhập thành công');
                             navigate('/sinh-vien');
-                        } else if (role === 3) {
+                        } else if (role === 2) {
                             setMessage('Đăng nhập thành công');
                             navigate('/admin');
                         } else {
@@ -99,19 +99,13 @@ const Login: React.FC = () => {
         handleRouteTeacher();
     } else if (localStorage.getItem('role') == '0') {
         handleRouteStudent();
-    } else if (localStorage.getItem('role') == '3') {
+    } else if (localStorage.getItem('role') == '2') {
         handleRouteAdmin();
     }
 
     return (
         <>
-            {isToken ? (
-                localStorage.getItem('role') == '1' ? (
-                    handleRouteTeacher()
-                ) : (
-                    handleRouteStudent()
-                )
-            ) : (
+            {!isToken && (
                 <div className="bg-slate-100 h-screen">
                     <div className="bg-blue-300 h-16 items-center fixed w-full">
                         <div className="w-48 mx-2 my-2">
