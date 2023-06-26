@@ -76,11 +76,10 @@ class DepartmentService {
             throw error;
         }
     }
-    async updateDepartment(id, departmentName, facultyId) {
+    async updateDepartment(id, departmentName) {
         try {
             const department = await Department.update({
                 department_name: departmentName,
-                faculty_id: facultyId
             }, {
                 where: {
                     id: id,
