@@ -1,6 +1,6 @@
 import { Button, Col, Modal, Row, Spin } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './scss/styleDashboard.scss';
 import { MdBookmarkAdd } from 'react-icons/md';
 import { Header } from 'antd/es/layout/layout';
@@ -10,6 +10,7 @@ import HeaderToken from '../../common/utils/headerToken';
 import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
+import SystemConst from '../../common/consts/system_const';
 interface DataType {
     nameclasssection: string;
     class: string;
@@ -318,9 +319,6 @@ const AppClassSection: React.FC = () => {
                         content = 'Giáo viên không có quyền tạo môn học này';
                     } else if (status === 403 && errorMessage === 'Teacher not assigned to class') {
                         content = 'Giáo viên không được phân công lớp này';
-                    } else if (status === 403 && errorMessage === 'Access denied') {
-                        content = 'Sinh viên không có quyền tạo phòng';
-                        setIsPopupVisibleCreateClass(false);
                     } else {
                         content = 'Lỗi máy chủ';
                     }
@@ -329,6 +327,24 @@ const AppClassSection: React.FC = () => {
                 console.error(error);
             });
     };
+    useEffect(() => {
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .get(`${SystemConst.DOMAIN}/classrooms`, config)
+            .then((response) => {
+                console.log('Data: ', response.data);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const content = 'Lỗi máy chủ';
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+                // Xử lý lỗi nếu có
+                console.error(error);
+            });
+    }, []);
     const handleSubmitCreateRoom = () => {
         if (nameClass.length === 0) {
             setErrorClass(true);
@@ -348,7 +364,6 @@ const AppClassSection: React.FC = () => {
     };
     return (
         <>
-            {' '}
             <div className="container mt-5">
                 <div className="flex justify-between mb-5">
                     <div>
