@@ -46,6 +46,5 @@ Subject.init({
 });
 
 Subject.hasMany(Classroom, { foreignKey: 'subject_id'});
-Subject.belongsTo(Department, { foreignKey: 'department_id'});
 
 module.exports = Subject;
