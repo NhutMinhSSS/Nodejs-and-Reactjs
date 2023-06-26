@@ -2,6 +2,7 @@ const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
 const Department = require('./department.model');
+const Classroom = require('./classroom.model');
 const sequelize = db.getPool();
 //Môn học
 class Subject extends Model{}
@@ -44,6 +45,7 @@ Subject.init({
     updatedAt: 'updated_at'
 });
 
+Subject.hasMany(Classroom, { foreignKey: 'subject_id'});
 Subject.belongsTo(Department, { foreignKey: 'department_id'});
 
 module.exports = Subject;

@@ -118,6 +118,29 @@ class CommonService {
             throw error;
         }
     }
+    async checkCCCDUserExist(CCCD, role) {
+        try {
+            let isCheck;
+            if (role === EnumServerDefinitions.ROLE.TEACHER) {
+                isCheck = await Teacher.findOne({
+                    where: {
+                        CCCD: CCCD
+                    },
+                    attributes: ['id']
+                });
+            } else {
+                isCheck = await Student.findOne({
+                    where: {
+                        CCCD: CCCD
+                    },
+                    attributes: ['id']
+                });
+            }
+            return isCheck;
+        } catch (error) {
+            throw error;
+        }
+    }
     async getTeacherCodeOrStudentCodeByAccountId(accountId, role) {
         try {
             let userInfo = role === EnumServerDefinitions.ROLE.TEACHER ? { model: Teacher, user_code: 'teacher_code'}  

@@ -1,4 +1,5 @@
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const Classroom = require("../models/classroom.model");
 const Department = require("../models/department.model");
 const Subject = require("../models/subject.model");
 
@@ -11,17 +12,28 @@ class SubjectService {
                 }
             });
             return subject;
-        } catch (error)  {
+        } catch (error) {
             throw error;
         }
     }
-    async findAllSubjects() {
+    async findAllSubjects(countClassroom = false) {
         try {
             const subjects = await Subject.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'subject_name', 'credit', 'department_id'],
+                include: countClassroom ? [{
+                    model: Classroom,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: []
+                }] : [],
+                attributes: ['id', 'subject_name', 'credit',
+                    countClassroom ? [Subject.sequelize.literal(`SELECT COUNT(*)
+                FROM classrooms
+                WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`)] : []],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']

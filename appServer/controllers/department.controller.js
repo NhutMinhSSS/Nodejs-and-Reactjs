@@ -10,7 +10,7 @@ const sequelize = db.getPool();
 class DepartmentController {
     async getAllDepartments(req, res) {
         try {
-            const departments = await DepartmentService.findAllDepartment();
+            const departments = await DepartmentService.findAllDepartment(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, departments);
         } catch (error) {
             logger.error(error);
@@ -67,7 +67,7 @@ class DepartmentController {
                     EnumMessage.NOT_EXIST);
             }
             const department = await DepartmentService.findDepartmentByName(departmentName);
-            if (department.id !== departmentId) {
+            if (department && department.id !== departmentId) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     EnumMessage.ALREADY_EXIST);
             }

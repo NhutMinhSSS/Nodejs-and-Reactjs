@@ -1,6 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Subject = require('./subject.model');
 const sequelize = db.getPool();
 //Bộ môn
 class Department extends Model{}
@@ -39,4 +40,5 @@ Department.init({
     updatedAt: 'updated_at'
 });
 
+Department.hasMany(Subject, { foreignKey: 'department_id'});
 module.exports = Department;
