@@ -19,6 +19,19 @@ class DepartmentService {
             throw error;
         }
     }
+    async findAllDepartment() {
+        try {
+            const departments = await Department.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'department_name']
+            });
+            return departments;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findAllDepartmentAndSubjectQuantity() {
         try {
             const department = await Department.findAll({
@@ -33,6 +46,13 @@ class DepartmentService {
                     },
                     attributes: []
                 }, {
+                    model: RegularClass,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: []
+                }, {
                     model: Faculty,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
@@ -41,7 +61,10 @@ class DepartmentService {
                 }],
                 attributes: ['id', 'department_name',
                     [Department.sequelize.literal(`(SELECT COUNT(*) FROM subjects WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
-                        'subject_quantity']],
+                        'subject_quantity'],
+                    [Department.sequelize.literal(`(SELECT COUNT(*) FROM regular_class WHERE regular_class.department_id = Department.id and regular_class.status= ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                        'regular_class_quantity']
+                    ],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']
