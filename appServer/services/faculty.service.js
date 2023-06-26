@@ -52,9 +52,7 @@ class FacultyService {
                     'id',
                     'faculty_name',
                     countDepartment ? [
-                        Faculty.sequelize.literal(`(SELECT COUNT(*) 
-                                            FROM departments 
-                                            WHERE departments.faculty_id = Faculty.id and departments.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                        Faculty.sequelize.literal(`(SELECT COUNT(*) FROM departments WHERE departments.faculty_id = Faculty.id and departments.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
                         'department_quantity'
                     ] : []
                 ],
