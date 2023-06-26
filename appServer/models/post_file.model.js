@@ -2,7 +2,6 @@ const {DataTypes, DATE, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
 const File = require('./file.model');
-const Post = require('./post.model');
 const sequelize = db.getPool();
 
 class PostFile extends Model{}
