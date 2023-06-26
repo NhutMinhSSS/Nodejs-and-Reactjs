@@ -7,7 +7,7 @@ const DepartmentRouter = require('./department.route');
 
 AdminRouter.use(authorize([EnumServerDefinitions.ROLE.ADMIN]));
 AdminRouter.use('/faculties', FacultyRouter);
-AdminRouter.use('departments', DepartmentRouter);
+AdminRouter.use('/departments', DepartmentRouter);
 
 
 module.exports = AdminRouter;
