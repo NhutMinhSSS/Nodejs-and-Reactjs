@@ -39,7 +39,7 @@ class SubjectController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
                 }
-                const isUpdate = await SubjectService.activeSubject(subject.id, departmentId, credit);
+                const isUpdate = await SubjectService.activeSubject(subject.id, subjectName, departmentId, credit);
                 if (!isUpdate) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_CREATE);

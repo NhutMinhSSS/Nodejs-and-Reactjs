@@ -38,7 +38,7 @@ class RegularClassController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
                 }
-                const isUpdate = await RegularClassService.activeRegularClass(regularClass.id, departmentId);
+                const isUpdate = await RegularClassService.activeRegularClass(regularClass.id, className, departmentId);
                 if (!isUpdate) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_CREATE);
