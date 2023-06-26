@@ -5,12 +5,11 @@ const logger = require("../config/logger.config");
 const FacultyService = require("../services/faculty.service");
 const db = require("../config/connect_database.config");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
-const CommonService = require("../common/utils/common_service");
 const sequelize = db.getPool();
 class FacultyController {
     async getAllFaculties(req, res) {
         try {
-            const faculties = await CommonService.getAllFaculty(true);
+            const faculties = await FacultyService.findAllFacultyAnDepartmentQuantity();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
         } catch (error) {
             logger.error(error);
@@ -31,7 +30,7 @@ class FacultyController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
                 }
-                const isUpdate = await FacultyService.activeFaculty(faculty.id);
+                const isUpdate = await FacultyService.activeFaculty(faculty.id, facultyName);
                 if (!isUpdate) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_CREATE);

@@ -16,23 +16,23 @@ class SubjectService {
             throw error;
         }
     }
-    async findAllSubjects(countClassroom = false) {
+    async findAllSubjects() {
         try {
             const subjects = await Subject.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: countClassroom ? [{
+                include:  [{
                     model: Classroom,
                     required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
-                }] : [],
+                }],
                 attributes: ['id', 'subject_name', 'credit',
-                    countClassroom ? [Subject.sequelize.literal(`SELECT COUNT(*) FROM classrooms WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`),
-                        'classroom_quantity'] : []],
+                    [Subject.sequelize.literal(`SELECT COUNT(*) FROM classrooms WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`),
+                        'classroom_quantity']],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']

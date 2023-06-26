@@ -14,6 +14,9 @@ class FormatUtils {
         const exam_deadline = moment(dateString);
         return exam_deadline <= tomorrow && now < exam_deadline;
     }
+    formatDateNow() {
+        return moment.tz(SystemConst.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
+    }
     // check before start time
     checkBeforeStartTime(startTime) {
         const submissionDate = moment().tz(SystemConst.TIME_ZONE);
