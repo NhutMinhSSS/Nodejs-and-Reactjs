@@ -10,7 +10,7 @@ const sequelize = db.getPool();
 class FacultyController {
     async getAllFaculties(req, res) {
         try {
-            const faculties = await CommonService.findAllFaculty(true);
+            const faculties = await CommonService.getAllFaculty(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
         } catch (error) {
             logger.error(error);
