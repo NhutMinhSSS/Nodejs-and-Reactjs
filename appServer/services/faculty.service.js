@@ -134,9 +134,11 @@ class FacultyService {
     }
     async activeFaculty(id) {
         try {
+            const dateNow = moment.tz(SystemConst.TIME_ZONE).date();
             const faculty = await Faculty.update({
                 status: EnumServerDefinitions.STATUS.ACTIVE,
-                created_at: moment.tz(SystemConst.TIME_ZONE).date()
+                created_at: dateNow,
+                updated_at: dateNow
             }, {
                 where: {
                     id: id,
