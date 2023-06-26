@@ -39,7 +39,7 @@ class DepartmentService {
                     },
                     attributes: ['faculty_name']
                 }],
-                attributes: ['id', 'faculty_name',
+                attributes: ['id', 'department_name',
                     countSubject ? [Department.sequelize.literal(`(SELECT COUNT(*) FROM subjects WHERE subjects.department_id = Department.id and subjects.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
                         'subject_quantity'] : []],
                 order: [
