@@ -22,13 +22,7 @@ class DepartmentController {
     async getAllDepartments(req, res) {
         try {
             const departments = await DepartmentService.findAllDepartment(true);
-            const listDepartments = departments.map(({ id, department_name, Faculty, subject_quantity }) => ({
-                id,
-                department_name,
-                faculty_name: Faculty.faculty_name,
-                subject_quantity
-            }));
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, listDepartments);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, departments);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

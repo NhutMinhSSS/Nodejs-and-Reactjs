@@ -25,14 +25,14 @@ class DepartmentService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: [countSubject ? {
+                include: [countSubject && {
                     model: Subject,
                     required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
-                } : [], {
+                }, {
                     model: Faculty,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
