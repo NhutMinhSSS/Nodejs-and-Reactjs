@@ -47,7 +47,7 @@ class DepartmentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
                 }
-                const isUpdate = await DepartmentService.activeDepartment(department.id, facultyId);
+                const isUpdate = await DepartmentService.activeDepartment(department.id, departmentName, facultyId);
                 if (!isUpdate) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_CREATE);
@@ -65,7 +65,7 @@ class DepartmentController {
     async updateDepartment(res, req) {
         const departmentId = req.body.department_id;
         const departmentName = req.body.department_name;
-        const facultyId = req.body.faculty_id;
+        //const facultyId = req.body.faculty_id;
         if (!departmentId || !departmentName || !facultyId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
@@ -81,7 +81,7 @@ class DepartmentController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     EnumMessage.ALREADY_EXIST);
             }
-            const isUpdate = await DepartmentService.updateDepartment(departmentId, departmentName, facultyId);
+            const isUpdate = await DepartmentService.updateDepartment(departmentId, departmentName);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);

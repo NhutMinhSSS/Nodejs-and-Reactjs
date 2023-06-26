@@ -1,4 +1,5 @@
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
+const FormatUtils = require("../common/utils/format.utils");
 const Classroom = require("../models/classroom.model");
 const Department = require("../models/department.model");
 const Faculty = require("../models/faculty.model");
@@ -75,11 +76,10 @@ class DepartmentService {
             throw error;
         }
     }
-    async updateDepartment(id, departmentName, facultyId) {
+    async updateDepartment(id, departmentName) {
         try {
             const department = await Department.update({
                 department_name: departmentName,
-                faculty_id: facultyId
             }, {
                 where: {
                     id: id,
@@ -137,11 +137,15 @@ class DepartmentService {
             throw error;
         }
     }
-    async activeDepartment(id, facultyId) {
+    async activeDepartment(id, departmentName, facultyId) {
         try {
+            const dateNow = FormatUtils.formatDateNow();
             const department = await Department.update({
+                department_name: departmentName,
                 faculty_id: facultyId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: EnumServerDefinitions.STATUS.ACTIVE,
+                created_at: dateNow,
+                updated_at: dateNow
             }, {
                 where: {
                     id: id,
