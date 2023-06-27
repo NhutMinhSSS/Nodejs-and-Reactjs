@@ -1,14 +1,25 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const BcryptUtils = require("../../config/bcrypt_utils.config");
 const Account = require("../../models/account.model");
+const Student = require("../../models/student.model");
+const Teacher = require("../../models/teacher.model");
 
 class AccountService {
-    async findAccountById(id) {
+    async findAccountById(id, role) {
         try {
             const account = await Account.findOne({
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                ...role !== EnumServerDefinitions.ROLE.ADMIN && {
+                    include: [{
+                        model: role === EnumServerDefinitions.ROLE.TEACHER ? Teacher : Student,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    }]
                 },
                 attributes: ['id']
             });

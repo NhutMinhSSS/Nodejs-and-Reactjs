@@ -147,6 +147,9 @@ class DepartmentService {
                     }, transaction
                 });
             }
+            await Teacher.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, { where: { department_id: departmentId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status']});
             const department = await Department.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {

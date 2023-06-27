@@ -4,8 +4,10 @@ const Classroom = require('../models/classroom.model');
 const Department = require('../models/department.model');
 const Faculty = require('../models/faculty.model');
 const RegularClass = require('../models/regular_class.model');
-const Subject = require("../models/subject.model");
+const Subject = require('../models/subject.model');
 const { Op } = require('sequelize');
+const Teacher = require('../models/teacher.model');
+const Student = require('../models/student.model');
 class FacultyService {
     async checkExistFacultyById(id) {
         try {
@@ -52,7 +54,7 @@ class FacultyService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include:[
+                include: [
                     {
                         model: Department,
                         required: false,
@@ -104,7 +106,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 attributes: ['id']
-            }); 
+            });
             const departmentIds = departments.map(item => item.id);
             if (departmentIds.length !== EnumServerDefinitions.EMPTY) {
                 const subjects = await Subject.findAll({
@@ -125,13 +127,16 @@ class FacultyService {
                 });
                 const regularClass = await RegularClass.findAll({
                     where: {
-                        department_id: {[Op.in]: departmentIds},
+                        department_id: { [Op.in]: departmentIds },
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['id']
                 });
                 const regularClassIds = regularClass.map(item => item.id);
                 const subjectIds = subjects.map(item => item.id);
+                await Teacher.update({
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
                 await Department.update(
                     { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
                     { where: { faculty_id: facultyId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
@@ -141,6 +146,14 @@ class FacultyService {
                     await RegularClass.update({
                         status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
+                    await Student.update({
+                        status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                    }, {
+                        where: {
+                            regular_class_id: regularClassIds,
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        }, transaction, fields: ['status']
+                    })
                     flag = true;
                 }
                 if (subjectIds.length !== EnumServerDefinitions.EMPTY) {
@@ -150,16 +163,20 @@ class FacultyService {
                     );
                     flag = true;
                 }
-               if (flag) {
-                await Classroom.update(
-                    { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
-                    { where: { [Op.or]: [{
-                        subject_id: {[Op.in]: subjectIds}
-                    }, {
-                        regular_class_id: {[Op.in]: regularClassIds}
-                    }], status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
-                );
-               }
+                if (flag) {
+                    await Classroom.update(
+                        { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
+                        {
+                            where: {
+                                [Op.or]: [{
+                                    subject_id: { [Op.in]: subjectIds }
+                                }, {
+                                    regular_class_id: { [Op.in]: regularClassIds }
+                                }], status: EnumServerDefinitions.STATUS.ACTIVE
+                            }, transaction, fields: ['status']
+                        }
+                    );
+                }
             }
             const faculty = await Faculty.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
