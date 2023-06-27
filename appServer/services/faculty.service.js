@@ -134,9 +134,9 @@ class FacultyService {
                 });
                 const regularClassIds = regularClass.map(item => item.id);
                 const subjectIds = subjects.map(item => item.id);
-                await Teacher.update({
-                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
+                // await Teacher.update({
+                //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                // }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
                 await Department.update(
                     { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
                     { where: { faculty_id: facultyId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
@@ -146,14 +146,14 @@ class FacultyService {
                     await RegularClass.update({
                         status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
-                    await Student.update({
-                        status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                    }, {
-                        where: {
-                            regular_class_id: regularClassIds,
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        }, transaction, fields: ['status']
-                    })
+                    // await Student.update({
+                    //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                    // }, {
+                    //     where: {
+                    //         regular_class_id: regularClassIds,
+                    //         status: EnumServerDefinitions.STATUS.ACTIVE
+                    //     }, transaction, fields: ['status']
+                    // });
                     flag = true;
                 }
                 if (subjectIds.length !== EnumServerDefinitions.EMPTY) {

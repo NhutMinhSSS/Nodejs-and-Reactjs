@@ -6,6 +6,8 @@ const Faculty = require("../models/faculty.model");
 const RegularClass = require("../models/regular_class.model");
 const Subject = require("../models/subject.model");
 const { Op } = require("sequelize");
+const Teacher = require("../models/teacher.model");
+const Student = require("../models/student.model");
 
 
 class DepartmentService {
@@ -131,6 +133,14 @@ class DepartmentService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }, transaction
                 });
+                // await Student.update({
+                //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                // }, {
+                //     where: {
+                //         regular_class_id: regularClassIds,
+                //         status: EnumServerDefinitions.STATUS.ACTIVE
+                //     }, transaction
+                // });
                 flag = true;
             }
             if (flag) {
@@ -147,9 +157,9 @@ class DepartmentService {
                     }, transaction
                 });
             }
-            await Teacher.update({
-                status: EnumServerDefinitions.STATUS.NO_ACTIVE
-            }, { where: { department_id: departmentId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status']});
+            // await Teacher.update({
+            //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            // }, { where: { department_id: departmentId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status']});
             const department = await Department.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {

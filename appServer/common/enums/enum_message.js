@@ -42,6 +42,8 @@ class EnumMessage{
     static ALREADY_EXIST = 'Already exist';
     //Error update but exist name no active
     static ALREADY_EXIST_NO_ACTIVE = 'Already exist no active';
+    //Already exist CCCD
+    static CCCD_ALREADY_EXIST = 'CCCD already exist';
     //Not exists
     static NOT_EXIST = 'Not exist';
     //Not exist

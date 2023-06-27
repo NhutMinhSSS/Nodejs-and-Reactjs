@@ -3,6 +3,7 @@ const RegularClass = require("../models/regular_class.model");
 const Department = require("../models/department.model");
 const Classroom = require("../models/classroom.model");
 const FormatUtils = require("../common/utils/format.utils");
+const Student = require("../models/student.model");
 
 class RegularClassService {
     async findAllRegularClass() {
@@ -133,6 +134,14 @@ class RegularClassService {
     }
     async deleteRegularClass(regularClassId, transaction) {
         try {
+            // await Student.update({
+            //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            // }, {
+            //     where: {
+            //         regular_class_id: regularClassId,
+            //         status: EnumServerDefinitions.STATUS.ACTIVE
+            //     }, transaction
+            // });
             await Classroom.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
