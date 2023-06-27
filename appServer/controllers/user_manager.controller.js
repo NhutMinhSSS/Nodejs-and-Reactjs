@@ -7,7 +7,6 @@ const ServerResponse = require('../common/utils/server_response');
 const AccountService = require('../services/account_services/account.service');
 const StudentService = require('../services/student_services/student.service');
 const TeacherService = require('../services/teacher_services/teacher.service');
-const AccountService = require('../services/account_services/account.service');
 const RegularClassService = require('../services/regular_class.service');
 const DepartmentService = require('../services/department.service');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');

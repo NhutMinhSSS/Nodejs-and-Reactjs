@@ -151,7 +151,7 @@ class DepartmentService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: id,
+                    id: departmentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
