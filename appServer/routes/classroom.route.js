@@ -8,8 +8,8 @@ const EnumServerDefinitions = require('../common/enums/enum_server_definitions')
 const checkRoomMember = require('../middlewares/check_room_member.middleware');
 
 
-classroomRouter.get('/', authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), ClassroomController.showJoinedClassrooms);
-classroomRouter.get('/:classroom_id',  authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), checkRoomMember, PostController.showPostsByUser);
+ClassroomRouter.get('/', authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), ClassroomController.showJoinedClassrooms);
+ClassroomRouter.get('/:classroom_id',  authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), checkRoomMember, PostController.showPostsByUser);
 //classroomRouter.post('/create-classroom', authorize([EnumServerDefinitions.ROLE.TEACHER]), classroomController.createClassroom);
 //classroomRouter.post('/join-classroom', classroomController.joinClassroom);
 
