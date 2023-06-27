@@ -30,10 +30,10 @@ class SubjectController {
         }
     }
     async addSubject(req, res) {
-        const subjectName = req.body.subject_name || null;
-        const credit = req.body.credit || 1;
-        const departmentId = req.body.department_id || null;
-        if (!subjectName || !departmentId) {
+        const subjectName = req.body.subject_name;
+        const credit = req.body.credit;
+        const departmentId = req.body.department_id;
+        if (!subjectName || !departmentId || !credit) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
