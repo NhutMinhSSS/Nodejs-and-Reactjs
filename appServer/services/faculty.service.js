@@ -5,7 +5,7 @@ const Department = require('../models/department.model');
 const Faculty = require('../models/faculty.model');
 const RegularClass = require('../models/regular_class.model');
 const Subject = require("../models/subject.model");
-
+const { Op } = require('sequelize');
 class FacultyService {
     async checkExistFacultyById(id) {
         try {
@@ -96,41 +96,71 @@ class FacultyService {
             throw error;
         }
     }
-    async deleteFaculty(id, transaction) {
+    async deleteFaculty(facultyId, transaction) {
         try {
-            const subjects = await Subject.findAll({
+            const departments = await Department.findAll({
                 where: {
+                    faculty_id: facultyId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id'],
-                include: [
-                    {
-                        model: Department,
-                        attributes: [],
-                        where: {
-                            faculty_id: id,
-                            status: EnumServerDefinitions.STATUS.ACTIVE
+                attributes: ['id']
+            }); 
+            const departmentIds = departments.map(item => item.id);
+            if (departmentIds.length !== EnumServerDefinitions.EMPTY) {
+                const subjects = await Subject.findAll({
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id'],
+                    include: [
+                        {
+                            model: Department,
+                            attributes: [],
+                            where: {
+                                faculty_id: facultyId,
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            }
                         }
-                    }
-                ]
-            });
-            const subjectIds = subjects.map((subject) => subject.id);
-            const departmentIds = subjects.map((item) => item.Department.id);
-            await Department.update(
-                { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
-                { where: { id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
-            );
-            await RegularClass.update({
-                status: EnumServerDefinitions.STATUS.NO_ACTIVE
-            }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
-            await Subject.update(
-                { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
-                { where: { id: subjectIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
-            );
-            await Classroom.update(
-                { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
-                { where: { subject_id: subjectIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
-            );
+                    ]
+                });
+                const regularClass = await RegularClass.findAll({
+                    where: {
+                        department_id: {[Op.in]: departmentIds},
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id']
+                });
+                const regularClassIds = regularClass.map(item => item.id);
+                const subjectIds = subjects.map(item => item.id);
+                await Department.update(
+                    { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
+                    { where: { faculty_id: facultyId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
+                );
+                let flag = false;
+                if (regularClassIds !== EnumServerDefinitions.EMPTY) {
+                    await RegularClass.update({
+                        status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                    }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
+                    flag = true;
+                }
+                if (subjectIds !== EnumServerDefinitions.EMPTY) {
+                    await Subject.update(
+                        { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
+                        { where: { id: subjectIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
+                    );
+                    flag = true;
+                }
+               if (flag) {
+                await Classroom.update(
+                    { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
+                    { where: { [Op.or]: [{
+                        subject_id: subjectIds
+                    }, {
+                        regular_class_id: regularClassIds
+                    }], status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
+                );
+               }
+            }
             const faculty = await Faculty.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
