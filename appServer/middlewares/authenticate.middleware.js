@@ -25,7 +25,7 @@ const authenticateToken = async (req, res, next) => {
             }
             decodedUser = user;
         });
-        const account = await AccountService.findAccountById(decodedUser.account_id);
+        const account = await AccountService.findAccountById(decodedUser.account_id, decodedUser.role);
         if (!account) {
             const message = decodedUser.role === EnumServerDefinitions.ROLE.TEACHER ? EnumMessage.TEACHER_NOT_EXISTS : EnumMessage.STUDENT_NOT_EXISTS;
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, message);
