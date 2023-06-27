@@ -1,7 +1,7 @@
 const Teacher = require('../../models/teacher.model');
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const TeacherList = require("../../models/teacher_list.model");
-const Department = require("../../models/teacher.model");
+const Department = require("../../models/department.model");
 class TeacherService {
     async findTeacherByTeacherCode(teacherCode) {
         try {
