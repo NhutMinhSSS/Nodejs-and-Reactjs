@@ -132,13 +132,13 @@ class RegularClassService {
             throw error;
         }
     }
-    async deleteRegularClass(id, transaction) {
+    async deleteRegularClass(regularClassId, transaction) {
         try {
             await Classroom.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    regular_class_id: id,
+                    regular_class_id: regularClassId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
@@ -146,7 +146,7 @@ class RegularClassService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: id,
+                    id: regularClassId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });

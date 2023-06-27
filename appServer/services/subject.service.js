@@ -117,13 +117,13 @@ class SubjectService {
             throw error;
         }
     }
-    async deleteSubject(id, transaction) {
+    async deleteSubject(subjectId, transaction) {
         try {
             await Classroom.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    subject_id: id,
+                    subject_id: subjectId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
@@ -131,7 +131,7 @@ class SubjectService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: id,
+                    id: subjectId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
