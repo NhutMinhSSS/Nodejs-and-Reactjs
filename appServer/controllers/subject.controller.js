@@ -9,9 +9,19 @@ const db = require("../config/connect_database.config");
 const sequelize = db.getPool();
 
 class SubjectController {
-    async getAllSubjects(req, res) {
+    async getListSubjects() {
         try {
-            const subjects = await SubjectService.findAllSubjects(true);
+            const subjects = await SubjectService.findAllSubject();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, subjects);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async getAllSubjectsInit(req, res) {
+        try {
+            const subjects = await SubjectService.findAllSubjectsAndClassroomQuantity();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, subjects);
         } catch (error) {
             logger.error(error);
@@ -20,9 +30,9 @@ class SubjectController {
         }
     }
     async addSubject(req, res) {
-        const subjectName = req.body.subject_name;
+        const subjectName = req.body.subject_name || null;
         const credit = req.body.credit || 1;
-        const departmentId = req.body.department_id;
+        const departmentId = req.body.department_id || null;
         if (!subjectName || !departmentId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
@@ -58,17 +68,17 @@ class SubjectController {
         const subjectId = req.body.subject_id;
         const subjectName = req.body.subject_name;
         const credit = req.body.credit;
-        const departmentId = req.body.department_id;
-        if (!subjectId || !subjectName || !departmentId) {
+        //const departmentId = req.body.department_id;
+        if (!subjectId || !subjectName || !departmentId || !credit) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
-            const department = await DepartmentService.checkDepartmentExist(departmentId);
-            if(!department) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.NOT_EXIST);
-            }
+            // const department = await DepartmentService.checkDepartmentExist(departmentId);
+            // if(!department) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+            //         EnumMessage.NOT_EXIST);
+            // }
             const subject = await SubjectService.findSubjectByName(subjectName);
             if (subject && subject.id !== subjectId){
                 let message = EnumMessage.ALREADY_EXIST;
@@ -78,7 +88,7 @@ class SubjectController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     message);
             }
-            const isUpdate = await SubjectService.updateSubject(subjectId, subjectName, departmentId, credit);
+            const isUpdate = await SubjectService.updateSubject(subjectId, subjectName, credit);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);

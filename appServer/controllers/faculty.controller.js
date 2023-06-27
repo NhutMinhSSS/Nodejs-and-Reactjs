@@ -7,7 +7,17 @@ const db = require("../config/connect_database.config");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const sequelize = db.getPool();
 class FacultyController {
-    async getAllFaculties(req, res) {
+    async getListFaculties(req, res) {
+        try {
+            const faculties = await FacultyService.findAllFaculty();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async getAllFacultiesInit(req, res) {
         try {
             const faculties = await FacultyService.findAllFacultyAnDepartmentQuantity();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, faculties);

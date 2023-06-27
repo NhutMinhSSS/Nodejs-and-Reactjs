@@ -43,6 +43,13 @@ class SubjectService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
+                }, {
+                    model: Department,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['department_name']
                 }],
                 attributes: ['id', 'subject_name', 'credit',
                     [Subject.sequelize.literal(`SELECT COUNT(*) FROM classrooms WHERE classrooms.subject_id = Subject.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE}`),
@@ -113,11 +120,10 @@ class SubjectService {
             throw error;
         }
     }
-    async updateSubject(id, subjectName, departmentId, credit) {
+    async updateSubject(id, subjectName, credit) {
         try {
             const subject = await Subject.update({
                 subject_name: subjectName,
-                department_id: departmentId,
                 credit: credit
             }, {
                 where: {
