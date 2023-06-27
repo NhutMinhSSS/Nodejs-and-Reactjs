@@ -1,6 +1,7 @@
 const Teacher = require('../../models/teacher.model');
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const TeacherList = require("../../models/teacher_list.model");
+const Department = require("../../models/teacher.model");
 class TeacherService {
     async findTeacherByTeacherCode(teacherCode) {
         try {
@@ -33,6 +34,14 @@ class TeacherService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
+                include: [{
+                    model: Department,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['department_name']
+                }],
+                attributes: ['id', 'teacher_code', 'first_name', 'last_name'],
                 order: ['teacher_code', 'ASC']
             });
             return teachers;
