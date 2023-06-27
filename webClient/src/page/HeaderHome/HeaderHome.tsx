@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import logoTruong from '../../img/Logotruong.png';
 import { MenuOutlined } from '@ant-design/icons';
 import iconUser from '../../img/iconUser.svg';
-import { Col, Dropdown, Input, MenuProps, Modal, Row, Space  } from 'antd';
+import { Col, Dropdown, Input, MenuProps, Modal, Row, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { MdAdd } from 'react-icons/md';
 import './style.scss';
@@ -31,18 +31,7 @@ const HeaderHome: React.FC = () => {
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
                 if (!isError) {
-                    let content = '';
-
-                    const {
-                        status,
-                        data: { error_message: errorMessage },
-                    } = error.response;
-                    if (status === 403 && errorMessage === 'Access denied') {
-                        content = 'Sinh viên không có quyền tạo phòng';
-                        setIsPopupVisibleCreateClass(false);
-                    } else {
-                        content = 'Lỗi máy chủ';
-                    }
+                    const content = 'Lỗi máy chủ';
                     const title = 'Lỗi';
                     ErrorCommon(title, content);
                 }

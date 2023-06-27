@@ -11,7 +11,7 @@ interface Option {
 }
 
 const SelectOption: React.FC<SelectOptionProps> = ({ apiUrl, value, onChange }) => {
-    const [options, setOptions] = useState<Option[]>([]);
+    const [options, setOptions] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -32,7 +32,7 @@ const SelectOption: React.FC<SelectOptionProps> = ({ apiUrl, value, onChange }) 
     };
     return (
         <select className="bg-slate-200 h-8 rounded-md focus:outline-none focus:border-blue-600 ">
-            {options.map((option) => (
+            {options.map((option: any) => (
                 <option key={option.id} value={option.id}>
                     {option.name}
                 </option>

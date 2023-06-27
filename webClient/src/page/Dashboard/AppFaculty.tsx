@@ -1,16 +1,19 @@
-import { Button, Modal, Input } from 'antd';
+import { Button, Modal, Input, Spin } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
 import { MdPersonAdd } from 'react-icons/md';
 import Notification from '../../components/Notification';
 import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
+import HeaderToken from '../../common/utils/headerToken';
+import UnauthorizedError from '../../common/exception/unauthorized_error';
+import ErrorCommon from '../../common/Screens/ErrorCommon';
 interface DataType {
     facultyname: string;
     numberofsubjects: number;
     action: React.ReactNode;
 }
-
+const BASE_URL = `${SystemConst.DOMAIN}/admin/faculties`;
 const AppFaculty = () => {
     const columns: ColumnsType<DataType> = [
         {
@@ -26,45 +29,184 @@ const AppFaculty = () => {
             dataIndex: 'action',
         },
     ];
+    const [dataFaculty, setDataFaculy] = useState<DataType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedItemEdit, setSelectedItemEdit] = useState<{ id?: number; faculty_name: string } | null>(null);
+    const [selectedItemDetele, setSelectedItemDelete] = useState<{ id?: number } | null>(null);
 
-    const data: DataType[] = [
-        {
-            facultyname: 'Khoa Kinh Tế',
-            numberofsubjects: 1,
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-    ];
+    //Xử lý Call APU Get Data
+    useEffect(() => {
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+        handleFecthData();
+    }, []);
+    const handleFecthData = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .get(BASE_URL, config)
+            .then((response) => {
+                const Api_Data_Faculty = response.data.response_data;
+                console.log('data: ', Api_Data_Faculty);
+
+                const newData: DataType[] = Api_Data_Faculty.map(
+                    (item: { id: number; faculty_name: any; department_quantity: any }) => ({
+                        facultyname: item.faculty_name,
+                        numberofsubjects: item.department_quantity,
+                        action: (
+                            <>
+                                <div className="flex gap-x-1">
+                                    <button
+                                        className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                                        onClick={() => handleEdit(item)}
+                                    >
+                                        Sửa
+                                    </button>
+                                    <button
+                                        className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                                        onClick={() => handleDelete(item)}
+                                    >
+                                        Xóa
+                                    </button>
+                                </div>
+                            </>
+                        ),
+                    }),
+                );
+                setDataFaculy(newData);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const content = 'Lỗi máy chủ';
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    //Xử lý Call API Create
+    const handleCreateFaculty = () => {
+        const data = { faculty_name: isValueFaculty };
+
+        console.log('Data: ', data);
+        const config = HeaderToken.getTokenConfig();
+        axios
+
+            .post(`${BASE_URL}/create-faculty`, data, config)
+            .then((response) => {
+                handleFecthData();
+                setIsValueFaculty('');
+                setOpenModal(false);
+                handleClickSuccess();
+                console.log('Data', response);
+                // const data = response.data.respone_data;
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+                    const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 409 && errorMessage === 'Already exist') {
+                        content = 'Khoa này đã tồn tại';
+                    } else if (status === 400 && errorMessage === 'Create not success') {
+                        content = 'Tạo khoa không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    //Xử lý Call API Update
+    const handleUpdateFaculy = () => {
+        const data = { faculty_id: selectedItemEdit?.id, faculty_name: selectedItemEdit?.faculty_name };
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .patch(`${BASE_URL}/update-faculty`, data, config)
+            .then((response) => {
+                handleClickEditSuccess();
+                handleFecthData();
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 409 && errorMessage === 'Already exist') {
+                        content = 'Khoa này đã tồn tại';
+                    } else if (status === 400 && errorMessage === 'Update not success') {
+                        content = 'Cập nhật khoa không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    //Xử lý Call API Delete
+    const handleDeleteFaculty = () => {
+        const dataDelete = selectedItemDetele?.id;
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .delete(`${BASE_URL}/delete-faculty/${dataDelete}`, config)
+            .then((response) => {
+                handleFecthData();
+                handleClickDeleteSuccess();
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Xóa khoa không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    const handleSubmitCreateFaculty = () => {
+        if (isValueFaculty.length === 0) {
+            setErrorFaculty(true);
+        } else {
+            handleCreateFaculty();
+        }
+    };
+    const handleSubmitEditFaculty = () => {
+        handleUpdateFaculy();
+        setOpenModalEdit(false);
+    };
+    const handleSubmitDeleteFaculty = () => {
+        handleDeleteFaculty();
+        setDeleteModalVisible(false);
+    };
 
     //Khai báo các State quản lí trạng thái
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
-    const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
     const [isValueFaculty, setIsValueFaculty] = useState('');
     const [errorFaculty, setErrorFaculty] = useState(false);
-
-    // Get API
-    useEffect(() => {
-        axios.get(`${SystemConst.DOMAIN}/`);
-    }, []);
 
     const handleChangeValueFaculty = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedValue = e.target.value;
@@ -74,13 +216,17 @@ const AppFaculty = () => {
         }
     };
 
-    const handleEdit = (row: DataType) => {
-        setEditedData(row);
+    const handleEdit = (item: { id: number; faculty_name: string }) => {
         setOpenModalEdit(true);
+        setSelectedItemEdit(item);
     };
-    const handleDelete = (row: DataType) => {
-        setSelectedDeleteData(row);
+
+    const handleChangeEdit = (e: { target: { value: any } }) => {
+        setSelectedItemEdit({ ...selectedItemEdit, faculty_name: e.target.value || null });
+    };
+    const handleDelete = (item: { id: number }) => {
         setDeleteModalVisible(true);
+        setSelectedItemDelete(item);
     };
 
     const handleShowModal = () => {
@@ -93,24 +239,14 @@ const AppFaculty = () => {
         setOpenModalEdit(false);
     };
     const handleClickSuccess = () => {
-        Notification('success', 'Thành công', 'Tạo Khoa thành công');
+        Notification('success', 'Thông báo', 'Tạo Khoa thành công');
     };
-    const handleSubmitCreateFaculty = () => {
-        if (isValueFaculty.length === 0) {
-            setErrorFaculty(true);
-        } else {
-            setOpenModal(false);
-            console.log('data:', isValueFaculty);
-            handleClickSuccess();
-            setIsValueFaculty('');
-        }
+    const handleClickEditSuccess = () => {
+        Notification('success', 'Thông báo', 'Cập nhật thành công khoa');
     };
-
-    const handleSubmitEditFaculty = () => {};
-    const handleSubmitDeleteFaculty = () => {
-        setDeleteModalVisible(false);
+    const handleClickDeleteSuccess = () => {
+        Notification('success', 'Thông báo', 'Xóa thành công khoa');
     };
-
     return (
         <>
             <div className="container mt-5 ">
@@ -119,7 +255,18 @@ const AppFaculty = () => {
                         <MdPersonAdd />
                     </Button>
                 </div>
-                <Table columns={columns} dataSource={data} />
+                <Table
+                    columns={columns}
+                    dataSource={dataFaculty}
+                    loading={isLoading}
+                    pagination={{
+                        defaultPageSize: 6,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['4', '6', '8', '12', '16'],
+                    }}
+                >
+                    {/* <Spin spinning={isLoading} size="large"></Spin> */}
+                </Table>
             </div>
             {/* Modal thêm khoa */}
             <>
@@ -158,10 +305,14 @@ const AppFaculty = () => {
                     footer={null}
                 >
                     <div className="p-5">
-                        <span className="text-lg font-medium">Thêm khoa</span>
+                        <span className="text-lg font-medium">Sửa khoa</span>
                         <div className="mt-10">
                             <label htmlFor="">Tên khoa</label>
-                            <Input className="bg-slate-200" />
+                            <Input
+                                onChange={(e) => handleChangeEdit({ target: e.target })}
+                                value={selectedItemEdit?.faculty_name}
+                                className="bg-slate-200"
+                            />
                         </div>
 
                         <div className="flex justify-end items-end">
@@ -201,113 +352,3 @@ const AppFaculty = () => {
 };
 
 export default AppFaculty;
-// {
-//     facultyname: 'Khoa Công Nghệ Thông tin',
-//     numberofsubjects: 5,
-//     action: (
-//         <>
-//             <div className="flex gap-x-1">
-//                 <button
-//                     className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-//                     onClick={() => handleEdit(data[1])}
-//                 >
-//                     Sửa
-//                 </button>
-//                 <button
-//                     className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-//                     onClick={() => handleDelete(data[1])}
-//                 >
-//                     Xóa
-//                 </button>
-//             </div>
-//         </>
-//     ),
-// },
-// {
-//     facultyname: 'Khoa Cơ Khí',
-//     numberofsubjects: 3,
-//     action: (
-//         <>
-//             <div className="flex gap-x-1">
-//                 <button
-//                     className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-//                     onClick={() => handleEdit(data[2])}
-//                 >
-//                     Sửa
-//                 </button>
-//                 <button
-//                     className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-//                     onClick={() => handleDelete(data[2])}
-//                 >
-//                     Xóa
-//                 </button>
-//             </div>
-//         </>
-//     ),
-// },
-// {
-//     facultyname: 'Khoa Nhiệt - Lạnh',
-//     numberofsubjects: 2,
-//     action: (
-//         <>
-//             <div className="flex gap-x-1">
-//                 <button
-//                     className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-//                     onClick={() => handleEdit(data[3])}
-//                 >
-//                     Sửa
-//                 </button>
-//                 <button
-//                     className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-//                     onClick={() => handleDelete(data[3])}
-//                 >
-//                     Xóa
-//                 </button>
-//             </div>
-//         </>
-//     ),
-// },
-// {
-//     facultyname: 'Khoa Cơ Động Lực',
-//     numberofsubjects: 4,
-//     action: (
-//         <>
-//             <div className="flex gap-x-1">
-//                 <button
-//                     className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-//                     onClick={() => handleEdit(data[4])}
-//                 >
-//                     Sửa
-//                 </button>
-//                 <button
-//                     className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-//                     onClick={() => handleDelete(data[4])}
-//                 >
-//                     Xóa
-//                 </button>
-//             </div>
-//         </>
-//     ),
-// },
-// {
-//     facultyname: 'Khoa Điện Tử',
-//     numberofsubjects: 2,
-//     action: (
-//         <>
-//             <div className=" flex gap-x-1">
-//                 <button
-//                     className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-//                     onClick={() => handleEdit(data[5])}
-//                 >
-//                     Sửa
-//                 </button>
-//                 <button
-//                     className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-//                     onClick={() => handleDelete(data[5])}
-//                 >
-//                     Xóa
-//                 </button>
-//             </div>
-//         </>
-//     ),
-// },

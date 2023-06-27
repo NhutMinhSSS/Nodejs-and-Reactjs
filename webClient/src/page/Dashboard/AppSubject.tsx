@@ -1,8 +1,11 @@
 import { Button, Input, Modal } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdAddBox, MdPersonAdd } from 'react-icons/md';
 import SelectOption from '../../components/SelectOption';
+import axios from 'axios';
+import SystemConst from '../../common/consts/system_const';
+import HeaderToken from '../../common/utils/headerToken';
 interface DataType {
     subjecttitle: string;
     subject: string;
@@ -13,7 +16,7 @@ interface DataType {
 const AppSubject = () => {
     const columns: ColumnsType<DataType> = [
         {
-            title: 'Tên bộ môn',
+            title: 'Tên môn học',
             dataIndex: 'subjecttitle',
         },
         {
@@ -21,11 +24,17 @@ const AppSubject = () => {
             dataIndex: 'credits',
         },
         {
-            title: 'Khoa',
+            title: 'Bộ môn',
             dataIndex: 'subject',
         },
         { title: 'Hành động', dataIndex: 'action' },
     ];
+    // useEffect(() => {
+    //     const config = HeaderToken.getTokenConfig();
+    //     axios.get(`${SystemConst.DOMAIN}/admin/subjects`, config).then((response) => {
+    //         console.log('data: ', response);
+    //     });
+    // });
     const data: DataType[] = [
         {
             subjecttitle: 'Cơ sở dữ liệu',
@@ -50,80 +59,25 @@ const AppSubject = () => {
                 </>
             ),
         },
-        {
-            subjecttitle: 'Cơ lý thuyết',
-            credits: 3,
-            subject: 'Tự động hóa',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            subjecttitle: 'Pháp luật',
-            credits: 3,
-            subject: 'Giáo dục đại cương',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            subjecttitle: 'Nhập môn lập trình',
-            subject: 'Công nghệ phần mềm',
-            credits: 3,
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
     ];
     const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
     const [selectOptionSubject, setSelectOptionSubject] = useState<number | null>(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [openModalEdit, setOpenModalEdit] = useState(false);
+    const [nameSubject, setNameSubject] = useState('');
+    const [credits, setCredits] = useState('');
+
+    const handleChangeNameSubject = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setNameSubject(inputValue);
+    };
+    const handleChangeCredits = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        setCredits(inputValue);
+    };
+
     const handleEdit = (row: DataType) => {
         setEditedData(row);
         setOpenModalEdit(true);
@@ -132,8 +86,7 @@ const AppSubject = () => {
         setSelectedDeleteData(row);
         setDeleteModalVisible(true);
     };
-    const [openModal, setOpenModal] = useState(false);
-    const [openModalEdit, setOpenModalEdit] = useState(false);
+
     const handleShowModal = () => {
         setOpenModal(true);
     };
@@ -165,15 +118,19 @@ const AppSubject = () => {
                         <span>Thêm sinh viên</span>
                         <div className="grid grid-cols-2 gap-2 mt-10">
                             <div>
-                                <label htmlFor="">Tên bộ môn</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Tên môn học</label>
+                                <Input
+                                    onChange={handleChangeNameSubject}
+                                    value={nameSubject}
+                                    className="bg-slate-200"
+                                />
                             </div>
                             <div>
                                 <label htmlFor="">Tín chỉ</label>
-                                <Input className="bg-slate-200" />
+                                <Input onChange={handleChangeCredits} value={credits} className="bg-slate-200" />
                             </div>
                             <div className="flex flex-col">
-                                <label htmlFor="">Khoa</label>
+                                <label htmlFor="">Bộ môn</label>
                                 <SelectOption
                                     onChange={handleOptionChangeSubject}
                                     value={selectOptionSubject}
@@ -187,50 +144,36 @@ const AppSubject = () => {
                 </Modal>
 
                 {/* Modal sửa subject */}
-                <Modal className="custom-modal " open={openModalEdit} onCancel={handleCancelEdit} footer={null}>
+                <Modal className="custom-modal " open={openModal} onCancel={handleCancel} footer={null}>
                     <div className="p-5">
-                        <span>Sửa sinh viên</span>
+                        <span>Thêm sinh viên</span>
                         <div className="grid grid-cols-2 gap-2 mt-10">
                             <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Tên môn học</label>
+                                <Input
+                                    onChange={handleChangeNameSubject}
+                                    value={nameSubject}
+                                    className="bg-slate-200"
+                                />
                             </div>
                             <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
+                                <label htmlFor="">Tín chỉ</label>
+                                <Input onChange={handleChangeCredits} value={credits} className="bg-slate-200" />
                             </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
-                            </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
-                            </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
-                            </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
-                            </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
-                            </div>
-                            <div>
-                                <label htmlFor="">Mã sinh viên</label>
-                                <Input className="bg-slate-200" />
+                            <div className="flex flex-col">
+                                <label htmlFor="">Bộ môn</label>
+                                <SelectOption
+                                    onChange={handleOptionChangeSubject}
+                                    value={selectOptionSubject}
+                                    apiUrl=""
+                                />
                             </div>
                         </div>
-                        <div>
-                            <label htmlFor="">Mã sinh viên</label>
-                            <Input className="bg-slate-200" />
-                        </div>
+
                         <Button className="mt-5">Lưu</Button>
                     </div>
                 </Modal>
+
                 {/* Modal xóa subject */}
                 <>
                     <Modal

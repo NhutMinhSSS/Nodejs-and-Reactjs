@@ -137,13 +137,13 @@ class FacultyService {
                     { where: { faculty_id: facultyId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
                 );
                 let flag = false;
-                if (regularClassIds !== EnumServerDefinitions.EMPTY) {
+                if (regularClassIds.length !== EnumServerDefinitions.EMPTY) {
                     await RegularClass.update({
                         status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, { where: { department_id: departmentIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] });
                     flag = true;
                 }
-                if (subjectIds !== EnumServerDefinitions.EMPTY) {
+                if (subjectIds.length !== EnumServerDefinitions.EMPTY) {
                     await Subject.update(
                         { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
                         { where: { id: subjectIds, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
@@ -154,9 +154,9 @@ class FacultyService {
                 await Classroom.update(
                     { status: EnumServerDefinitions.STATUS.NO_ACTIVE },
                     { where: { [Op.or]: [{
-                        subject_id: subjectIds
+                        subject_id: {[Op.in]: subjectIds}
                     }, {
-                        regular_class_id: regularClassIds
+                        regular_class_id: {[Op.in]: regularClassIds}
                     }], status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status'] }
                 );
                }
@@ -165,7 +165,7 @@ class FacultyService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: id,
+                    id: facultyId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });

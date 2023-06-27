@@ -58,23 +58,23 @@ const Dashboard: React.FC = () => {
                             <Menu.Item key="admin/app-faculty">
                                 <Link to="/admin/app-faculty">Khoa</Link>
                             </Menu.Item>
-                            <Menu.Item key="admin/app-teacher">
-                                <Link to="/admin/app-teacher">Giảng Viên</Link>
-                            </Menu.Item>
                             <Menu.Item key="admin/app-genre">
                                 <Link to="/admin/app-genre">Bộ môn</Link>
                             </Menu.Item>
                             <Menu.Item key="admin/app-subject">
                                 <Link to="/admin/app-subject">Môn học</Link>
                             </Menu.Item>
-                            <Menu.Item key="admin/app-class-section">
-                                <Link to="/admin/app-class-section">Lớp Học Phần</Link>
+                            <Menu.Item key="admin/app-teacher">
+                                <Link to="/admin/app-teacher">Giảng Viên</Link>
                             </Menu.Item>
                             <Menu.Item key="admin/app-student">
                                 <Link to="/admin/app-student">Sinh viên</Link>
                             </Menu.Item>
                             <Menu.Item key="/app-class">
                                 <Link to="/admin/app-class">Lớp</Link>
+                            </Menu.Item>
+                            <Menu.Item key="admin/app-class-section">
+                                <Link to="/admin/app-class-section">Lớp Học Phần</Link>
                             </Menu.Item>
                         </Menu>
                     </Sider>

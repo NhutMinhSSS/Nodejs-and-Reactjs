@@ -32,8 +32,10 @@ class UnauthorizedError {
                 content = 'Tài khoản của bạn đã bị xóa.';
                 flag = true;
             }
+        } else if (status === 403 && errorMessage === 'Access denied') {
+            content = 'Bạn không được phép thực hiện truy cập này';
+            flag = true;
         }
-
         if (flag) {
             showUnauthorizedPopup('Lỗi', content);
         }
