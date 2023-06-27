@@ -8,7 +8,7 @@ class TeacherController {
     async getAllTeacherInit(req, res) {
         try {
             const teachers = await TeacherService.findAllTeacher();
-            return teachers;
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, teachers);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
