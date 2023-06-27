@@ -42,7 +42,7 @@ class TeacherService {
                     attributes: ['department_name']
                 }],
                 attributes: ['id', 'teacher_code', 'first_name', 'last_name', 'date_of_birth', 'gender', 'phone_number', 'CCCD', 'address'],
-                order: ['teacher_code', 'ASC']
+                order: [['teacher_code', 'ASC']]
             });
             return teachers;
         } catch (error) {
