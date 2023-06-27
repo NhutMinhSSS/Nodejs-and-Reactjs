@@ -9,7 +9,17 @@ const db = require("../config/connect_database.config");
 const sequelize = db.getPool();
 
 class RegularClassController {
-    async getAllRegularClass(req, res) {
+    async getListRegularClass(req, res) {
+        try {
+            const regularClass = await RegularClassService.findAllRegularClass();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, regularClass);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async getAllRegularClassInit(req, res) {
         try {
             const regularClass = await RegularClassService.findAllRegularClass(true);
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, regularClass);
@@ -58,13 +68,13 @@ class RegularClassController {
     async updateRegularClass(req, res) {
         const regularClassId = req.body.regular_class_id;
         const className = req.body.class_name;
-        const departmentId = req.body.department_id;
+        //const departmentId = req.body.department_id;
         try {
-            const department = await DepartmentService.checkDepartmentExist(departmentId);
-            if (!department) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.NOT_EXIST);
-            }
+            // const department = await DepartmentService.checkDepartmentExist(departmentId);
+            // if (!department) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+            //         EnumMessage.NOT_EXIST);
+            // }
             const regularClass = await RegularClassService.findRegularClassByName(className);
             if (regularClass && regularClass.id !== regularClassId) {
                 let message = EnumMessage.ALREADY_EXIST;
@@ -74,7 +84,7 @@ class RegularClassController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                     message);
             }
-            const isUpdate = await RegularClassService.updateRegularClass(regularClassId, className, departmentId);
+            const isUpdate = await RegularClassService.updateRegularClass(regularClassId, className);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
