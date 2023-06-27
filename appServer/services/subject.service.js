@@ -17,6 +17,19 @@ class SubjectService {
             throw error;
         }
     }
+    async findAllSubject() {
+        try {
+            const subjects = await Subject.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'subject_name']
+            });
+            return subjects;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findAllSubjectsAndClassroomQuantity() {
         try {
             const subjects = await Subject.findAll({
