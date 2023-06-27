@@ -16,10 +16,19 @@ const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
 
 class ClassroomController {
-    async getSubjectAndRegularClass(req, res) {
+    async getAllClassroomsInit(req, res) {
         try {
-            const accountId = req.user.account_id;
-            const teacher = await TeacherService.findTeacherByAccountId(accountId);
+            const classrooms = await ClassroomService.findAllClassroom();
+            return classrooms;
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async getTeacherAndSubjectAndRegularClass(req, res) {
+        try {
+            const teacher = await TeacherService.findAllTeacher();
             const subjects = await SubjectService.findAllSubjectByDepartmentId(teacher.department_id);
             const regularClass = await RegularClassService.findAllRegularClassByDepartmentId(teacher.department_id);
             const listSubject = subjects.map(item => ({
