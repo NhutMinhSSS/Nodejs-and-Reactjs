@@ -67,8 +67,12 @@ class RegularClassController {
             }
             const regularClass = await RegularClassService.findRegularClassByName(className);
             if (regularClass && regularClass.id !== regularClassId) {
+                let message = EnumMessage.ALREADY_EXIST;
+                if (regularClass.status === EnumServerDefinitions.STATUS.NO_ACTIVE) {
+                    message = EnumMessage.ALREADY_EXIST_NO_ACTIVE;
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                    EnumMessage.ALREADY_EXIST);
+                    message);
             }
             const isUpdate = await RegularClassService.updateRegularClass(regularClassId, className, departmentId);
             if (!isUpdate) {

@@ -78,8 +78,12 @@ class DepartmentController {
             }
             const department = await DepartmentService.findDepartmentByName(departmentName);
             if (department && department.id !== departmentId) {
+                let message = EnumMessage.ALREADY_EXIST;
+                if (department.status === EnumServerDefinitions.STATUS.NO_ACTIVE) {
+                    message = EnumMessage.ALREADY_EXIST_NO_ACTIVE;
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                    EnumMessage.ALREADY_EXIST);
+                    message);
             }
             const isUpdate = await DepartmentService.updateDepartment(departmentId, departmentName);
             if (!isUpdate) {
