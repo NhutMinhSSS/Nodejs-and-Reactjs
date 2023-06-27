@@ -69,7 +69,7 @@ class SubjectController {
         const subjectName = req.body.subject_name;
         const credit = req.body.credit;
         //const departmentId = req.body.department_id;
-        if (!subjectId || !subjectName || !departmentId || !credit) {
+        if (!subjectId || !subjectName || !credit) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
