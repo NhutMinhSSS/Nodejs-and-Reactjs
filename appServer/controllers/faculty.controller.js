@@ -55,8 +55,12 @@ class FacultyController {
         try {
             const faculty = await FacultyService.findFacultyByName(facultyName);
             if (faculty && faculty.id !== facultyId) {
+                let message = EnumMessage.ALREADY_EXIST;
+                if (faculty.status === EnumServerDefinitions.STATUS.NO_ACTIVE) {
+                    message = EnumMessage.ALREADY_EXIST_NO_ACTIVE;
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                    EnumMessage.ALREADY_EXIST);
+                    message);
             }
             const isUpdate = await FacultyService.updateFaculty(facultyId, facultyName);
             if (!isUpdate) {

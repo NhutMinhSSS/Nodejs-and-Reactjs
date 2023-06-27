@@ -8,11 +8,14 @@ import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
+import { el } from 'date-fns/locale';
+import Notification from '../../components/Notification';
 const BASE_URL = `${SystemConst.DOMAIN}/admin/departments`;
 interface DataType {
     department_name: string;
     facultyname: string;
     numberofsubjects: number;
+    nameofregularclass: number;
     action: React.ReactNode;
 }
 const AppGenre = () => {
@@ -30,12 +33,24 @@ const AppGenre = () => {
             dataIndex: 'numberofsubjects',
         },
         {
+            title: 'Số lượng lớp',
+            dataIndex: 'nameofregularclass',
+        },
+        {
             title: 'Hành động',
             dataIndex: 'action',
         },
     ];
     const [dataGenre, setDataGenre] = useState<DataType[]>([]);
     const [isOptions, setIsOptions] = useState<any[]>([]);
+    const [isOptionEdit, setIsOptionEdit] = useState<any[]>([]);
+    const [selectedItemEdit, setSelectedItemEdit] = useState<{
+        id?: number;
+        department_name: string;
+        Faculty: { faculty_name: any };
+    } | null>(null);
+    const [selectedItemDetele, setSelectedItemDelete] = useState<{ id?: number } | null>(null);
+
     const handleFecthData = () => {
         const config = HeaderToken.getTokenConfig();
         axios
@@ -43,23 +58,32 @@ const AppGenre = () => {
             .then((response) => {
                 const Api_Data_Faculty = response.data.response_data;
                 console.log('data: ', Api_Data_Faculty);
+                setIsOptionEdit(Api_Data_Faculty);
                 const newData: DataType[] = Api_Data_Faculty.map(
-                    (item: { Faculty: any; id: number; department_name: any; subject_quantity: any }) => ({
+                    (item: {
+                        regular_class_quantity: any;
+                        Faculty: any;
+                        id: number;
+                        department_name: any;
+                        subject_quantity: any;
+                    }) => ({
+                        id: item.id,
                         department_name: item.department_name,
                         facultyname: item.Faculty.faculty_name,
                         numberofsubjects: item.subject_quantity,
+                        nameofregularclass: item.regular_class_quantity,
                         action: (
                             <>
                                 <div className="flex gap-x-1">
                                     <button
                                         className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                                        // onClick={() => handleEdit(item)}
+                                        onClick={() => handleEdit(item)}
                                     >
                                         Sửa
                                     </button>
                                     <button
                                         className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                                        // onClick={() => handleDelete(item)}
+                                        onClick={() => handleDelete(item)}
                                     >
                                         Xóa
                                     </button>
@@ -79,7 +103,6 @@ const AppGenre = () => {
                 }
             });
     };
-
     //Xử lý gọi dữ liệu ở trong Khoa
     const fetchDataSelectOption = () => {
         const config = HeaderToken.getTokenConfig();
@@ -104,11 +127,14 @@ const AppGenre = () => {
     }, []);
     const handleCreateSubject = () => {
         const config = HeaderToken.getTokenConfig();
-        const data = { nameGenre, selectedOptionGenre };
+        const data = { department_name: nameGenre, faculty_id: selectedOptionGenre };
+        console.log(data);
         axios
-            .post(`${BASE_URL}/create`, data, config)
+            .post(`${BASE_URL}/create-department`, data, config)
             .then((response) => {
                 setNameGenre('');
+                handleSuccesCreate();
+                handleFecthData();
             })
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
@@ -119,12 +145,14 @@ const AppGenre = () => {
                         status,
                         data: { error_message: errorMessage },
                     } = error.response;
-                    if (status === 400) {
+                    if (status === 400 && error === 'Required more information') {
                         content = 'Cần gửi đầy đủ thông tin';
-                    } else if (status === 403 && errorMessage === 'Teacher not assigned to subject') {
-                        content = 'Giáo viên không có quyền tạo môn học này';
-                    } else if (status === 403 && errorMessage === 'Teacher not assigned to class') {
-                        content = 'Giáo viên không được phân công lớp này';
+                    } else if (status === 400 && errorMessage === 'Not exist') {
+                        content = 'Khoa không tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist') {
+                        content = 'Bộ môn đã tồn tại';
+                    } else if (status === 400 && errorMessage === 'Create not success') {
+                        content = 'Tạo bộ môn không thành công';
                     } else {
                         content = 'Lỗi máy chủ';
                     }
@@ -133,19 +161,87 @@ const AppGenre = () => {
                 console.error(error);
             });
     };
-    const [isLoading, setIsLoading] = useState(false);
+    const handleUpdateSubject = () => {
+        const config = HeaderToken.getTokenConfig();
+        const dataUpdate = { department_id: selectedItemEdit?.id, department_name: selectedItemEdit?.department_name };
+        console.log(dataUpdate, ' dasdsad');
+        axios
+            .patch(`${BASE_URL}/update-department`, dataUpdate, config)
+            .then((response) => {
+                handleSuccesUpdate();
+                handleFecthData();
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+                    const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && error === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Not exist') {
+                        content = 'Khoa không tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist') {
+                        content = 'Bộ môn đã tồn tại';
+                    } else if (status === 400 && errorMessage === 'Create not success') {
+                        content = 'Tạo bộ môn không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+                console.error(error);
+            });
+    };
+    const handleSubjectDelete = () => {
+        const config = HeaderToken.getTokenConfig();
+        const dataDelete = selectedItemDetele?.id;
+        axios
+            .delete(`${BASE_URL}/delete-department/${dataDelete}`, config)
+            .then(() => {
+                handleSuccesDelete();
+                handleFecthData();
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Xóa bộ môn không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
     const [openModal, setOpenModal] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [editModalVisible, setEditModalVisible] = useState(false);
-    const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
-    const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
     const [errorGenre, setErrorGenre] = useState(false);
-    const [isValueGenre, setIsValueGenre] = useState('');
     const [nameGenre, setNameGenre] = useState('');
     const [selectedOptionGenre, setSelectedOptionGenre] = useState<number | null>(null);
-    const handleEdit = (row: DataType) => {
-        setEditedData(row);
+    const handleEdit = (item: { id: number; Faculty: { faculty_name: any }; department_name: any }) => {
         setEditModalVisible(true);
+        setSelectedItemEdit(item);
+        console.log(item.Faculty.faculty_name, 'dsasd');
+    };
+    const handleChangeEdit = (e: { target: { value: any } }) => {
+        setSelectedItemEdit({
+            ...selectedItemEdit,
+            Faculty: { faculty_name: selectedItemEdit?.Faculty.faculty_name },
+            department_name: e.target.value || null,
+        });
     };
 
     const handleShowModal = () => {
@@ -157,36 +253,29 @@ const AppGenre = () => {
     const handleCancelEdit = () => {
         setEditModalVisible(false);
     };
-    const handleDelete = (row: DataType) => {
-        setSelectedDeleteData(row);
+    const handleDelete = (item: { id: number }) => {
         setDeleteModalVisible(true);
+        setSelectedItemDelete(item);
     };
     const handleSubmitCreateGenre = () => {
         if (nameGenre.length === 0) {
             setErrorGenre(true);
-        }
-        if (!selectedOptionGenre) {
+        } else if (!selectedOptionGenre) {
             setErrorGenre(true);
+        } else {
+            handleCreateSubject();
         }
-        setIsValueGenre('');
-        const roomData = {
-            nameGenre,
-            selectedOptionGenre,
-        };
-        console.log('Data: ', roomData);
     };
     const handleSubmitEditGenre = () => {
+        handleUpdateSubject();
         setEditModalVisible(false);
     };
     const handleSubmitDeleteGenre = () => {
+        handleSubjectDelete();
         setDeleteModalVisible(false);
     };
     const handleOptionChangeGenre = (value: number | null) => {
         setSelectedOptionGenre(value);
-        const selectValue = value;
-        if (selectValue !== null) {
-            setErrorGenre(false);
-        }
     };
     const handleChangeNameGenre = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNameGenre(e.target.value);
@@ -194,6 +283,15 @@ const AppGenre = () => {
         if (selectValue !== '') {
             setErrorGenre(false);
         }
+    };
+    const handleSuccesCreate = () => {
+        Notification('success', 'Thông báo', 'Thêm bộ môn thành công');
+    };
+    const handleSuccesUpdate = () => {
+        Notification('success', 'Thông báo', 'Cập nhật bộ môn thành công');
+    };
+    const handleSuccesDelete = () => {
+        Notification('success', 'Thông báo', 'Xóa thành công bộ môn');
     };
     return (
         <>
@@ -223,7 +321,11 @@ const AppGenre = () => {
                             <div className="grid grid-cols-2 gap-2 mt-10">
                                 <div>
                                     <label htmlFor="">Tên bộ môn</label>
-                                    <Input onChange={handleChangeNameGenre} className="bg-slate-200" />
+                                    <Input
+                                        value={nameGenre}
+                                        onChange={handleChangeNameGenre}
+                                        className="bg-slate-200"
+                                    />
                                     {errorGenre && <p className="text-red-500">Vui lòng điền bộ môn</p>}
                                 </div>
                                 <div>
@@ -234,12 +336,21 @@ const AppGenre = () => {
                                             value={selectedOptionGenre}
                                             apiUrl={}
                                         /> */}
-                                        <select className="bg-slate-200 h-8 rounded-md focus:outline-none focus:border-blue-600 ">
+                                        <select
+                                            onChange={(e) => {
+                                                handleOptionChangeGenre(Number(e.target.value));
+                                            }}
+                                            className="bg-slate-200 h-8 rounded-md focus:outline-none focus:border-blue-600 "
+                                        >
+                                            <option value="" disabled selected hidden>
+                                                Chọn Khoa
+                                            </option>
                                             {isOptions.map((option: any) => (
                                                 <option key={option.id} value={option.id}>
                                                     {option.faculty_name}
                                                 </option>
                                             ))}
+                                            <label htmlFor="Chọn Khoa"></label>
                                         </select>
                                     </div>
                                     {errorGenre && <p className="text-red-500">Vui lòng chọn khoa</p>}
@@ -247,12 +358,7 @@ const AppGenre = () => {
                             </div>
                         </div>
                         <div className="flex justify-end px-5 items-end ctmGenre">
-                            <Button
-                                onClick={handleSubmitCreateGenre}
-                                value={isValueGenre}
-                                type="primary"
-                                className="mt-5"
-                            >
+                            <Button onClick={handleSubmitCreateGenre} value="" type="primary" className="mt-5">
                                 Lưu
                             </Button>
                         </div>
@@ -271,16 +377,36 @@ const AppGenre = () => {
                             <div className="grid grid-cols-2 gap-2 mt-10">
                                 <div>
                                     <label htmlFor="">Tên bộ môn</label>
-                                    <Input onChange={handleChangeNameGenre} className="bg-slate-200" />
+                                    <Input
+                                        // value={selectedItemEdit?.department_name}
+                                        onChange={(e) => handleChangeEdit({ target: { value: e.target.value } })}
+                                        className="bg-slate-200"
+                                    />
                                 </div>
                                 <div>
                                     <label htmlFor="">Khoa</label>
                                     <div className="flex flex-col">
-                                        <SelectOption
+                                        {/* <SelectOption
                                             onChange={handleOptionChangeGenre}
                                             value={selectedOptionGenre}
                                             apiUrl=""
-                                        />
+                                        /> */}
+                                        <select
+                                            disabled
+                                            onChange={(e) => {
+                                                handleOptionChangeGenre(Number(e.target.value));
+                                            }}
+                                            className="bg-slate-200 h-8 rounded-md focus:outline-none focus:border-blue-600 "
+                                        >
+                                            <option value={selectedItemEdit?.id} disabled selected hidden>
+                                                {selectedItemEdit?.Faculty.faculty_name}
+                                            </option>
+                                            {isOptionEdit.map((option: any) => (
+                                                <option key={option.id} value={option.id}>
+                                                    {option.faculty_name}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
                             </div>

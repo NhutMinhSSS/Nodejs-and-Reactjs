@@ -62,24 +62,28 @@ class DepartmentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async updateDepartment(res, req) {
+    async updateDepartment(req, res) {
         const departmentId = req.body.department_id;
         const departmentName = req.body.department_name;
         //const facultyId = req.body.faculty_id;
-        if (!departmentId || !departmentName || !facultyId) {
+        if (!departmentId || !departmentName) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
-            const faculty = await FacultyService.checkExistFacultyById(facultyId);
-            if (!faculty) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.NOT_EXIST);
-            }
+            // const faculty = await FacultyService.checkExistFacultyById(facultyId);
+            // if (!faculty) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+            //         EnumMessage.NOT_EXIST);
+            // }
             const department = await DepartmentService.findDepartmentByName(departmentName);
             if (department && department.id !== departmentId) {
+                let message = EnumMessage.ALREADY_EXIST;
+                if (department.status === EnumServerDefinitions.STATUS.NO_ACTIVE) {
+                    message = EnumMessage.ALREADY_EXIST_NO_ACTIVE;
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                    EnumMessage.ALREADY_EXIST);
+                    message);
             }
             const isUpdate = await DepartmentService.updateDepartment(departmentId, departmentName);
             if (!isUpdate) {

@@ -177,7 +177,7 @@ const AppFaculty = () => {
                     if (status === 400 && errorMessage === 'Required more information') {
                         content = 'Cần gửi đầy đủ thông tin';
                     } else if (status === 400 && errorMessage === 'Delete not success') {
-                        content = 'Cập nhật khoa không thành công';
+                        content = 'Xóa khoa không thành công';
                     } else {
                         content = 'Lỗi máy chủ';
                     }
@@ -205,8 +205,6 @@ const AppFaculty = () => {
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
-    const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
     const [isValueFaculty, setIsValueFaculty] = useState('');
     const [errorFaculty, setErrorFaculty] = useState(false);
 
@@ -312,7 +310,7 @@ const AppFaculty = () => {
                             <label htmlFor="">Tên khoa</label>
                             <Input
                                 onChange={(e) => handleChangeEdit({ target: e.target })}
-                                value={selectedItemEdit?.faculty_name || ''}
+                                value={selectedItemEdit?.faculty_name}
                                 className="bg-slate-200"
                             />
                         </div>
