@@ -1,9 +1,10 @@
 const express = require('express');
 const TeacherAdminRouter = express.Router();
 const TeacherController = require('../../controllers/teacher.controller');
-const UserManager = require('../../common/utils/user_manager');
 
 TeacherAdminRouter.get('/', TeacherController.getAllTeacherInit);
-TeacherAdminRouter.post('/create-teacher', UserManager.addStudentOrTeacher);
+TeacherAdminRouter.post('/create-teacher', TeacherController.addTeacher);
+TeacherAdminRouter.patch('/update-teacher', TeacherController.updateTeacher);
+TeacherAdminRouter.delete('/delete/:teacher_id', TeacherController.deleteTeacher);
 
 module.exports = TeacherAdminRouter;
