@@ -40,6 +40,8 @@ class EnumMessage{
     static REQUIRED_INFORMATION = 'Required more information';
     //Already exist
     static ALREADY_EXIST = 'Already exist';
+    //Error update but exist name no active
+    static ALREADY_EXIST_NO_ACTIVE = 'Already exist no active';
     //Not exists
     static NOT_EXIST = 'Not exist';
     //Not exist
