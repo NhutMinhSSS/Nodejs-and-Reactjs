@@ -116,11 +116,10 @@ class RegularClassService {
             throw error;
         }
     }
-    async updateRegularClass(id, className, departmentId) {
+    async updateRegularClass(id, className) {
         try {
             const regularClass = await RegularClass.update({
                 class_name: className,
-                department_id: departmentId
             }, {
                 where: {
                     id: id,
