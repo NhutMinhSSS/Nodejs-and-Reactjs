@@ -39,14 +39,14 @@ class StudentService {
             throw error;
         }
     }
-    async checkCCDDExist(CCCD) {
-        try {
-            const isCheck = await CommonService.checkCCCDUserExist(CCCD, EnumServerDefinitions.ROLE.STUDENT);
-            return isCheck;
-        } catch (error) {
-            throw error;
-        }
-    }
+    // async checkCCDDExist(CCCD) {
+    //     try {
+    //         const isCheck = await CommonService.checkCCCDUserExist(CCCD, EnumServerDefinitions.ROLE.STUDENT);
+    //         return isCheck;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
     async updateStudent(id, firstName, lastName, dateOfBirth, gender, phoneNumber, CCCD, regularClassId, address) {
         try {
             const isUpdate = await Student.update({
