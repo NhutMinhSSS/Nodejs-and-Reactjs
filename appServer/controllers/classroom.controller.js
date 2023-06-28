@@ -17,7 +17,15 @@ class ClassroomController {
     async getAllClassroomsInit(req, res) {
         try {
             const classrooms = await ClassroomService.findAllClassroom();
-            return classrooms;
+            const result = classrooms.map(({id, class_name, semester, school_year, RegularClass, status}) => ({
+                id,
+                class_name,
+                semester,
+                school_year,
+                regular_class_name: RegularClass.class_name,
+                status
+            }));
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
