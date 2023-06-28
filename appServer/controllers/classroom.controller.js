@@ -16,7 +16,7 @@ const sequelize = db.getPool();
 class ClassroomController {
     async getAllClassroomsInit(req, res) {
         try {
-            const classrooms = await ClassroomService.findAllClassroom ();
+            const classrooms = await ClassroomService.findAllClassroom();
             return classrooms;
         } catch (error) {
             logger.error(error);
