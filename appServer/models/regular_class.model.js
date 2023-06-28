@@ -46,8 +46,7 @@ RegularClass.init({
     updatedAt: 'updated_at'
 });
 
-RegularClass.hasMany(Classroom, { foreignKey: 'regular_class_id'})
-RegularClass.hasMany(Student, { foreignKey: 'regular_class_id'});
+RegularClass.hasMany(Classroom, { foreignKey: 'regular_class_id'});
 Department.hasMany(RegularClass, { foreignKey: 'department_id'});
 RegularClass.belongsTo(Department, {foreignKey: 'department_id'});
 
