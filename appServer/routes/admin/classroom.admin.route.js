@@ -4,7 +4,6 @@ const ClassroomController = require('../../controllers/classroom.controller');
 
 ClassroomAdminRouter.get('/', ClassroomController.getAllClassroomsInit);
 ClassroomAdminRouter.get('/get-teacher-subject-regularclass', ClassroomController.getTeacherAndSubjectAndRegularClass);
-ClassroomAdminRouter.get('/get-classrooms');
 ClassroomAdminRouter.post('/create-classroom', ClassroomController.createClassroom);
 
 module.exports = ClassroomAdminRouter;
