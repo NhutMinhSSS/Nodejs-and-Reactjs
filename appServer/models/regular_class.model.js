@@ -46,6 +46,7 @@ RegularClass.init({
 });
 
 RegularClass.hasMany(Classroom, { foreignKey: 'regular_class_id'});
+Classroom.belongsTo(RegularClass, { foreignKey: 'regular_class_id'});
 Department.hasMany(RegularClass, { foreignKey: 'department_id'});
 RegularClass.belongsTo(Department, {foreignKey: 'department_id'});
 
