@@ -50,6 +50,18 @@ class ClassroomStudentService {
                 throw error;
             }
     }
+    async addStudentsToNewClassroom(classroomId, student, transaction) {
+        try {
+            const listStudent = student.map(student => ({
+                classroom_id: classroomId,
+                student_id: student.id
+            }));
+            const newStudentsToClassroom = await StudentList.bulkCreate(listStudent, { transaction});
+            return newStudentsToClassroom;
+        } catch (error) {
+            throw error;
+        }
+    }
     async addStudentToClassroom(classroomId, studentId, transaction) {
         try {
             const studentExistsClassroom = await this.checkStudentNoActive(classroomId, studentId);
