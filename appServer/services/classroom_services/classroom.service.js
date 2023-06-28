@@ -27,7 +27,8 @@ class ClassroomService {
                 include: [{
                     model: RegularClass,
                     where: {
-                        status: {[Op.ne]: EnumServerDefinitions.STATUS.NO_ACTIVE}
+                        status: {[Op.ne]: {[Op.in]: [EnumServerDefinitions.STATUS.NO_ACTIVE,
+                        EnumServerDefinitions.STATUS.STORAGE]}}
                     },
                     attributes: ['class_name']
                 }],
