@@ -9,8 +9,6 @@ const TeacherService = require("../services/teacher_services/teacher.service");
 const StudentService = require("../services/student_services/student.service");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
-const PostService = require("../services/post_services/post.service");
-const StudentExamService = require("../services/student_services/student_exam.service");
 const SubjectService = require("../services/subject.service");
 const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
@@ -18,7 +16,7 @@ const sequelize = db.getPool();
 class ClassroomController {
     async getAllClassroomsInit(req, res) {
         try {
-            const classrooms = await ClassroomService.findAllClassroom();
+            const classrooms = await ClassroomService.findAllClassroom ();
             return classrooms;
         } catch (error) {
             logger.error(error);
@@ -78,67 +76,67 @@ class ClassroomController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async joinClassroom(req, res) {
-        const role = req.user.role;
-        const accountId = req.user.accountId;
-        const classCode = req.body.classCode;
-        if (!classCode) {
-            //Cần sửa nội dung lỗi
-            return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_CODE);
-        }
-        const transaction = await sequelize.transaction();
-        try {
-            // if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-            //         EnumMessage.ROLE_INVALID);
-            // }
-            const classroom = await ClassroomService.findClassroomByClassCode(classCode);
-            if (!classroom) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
-            }
-            if (role === EnumServerDefinitions.ROLE.TEACHER) {
-                const teacher = await TeacherService.findTeacherByAccountId(accountId);
-                // if (!teacher) {
-                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                //         EnumMessage.TEACHER_NOT_EXISTS);
-                // }
-                const isJoined = await ClassroomTeacherService.isTeacherJoined(classroom.id, teacher.id);
-                if (isJoined) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                        EnumMessage.IS_JOINED_CLASSROOM);
-                }
-                await ClassroomTeacherService.addTeacherToClassroom(classroom.id, teacher.id, transaction);
-            } else {
-                const student = await StudentService.findStudentByAccountId(accountId);
-                // if (!student) {
-                //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                //         EnumMessage.STUDENT_NOT_EXISTS);
-                // }
-                const isJoined = await ClassroomStudentService.isStudentJoined(classroom.id, student.id);
-                if (isJoined) {
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
-                        EnumMessage.IS_JOINED_CLASSROOM);
-                }
-                await ClassroomStudentService.addStudentToClassroom(classroom.id, student.id, transaction);
-                const listPosts = await PostService.findAllPostsByClassroomId(classroom.id);
-                if (listPosts) {
-                    const listStudentIds = listPosts.filter(post => post.post_details.is_public === true).map(post => post.id);
-                    //create student exam
-                    await StudentExamService.addStudentExams(listStudentIds, transaction);
-                }
-                //update student exam private
-            }
-            await transaction.commit();
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
-        } catch (error) {
-            await transaction.rollback();
-            logger.error(error);
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
-        }
-    }
+    // async joinClassroom(req, res) {
+    //     const role = req.user.role;
+    //     const accountId = req.user.accountId;
+    //     const classCode = req.body.classCode;
+    //     if (!classCode) {
+    //         //Cần sửa nội dung lỗi
+    //         return ServerResponse.createErrorResponse(SystemConst.STATUS_CODE.BAD_REQUEST,
+    //             EnumMessage.ERROR_CLASSROOM.REQUIRED_CLASS_CODE);
+    //     }
+    //     const transaction = await sequelize.transaction();
+    //     try {
+    //         // if (![EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER].includes(role)) {
+    //         //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+    //         //         EnumMessage.ROLE_INVALID);
+    //         // }
+    //         const classroom = await ClassroomService.findClassroomByClassCode(classCode);
+    //         if (!classroom) {
+    //             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+    //                 EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+    //         }
+    //         if (role === EnumServerDefinitions.ROLE.TEACHER) {
+    //             const teacher = await TeacherService.findTeacherByAccountId(accountId);
+    //             // if (!teacher) {
+    //             //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+    //             //         EnumMessage.TEACHER_NOT_EXISTS);
+    //             // }
+    //             const isJoined = await ClassroomTeacherService.isTeacherJoined(classroom.id, teacher.id);
+    //             if (isJoined) {
+    //                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
+    //                     EnumMessage.IS_JOINED_CLASSROOM);
+    //             }
+    //             await ClassroomTeacherService.addTeacherToClassroom(classroom.id, teacher.id, transaction);
+    //         } else {
+    //             const student = await StudentService.findStudentByAccountId(accountId);
+    //             // if (!student) {
+    //             //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+    //             //         EnumMessage.STUDENT_NOT_EXISTS);
+    //             // }
+    //             const isJoined = await ClassroomStudentService.isStudentJoined(classroom.id, student.id);
+    //             if (isJoined) {
+    //                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
+    //                     EnumMessage.IS_JOINED_CLASSROOM);
+    //             }
+    //             await ClassroomStudentService.addStudentToClassroom(classroom.id, student.id, transaction);
+    //             const listPosts = await PostService.findAllPostsByClassroomId(classroom.id);
+    //             if (listPosts) {
+    //                 const listStudentIds = listPosts.filter(post => post.post_details.is_public === true).map(post => post.id);
+    //                 //create student exam
+    //                 await StudentExamService.addStudentExams(listStudentIds, transaction);
+    //             }
+    //             //update student exam private
+    //         }
+    //         await transaction.commit();
+    //         return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+    //     } catch (error) {
+    //         await transaction.rollback();
+    //         logger.error(error);
+    //         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+    //             EnumMessage.DEFAULT_ERROR);
+    //     }
+    // }
     async createClassroom(req, res) {
         const className = req.body.nameClass;
         const semester = req.body.semester || 1;

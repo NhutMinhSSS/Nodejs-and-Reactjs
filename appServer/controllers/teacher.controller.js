@@ -6,7 +6,8 @@ const TeacherService = require('../services/teacher_services/teacher.service');
 const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
 const DepartmentService = require('../services/department.service');
 const CommonService = require('../common/utils/common_service');
-const sequelize = require('sequelize');
+const db = require('../config/connect_database.config');
+const sequelize = db.getPool();
 
 class TeacherController {
     async getAllTeacherInit(req, res) {
