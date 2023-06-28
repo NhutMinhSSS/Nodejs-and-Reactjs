@@ -143,10 +143,10 @@ class ClassroomController {
         const className = req.body.class_name;
         const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year || null;
-        const accountId = req.user.account_id;
+        const teacherId = req.user.teacher_id;
         const regularClassId = req.body.selectedClass;
         const subjectId = req.body.selectedSubject;
-        if (!className || !regularClassId || !subjectId || !schoolYear) {
+        if (!className || !regularClassId || !subjectId || !schoolYear || !teacherId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
         }
@@ -156,7 +156,7 @@ class ClassroomController {
         }
         const transaction = await sequelize.transaction();
         try {
-            const teacher = await TeacherService.findTeacherByAccountId(accountId);
+            const teacher = await TeacherService.findTeacherById(teacherId);
             const checkSubjectAndRegularClass = await Promise.all([
                 SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
                 RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
@@ -173,6 +173,7 @@ class ClassroomController {
             }
             const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, teacher.id, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
+            const listStudents = await StudentService;
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newClassroom);
         } catch (error) {
