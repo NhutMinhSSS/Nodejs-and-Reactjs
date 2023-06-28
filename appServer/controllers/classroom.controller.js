@@ -219,6 +219,44 @@ class ClassroomController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async CloseAndActiveClassroom(req, res) {
+        const classroomId = req.body.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const isDelete = await ClassroomService.CloseAndActiveClassroom(classroomId);
+            if (!isDelete) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async StorageClassroom(req, res) {
+        const classroomId = req.body.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const isUpdate = await ClassroomService.StorageClassroom(classroomId);
+            if (!isUpdate) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS); 
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async deleteClassroom(req, res) {
         const classroomId = req.params.classroom_id;
         if (!classroomId) {
@@ -226,12 +264,12 @@ class ClassroomController {
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
-            const isDelete = await ClassroomService.deleteAndActiveClassroom(classroomId);
+            const isDelete = await ClassroomService.deleteClassroom(classroomId);
             if (!isDelete) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_UPDATE);
+                    EnumMessage.ERROR_DELETE);
             }
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS); 
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

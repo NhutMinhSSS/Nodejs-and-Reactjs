@@ -4,6 +4,7 @@ const Classroom = require("../../models/classroom.model");
 const RegularClass = require("../../models/regular_class.model");
 const StudentList = require("../../models/student_list.model");
 const TeacherList = require("../../models/teacher_list.model");
+const { Op } = require("sequelize");
 
 
 class ClassroomService {
@@ -26,7 +27,7 @@ class ClassroomService {
                 include: [{
                     model: RegularClass,
                     where: {
-                        status: EnumServerDefinitions.STATUS.ACTIVE
+                        status: {[Op.ne]: EnumServerDefinitions.STATUS.NO_ACTIVE}
                     },
                     attributes: ['class_name']
                 }],
@@ -107,17 +108,45 @@ class ClassroomService {
             throw error;
         }
     }
-    async deleteAndActiveClassroom(id) {
+    async CloseAndActiveClassroom(id) {
         try {
             const classroom = await Classroom.findByPk(id, {
                 attributes: ['status']
             });
-            const status = classroom && classroom.status ? EnumServerDefinitions.STATUS.NO_ACTIVE : EnumServerDefinitions.STATUS.ACTIVE
+            const status = classroom && classroom.status ? EnumServerDefinitions.STATUS.CLOSE : EnumServerDefinitions.STATUS.ACTIVE
             const isDelete =  await Classroom.update({
                 status: status
             }, {
                 where: {
                     id: id,                   
+                }
+            });
+            return !!isDelete;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async StorageClassroom(id) {
+        try {
+            const isUpdate = await Classroom.update({
+                status: EnumServerDefinitions.STATUS.STORAGE
+            }, {
+                where: {
+                    id: id
+                }
+            });
+            return !!isUpdate;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async deleteClassroom(id) {
+        try {
+            const isDelete =  await Classroom.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: id,                 
                 }
             });
             return !!isDelete;

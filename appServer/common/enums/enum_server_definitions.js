@@ -6,7 +6,9 @@ class EnumServerDefinitions {
     //
     static STATUS = {
         ACTIVE: 1,
-        NO_ACTIVE: 0
+        NO_ACTIVE: 0,
+        CLOSE: 2,
+        STORAGE: 3,
     };
     //
     static ROLE = {
