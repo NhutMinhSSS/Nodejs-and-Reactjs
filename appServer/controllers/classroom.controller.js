@@ -143,7 +143,7 @@ class ClassroomController {
         const className = req.body.class_name;
         const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year || null;
-        const teacherId = req.user.teacher_id;
+        const teacherId = req.body.teacher_id;
         const regularClassId = req.body.regular_class_id;
         const subjectId = req.body.subject_id;
         if (!className || !regularClassId || !subjectId || !schoolYear || !teacherId) {
