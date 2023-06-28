@@ -92,14 +92,14 @@ class ClassroomService {
             throw error;
         }
     }
-    async createClassroom(className, semester, schoolYear, regularClassId, teacherId, subjectId, transaction) {
+    async createClassroom(className, semester, schoolYear, regularClassId, subjectId, transaction) {
         try {
             const newClassroom = Classroom.create({
                 class_name: className,
                 semester: semester,
                 school_year: schoolYear,
                 regular_class_id: regularClassId,
-                teacher_id: teacherId,
+                // teacher_id: teacherId,
                 subject_id: subjectId
             }, { transaction: transaction});
             return newClassroom;

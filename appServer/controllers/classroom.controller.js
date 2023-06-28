@@ -171,9 +171,8 @@ class ClassroomController {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
-            const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, teacher.id, subjectId, transaction);
+            const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
-            const listStudents = await StudentService;
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newClassroom);
         } catch (error) {
