@@ -28,7 +28,20 @@ class TeacherService {
             throw error;
         }
     }
-    async findAllTeacher() {
+    async findAllTeachers() {
+        try {
+            const teachers = await Teacher.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'first_name', 'last_name', 'department_id']
+            });
+            return teachers;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findAllTeachersAndDepartment() {
         try {
             const teachers = await Teacher.findAll({
                 where: {

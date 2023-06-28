@@ -63,6 +63,8 @@ class EnumMessage{
     static STUDENT_NOT_EXISTS = 'Student no exists';
     //Role invalid
     static ROLE_INVALID = 'Role Invalid';
+    //Semester invalid
+    static SEMESTER_INVALID = 'Semester invalid';
     //You have already joined this class
     static IS_JOINED_CLASSROOM = 'You have already joined classroom';
     //No permission 

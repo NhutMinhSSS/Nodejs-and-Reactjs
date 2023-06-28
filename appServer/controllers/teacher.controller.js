@@ -13,7 +13,7 @@ const sequelize = db.getPool();
 class TeacherController {
     async getAllTeacherInit(req, res) {
         try {
-            const teachers = await TeacherService.findAllTeacher();
+            const teachers = await TeacherService.findAllTeachersAndDepartment();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, teachers);
         } catch (error) {
             logger.error(error);
