@@ -92,23 +92,6 @@ class RegularClassService {
             throw error;
         }
     }
-    async findAllRegularClass() {
-        try {
-            const faculty = await RegularClass.findAll({
-                where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
-                attributes: ['id', 'class_name', 'create_date', 'department_id'],
-                order: [
-                    ['created_at', 'ASC'],
-                    ['updated_at', 'ASC']
-                ]
-            });
-            return faculty;
-        } catch (error) {
-            throw error;
-        }
-    }
     async checkRegularClassExist(id) {
         try {
             const regularClass = await RegularClass.findOne({
