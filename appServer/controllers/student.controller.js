@@ -15,6 +15,23 @@ const sequelize = db.getPool();
 
 
 class StudentController {
+    async getAllStudentInit(req, res) {
+        try {
+            const students = await StudentService.findAllStudents();
+            const result = students.map(item => ({
+                ...item,
+                class_name: item.RegularClass.class_name
+            }));
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
+        }
+    }
     async addStudent(req, res) {
         const studentCode = req.body.student_code;
         const firstName = req.body.first_name;

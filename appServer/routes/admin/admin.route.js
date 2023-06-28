@@ -7,6 +7,7 @@ const DepartmentAdminRouter = require('./department.admin.route');
 const SubjectAdminRouter = require('./subject.admin.route');
 const RegularClassAdminRouter = require('./regular_class.admin.route');
 const TeacherAdminRouter = require('./teacher.admin.route');
+const StudentRouter = require('./student.admin.route');
 
 AdminRouter.use(authorize([EnumServerDefinitions.ROLE.ADMIN]));
 AdminRouter.use('/faculties', FacultyAdminRouter);
@@ -14,6 +15,7 @@ AdminRouter.use('/departments', DepartmentAdminRouter);
 AdminRouter.use('/subjects', SubjectAdminRouter);
 AdminRouter.use('/regular-class', RegularClassAdminRouter);
 AdminRouter.use('/teachers', TeacherAdminRouter);
+AdminRouter.use('/students', StudentRouter);
 
 
 module.exports = AdminRouter;

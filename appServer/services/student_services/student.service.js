@@ -1,5 +1,6 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const CommonService = require("../../common/utils/common_service");
+const RegularClass = require("../../models/regular_class.model");
 const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model"); 
 
@@ -29,10 +30,20 @@ class StudentService {
             throw error;
         }
     }
-    async findAllStudent() {
+    async findAllStudents() {
         try {
             const students = await Student.findAll({
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: [{
+                    model: RegularClass,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['class_name']
+                }],
+                attributes: ['id', 'first_name', 'last_name']
             });
             return students;
         } catch (error) {
@@ -101,19 +112,6 @@ class StudentService {
             });
             return student;
         } catch(error) {
-            throw error;
-        }
-    }
-    async findAllStudents() {
-        try {
-            const students = await Student.findAll({
-                where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
-                order: ['student_code', 'ASC']
-            });
-            return students;
-        } catch (error) {
             throw error;
         }
     }
