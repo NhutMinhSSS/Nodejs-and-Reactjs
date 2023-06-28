@@ -1,10 +1,7 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const CommonService = require("../../common/utils/common_service");
-const generateCode = require("../../common/utils/generate_class_code");
 const Classroom = require("../../models/classroom.model");
-const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model");
-const Teacher = require("../../models/teacher.model");
 const TeacherList = require("../../models/teacher_list.model");
 
 
@@ -37,7 +34,6 @@ class ClassroomService {
     async updateClassroom(id, className, semester, schoolYear, regularClassId, subjectId){
         try {
             const isUpdate =  await Classroom.update({
-                class_code: classCode,
                 class_name: className,
                 semester: semester,
                 school_year: schoolYear,
@@ -62,19 +58,19 @@ class ClassroomService {
             throw error;
         }
     }
-    async findClassroomByClassCode(classCode) {
-        try {
-            const result = await Classroom.findOne({
-                where: {
-                    class_code: classCode,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                }
-            });
-            return result;
-        } catch (error) {
-            throw error;
-        }
-    }
+    // async findClassroomByClassCode(classCode) {
+    //     try {
+    //         const result = await Classroom.findOne({
+    //             where: {
+    //                 class_code: classCode,
+    //                 status: EnumServerDefinitions.STATUS.ACTIVE
+    //             }
+    //         });
+    //         return result;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
     async checkRoomMember(classroomId, userId, role) {
         try {
             const userRole = role === EnumServerDefinitions.ROLE.TEACHER ? {model: TeacherList, filed: 'teacher_id'} : {model: StudentList, filed: 'student_id'};
@@ -92,9 +88,7 @@ class ClassroomService {
     }
     async createClassroom(className, semester, schoolYear, regularClassId, teacherId, subjectId, transaction) {
         try {
-            const classCode = await this.generateCodeWithCheck();
             const newClassroom = Classroom.create({
-                class_code: classCode,
                 class_name: className,
                 semester: semester,
                 school_year: schoolYear,
@@ -121,28 +115,28 @@ class ClassroomService {
             throw error;
         }
     }
-    async isCodeExist(classCode) {
-        try {
-            const result = await this.findClassroomByClassCode(classCode);
-            return !!result;
-        } catch (error) {
-            throw error;
-        }
-    }
-    async generateCodeWithCheck() {
-        try {
-            let code = generateCode.classCode();
-            let exist = await this.isCodeExist(code);
+    // async isCodeExist(classCode) {
+    //     try {
+    //         const result = await this.findClassroomByClassCode(classCode);
+    //         return !!result;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
+    // async generateCodeWithCheck() {
+    //     try {
+    //         let code = generateCode.classCode();
+    //         let exist = await this.isCodeExist(code);
 
-            while (exist) {
-                code = generateCode.classCode();
-                exist = await this.isCodeExist(code);
-            }
-            return code;
-        } catch (error) {
-            throw error;
-        }
-    }
+    //         while (exist) {
+    //             code = generateCode.classCode();
+    //             exist = await this.isCodeExist(code);
+    //         }
+    //         return code;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
 }
 
 module.exports = new ClassroomService;
