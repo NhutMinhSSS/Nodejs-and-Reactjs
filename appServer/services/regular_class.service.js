@@ -12,7 +12,7 @@ class RegularClassService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'class_name']
+                attributes: ['id', 'class_name', 'department_id']
             });
             return regularClass;
         } catch (error) {

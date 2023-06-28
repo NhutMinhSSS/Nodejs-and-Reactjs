@@ -12,6 +12,7 @@ const ClassroomStudentService = require("../services/classroom_services/classroo
 const SubjectService = require("../services/subject.service");
 const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
+const CheckStringUtils = require('../common/utils/check_string.utils');
 
 class ClassroomController {
     async getAllClassroomsInit(req, res) {
@@ -34,20 +35,13 @@ class ClassroomController {
     }
     async getTeacherAndSubjectAndRegularClass(req, res) {
         try {
-            const teacher = await TeacherService.findAllTeacher();
-            const subjects = await SubjectService.findAllSubjectByDepartmentId(teacher.department_id);
-            const regularClass = await RegularClassService.findAllRegularClassByDepartmentId(teacher.department_id);
-            const listSubject = subjects.map(item => ({
-                subject_id: item.id,
-                subject_name: item.subject_name
-            }));
-            const listRegularClass = regularClass.map(item => ({
-                regular_class_id: item.id,
-                class_name: item.class_name
-            }));
+            const teachers = await TeacherService.findAllTeachers();
+            const subjects = await SubjectService.findAllSubject();
+            const regularClass = await RegularClassService.findAllRegularClass();
             const response = {
-                subjects: listSubject,
-                regular_class: listRegularClass
+                teachers: teachers,
+                subjects: subjects,
+                regular_class: regularClass
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, response);
         } catch (error) {
@@ -146,7 +140,7 @@ class ClassroomController {
     //     }
     // }
     async createClassroom(req, res) {
-        const className = req.body.nameClass;
+        const className = req.body.class_name;
         const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year || null;
         const accountId = req.user.account_id;
@@ -155,6 +149,10 @@ class ClassroomController {
         if (!className || !regularClassId || !subjectId || !schoolYear) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
+        }
+        if (!CheckStringUtils.checkSemester(semester)) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.SEMESTER_INVALID);
         }
         const transaction = await sequelize.transaction();
         try {

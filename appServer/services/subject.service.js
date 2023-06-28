@@ -23,7 +23,7 @@ class SubjectService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'subject_name']
+                attributes: ['id', 'subject_name', 'department_id']
             });
             return subjects;
         } catch (error) {
