@@ -21,7 +21,7 @@ class RegularClassController {
     }
     async getAllRegularClassInit(req, res) {
         try {
-            const regularClass = await RegularClassService.findAllRegularClass(true);
+            const regularClass = await RegularClassService.findAllRegularClassAndStudentQuantity();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, regularClass);
         } catch (error) {
             logger.error(error);
