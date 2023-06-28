@@ -78,6 +78,6 @@ Student.init({
 });
 
 Student.belongsTo(RegularClass, { foreignKey: 'regular_class_id'});
-
+RegularClass.hasMany(Student, { foreignKey: 'regular_class_id'});
 
 module.exports = Student;
