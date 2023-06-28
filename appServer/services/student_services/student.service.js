@@ -43,7 +43,7 @@ class StudentService {
                     },
                     attributes: ['class_name']
                 }],
-                attributes: ['id', 'first_name', 'last_name']
+                attributes: ['id', 'student_code', 'first_name', 'last_name']
             });
             return students;
         } catch (error) {

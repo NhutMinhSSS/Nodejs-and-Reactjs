@@ -20,6 +20,7 @@ class StudentController {
             const students = await StudentService.findAllStudents();
             const result = students.map(({ id, first_name, last_name, RegularClass }) => ({
                 id,
+                student_code,
                 first_name,
                 last_name,
                 class_name: RegularClass.class_name
