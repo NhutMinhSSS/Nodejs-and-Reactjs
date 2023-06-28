@@ -50,6 +50,20 @@ class StudentService {
             throw error;
         }
     }
+    async findStudentsByRegularClass(regularClassId) {
+        try {
+            const students = await Student.findAll({
+                where: {
+                    regular_class_id: regularClassId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return students;
+        } catch (error) {
+            throw error;
+        }
+    }
     // async checkCCDDExist(CCCD) {
     //     try {
     //         const isCheck = await CommonService.checkCCCDUserExist(CCCD, EnumServerDefinitions.ROLE.STUDENT);

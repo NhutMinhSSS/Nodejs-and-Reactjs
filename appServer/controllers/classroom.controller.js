@@ -173,6 +173,10 @@ class ClassroomController {
             }
             const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, subjectId, transaction);
             await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
+            const students = await StudentService.findStudentsByRegularClass(regularClassId);
+            if (students.length !== EnumServerDefinitions.EMPTY) {
+                await ClassroomStudentService.addStudentsToNewClassroom(newClassroom.id, students, transaction);
+            }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
