@@ -36,7 +36,8 @@ class RegularClassService {
                     required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
-                    }
+                    },
+                    attributes: []
                 }],
                 attributes: ['id', 'class_name',
                 [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM students WHERE students.regular_class_id = Department.id and students.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
