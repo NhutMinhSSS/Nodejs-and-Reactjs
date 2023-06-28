@@ -3,6 +3,7 @@ const {DataTypes, Model, DATE} = require('sequelize');
 const db = require('../config/connect_database.config');
 const Department = require('./department.model');
 const Classroom = require('./classroom.model');
+const Student = require('./student.model');
 const sequelize = db.getPool();
 
 class RegularClass extends Model{}
@@ -46,6 +47,7 @@ RegularClass.init({
 });
 
 RegularClass.hasMany(Classroom, { foreignKey: 'regular_class_id'})
+RegularClass.hasMany(Student, { foreignKey: 'regular_class_id'});
 Department.hasMany(RegularClass, { foreignKey: 'department_id'});
 RegularClass.belongsTo(Department, {foreignKey: 'department_id'});
 
