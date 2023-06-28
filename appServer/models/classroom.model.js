@@ -12,11 +12,6 @@ Classroom.init({
         autoIncrement: true,
         allowNull: false
     },
-    class_code:{
-        type: DataTypes.STRING(10),
-        allowNull: false,
-        unique: true
-    },
     class_name: {
         type: DataTypes.STRING,
         allowNull: false,
