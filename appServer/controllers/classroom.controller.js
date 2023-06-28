@@ -144,8 +144,8 @@ class ClassroomController {
         const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year || null;
         const teacherId = req.user.teacher_id;
-        const regularClassId = req.body.selectedClass;
-        const subjectId = req.body.selectedSubject;
+        const regularClassId = req.body.regular_class_id;
+        const subjectId = req.body.subject_id;
         if (!className || !regularClassId || !subjectId || !schoolYear || !teacherId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
