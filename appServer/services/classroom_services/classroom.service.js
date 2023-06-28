@@ -23,9 +23,6 @@ class ClassroomService {
     async findAllClassroom() {
         try {
             const classrooms = await Classroom.findAll({
-                where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                },
                 include: [{
                     model: RegularClass,
                     where: {
