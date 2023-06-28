@@ -113,7 +113,7 @@ class ClassroomService {
             const classroom = await Classroom.findByPk(id, {
                 attributes: ['status']
             });
-            const status = classroom && classroom.status ? EnumServerDefinitions.STATUS.CLOSE : EnumServerDefinitions.STATUS.ACTIVE
+            let status = classroom && classroom.status === 1 ? EnumServerDefinitions.STATUS.CLOSE : EnumServerDefinitions.STATUS.ACTIVE
             const isDelete =  await Classroom.update({
                 status: status
             }, {
