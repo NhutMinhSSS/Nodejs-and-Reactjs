@@ -228,10 +228,10 @@ class ClassroomController {
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
-            const isDelete = await ClassroomService.deleteClassroom(classroomId);
+            const isDelete = await ClassroomService.deleteAndActiveClassroom(classroomId);
             if (!isDelete) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_DELETE);
+                    EnumMessage.ERROR_UPDATE);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {

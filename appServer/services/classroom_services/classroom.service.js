@@ -107,16 +107,20 @@ class ClassroomService {
             throw error;
         }
     }
-    async deleteClassroom(id) {
+    async deleteAndActiveClassroom(id) {
         try {
-            return await Classroom.update({
-                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            const classroom = await Classroom.findByPk(id, {
+                attributes: ['status']
+            });
+            const status = classroom && classroom.status ? EnumServerDefinitions.STATUS.NO_ACTIVE : EnumServerDefinitions.STATUS.ACTIVE
+            const isDelete =  await Classroom.update({
+                status: status
             }, {
                 where: {
-                    id: id,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    id: id,                   
                 }
-            })
+            });
+            return !!isDelete;
         } catch (error) {
             throw error;
         }
