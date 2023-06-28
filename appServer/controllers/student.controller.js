@@ -18,9 +18,11 @@ class StudentController {
     async getAllStudentInit(req, res) {
         try {
             const students = await StudentService.findAllStudents();
-            const result = students.map(item => ({
-                ...item,
-                class_name: item.RegularClass.class_name
+            const result = students.map(({ id, first_name, last_name, RegularClass }) => ({
+                id,
+                first_name,
+                last_name,
+                class_name: RegularClass.class_name
             }));
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
