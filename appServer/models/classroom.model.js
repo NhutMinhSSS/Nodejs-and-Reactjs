@@ -1,6 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const RegularClass = require('./regular_class.model');
 const sequelize = db.getPool();
 
 class Classroom extends Model{}
@@ -73,5 +74,6 @@ Classroom.init({
     ]
 });
 
+Classroom.belongsTo(RegularClass, { foreignKey: 'regular_class_id'});
 
 module.exports = Classroom;

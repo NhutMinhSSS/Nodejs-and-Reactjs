@@ -1,6 +1,7 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const CommonService = require("../../common/utils/common_service");
 const Classroom = require("../../models/classroom.model");
+const RegularClass = require("../../models/regular_class.model");
 const StudentList = require("../../models/student_list.model");
 const TeacherList = require("../../models/teacher_list.model");
 
@@ -24,7 +25,15 @@ class ClassroomService {
             const classrooms = await Classroom.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                include: [{
+                    model: RegularClass,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['class_name']
+                }],
+                attributes: ['id', 'class_name', 'semester', 'school_year', 'status']
             });
             return classrooms;
         } catch (error) {
