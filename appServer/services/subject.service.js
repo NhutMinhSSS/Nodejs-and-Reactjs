@@ -96,16 +96,6 @@ class SubjectService {
             throw error;
         }
     }
-    async findAllSubject() {
-        try {
-            const subjects = await Subject.findAll({
-                status: EnumServerDefinitions.STATUS
-            });
-            return subjects;
-        } catch (error) {
-            throw error;
-        }
-    }
     async checkSubjectExist(id) {
         try {
             const subject = await Subject.findOne({
