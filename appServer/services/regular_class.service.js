@@ -19,23 +19,28 @@ class RegularClassService {
             throw error;
         }
     }
-    async findAllRegularClassAndClassroomQuantity() {
+    async findAllRegularClassAndStudentQuantity() {
         try {
             const regularClass = await RegularClass.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include:[{
-                    model: Classroom,
-                    required: false,
+                include: [{
+                    model: Department,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: []
+                    attributes: ['department_name']
+                }, {
+                    model: Student,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    }
                 }],
                 attributes: ['id', 'class_name',
-                     [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM classrooms WHERE classrooms.regular_class_id = RegularClass.id and classrooms.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
-                        'classroom_quantity']]
+                [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM students WHERE students.regular_class_id = Department.id and students.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                'student_quantity']]
             });
             return regularClass;
         } catch (error) {
