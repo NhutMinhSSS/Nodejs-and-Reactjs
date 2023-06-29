@@ -6,8 +6,6 @@ const Faculty = require("../models/faculty.model");
 const RegularClass = require("../models/regular_class.model");
 const Subject = require("../models/subject.model");
 const { Op } = require("sequelize");
-const Teacher = require("../models/teacher.model");
-const Student = require("../models/student.model");
 
 
 class DepartmentService {
@@ -81,7 +79,7 @@ class DepartmentService {
     }
     async updateDepartment(id, departmentName) {
         try {
-            const department = await Department.update({
+            const isUpdate = await Department.update({
                 department_name: departmentName,
             }, {
                 where: {
@@ -89,7 +87,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!department;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -160,7 +158,7 @@ class DepartmentService {
             // await Teacher.update({
             //     status: EnumServerDefinitions.STATUS.NO_ACTIVE
             // }, { where: { department_id: departmentId, status: EnumServerDefinitions.STATUS.ACTIVE }, transaction, fields: ['status']});
-            const department = await Department.update({
+            const isDelete = await Department.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -168,7 +166,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return !!department;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -176,7 +174,7 @@ class DepartmentService {
     async activeDepartment(id, departmentName, facultyId) {
         try {
             const dateNow = FormatUtils.formatDateNow();
-            const department = await Department.update({
+            const isActive = await Department.update({
                 department_name: departmentName,
                 faculty_id: facultyId,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
@@ -188,7 +186,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }
             });
-            return !!department;
+            return isActive > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

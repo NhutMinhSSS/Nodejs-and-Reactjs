@@ -109,7 +109,7 @@ class RegularClassService {
     }
     async updateRegularClass(id, className) {
         try {
-            const regularClass = await RegularClass.update({
+            const isUpdate = await RegularClass.update({
                 class_name: className,
             }, {
                 where: {
@@ -117,7 +117,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!regularClass;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -140,7 +140,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            const regularClass = await RegularClass.update({
+            const isDelete = await RegularClass.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -148,7 +148,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return !!regularClass;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -156,7 +156,7 @@ class RegularClassService {
     async activeRegularClass(id, className, departmentId) {
         try {
             const dateNow = FormatUtils.formatDateNow();
-            const regularClass = await RegularClass.update({
+            const isActive = await RegularClass.update({
                 class_name: className,
                 create_date: dateNow,
                 department_id: departmentId,
@@ -169,7 +169,7 @@ class RegularClassService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }
             });
-            return !!regularClass;
+            return isActive > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

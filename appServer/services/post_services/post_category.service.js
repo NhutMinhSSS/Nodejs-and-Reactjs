@@ -46,7 +46,7 @@ class PostCategoryService {
                 post_category_id: id,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, transaction});
-            const postCategory = await PostCategory.update({
+            const isDelete = await PostCategory.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -54,7 +54,7 @@ class PostCategoryService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return postCategory > 0;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

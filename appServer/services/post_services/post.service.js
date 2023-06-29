@@ -349,7 +349,7 @@ class PostService {
     }
     async deletePost(id, transaction) {
         try {
-            const post = await Post.update({
+            const isDelete = await Post.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -357,7 +357,7 @@ class PostService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return post > 0;
+            return isDelete > EnumServerDefinitions.ERROR;
         } catch (error) {
             throw error;
         }

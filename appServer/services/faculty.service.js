@@ -85,7 +85,7 @@ class FacultyService {
     }
     async updateFaculty(id, facultyName) {
         try {
-            const faculty = await Faculty.update({
+            const isUpdate = await Faculty.update({
                 faculty_name: facultyName
             }, {
                 where: {
@@ -93,7 +93,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!faculty;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -178,7 +178,7 @@ class FacultyService {
                     );
                 }
             }
-            const faculty = await Faculty.update({
+            const isDelete = await Faculty.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -186,7 +186,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!faculty;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -194,7 +194,7 @@ class FacultyService {
     async activeFaculty(id, facultyName) {
         try {
             const dateNow = FormatUtils.formatDateNow();
-            const faculty = await Faculty.update({
+            const isActive = await Faculty.update({
                 faculty_name: facultyName,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
                 created_at: dateNow,
@@ -205,7 +205,7 @@ class FacultyService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }
             });
-            return !!faculty;
+            return isActive > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
