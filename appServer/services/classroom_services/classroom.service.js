@@ -57,7 +57,7 @@ class ClassroomService {
             }, {
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

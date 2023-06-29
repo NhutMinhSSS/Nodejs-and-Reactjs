@@ -6,8 +6,6 @@ const Faculty = require('../models/faculty.model');
 const RegularClass = require('../models/regular_class.model');
 const Subject = require('../models/subject.model');
 const { Op } = require('sequelize');
-const Teacher = require('../models/teacher.model');
-const Student = require('../models/student.model');
 class FacultyService {
     async checkExistFacultyById(id) {
         try {
@@ -90,7 +88,7 @@ class FacultyService {
             }, {
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

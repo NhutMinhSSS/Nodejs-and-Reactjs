@@ -25,7 +25,7 @@ class PostCategoryService {
     }
     async updatePostCategory(id, categoryName) {
         try {
-            const postCategory =  await PostCategory.update({
+            const isUpdate =  await PostCategory.update({
                 category_name: categoryName
             }, {
                 where: {
@@ -33,7 +33,7 @@ class PostCategoryService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return postCategory > 0;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

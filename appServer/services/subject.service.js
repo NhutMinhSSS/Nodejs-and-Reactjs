@@ -3,6 +3,7 @@ const FormatUtils = require("../common/utils/format.utils");
 const Classroom = require("../models/classroom.model");
 const Department = require("../models/department.model");
 const Subject = require("../models/subject.model");
+const { Op } = require("sequelize");
 
 class SubjectService {
     async findSubjectByName(subjectName) {
@@ -114,7 +115,7 @@ class SubjectService {
             }, {
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

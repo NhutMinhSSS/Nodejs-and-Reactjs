@@ -4,6 +4,7 @@ const Department = require("../models/department.model");
 const Classroom = require("../models/classroom.model");
 const FormatUtils = require("../common/utils/format.utils");
 const Student = require("../models/student.model");
+const { Op } = require('sequelize');
 
 class RegularClassService {
     async findAllRegularClass() {
@@ -114,7 +115,7 @@ class RegularClassService {
             }, {
                 where: {
                     id: id,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;
