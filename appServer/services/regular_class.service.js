@@ -60,19 +60,20 @@ class RegularClassService {
             throw error;
         }
     }
-    async findRegularClassByDepartmentId(regularClassId, departmentId) {
+    async findRegularClassById(regularClassId) {
         try {
             const regularClass = await RegularClass.findOne({
                 where: {
                     id: regularClassId,
                     status: EnumServerDefinitions.STATUS.ACTIVE,
-                }, include: [{
+                },
+                attributes: ['id', 'class_name', 'department_id'], /* include: [{
                     model: Department,
                     where: {
                         id: departmentId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }
-                }]
+                }] */
             });
             return regularClass;
         } catch (error) {

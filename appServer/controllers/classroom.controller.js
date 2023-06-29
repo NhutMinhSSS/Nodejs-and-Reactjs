@@ -146,7 +146,7 @@ class ClassroomController {
         const teacherId = req.body.teacher_id;
         const regularClassId = req.body.regular_class_id;
         const subjectId = req.body.subject_id;
-        if (!className || !regularClassId || !subjectId || !schoolYear || !teacherId) {
+        if (!className || !regularClassId || !subjectId || !schoolYear) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
         }
@@ -156,23 +156,25 @@ class ClassroomController {
         }
         const transaction = await sequelize.transaction();
         try {
-            const teacher = await TeacherService.findTeacherById(teacherId);
+            const regularClass = await RegularClassService.findRegularClassById(regularClassId);
             const checkSubjectAndRegularClass = await Promise.all([
-                SubjectService.findSubjectByDepartmentId(subjectId, teacher.department_id),
-                RegularClassService.findRegularClassByDepartmentId(regularClassId, teacher.department_id)
+                SubjectService.findSubjectByDepartmentId(subjectId, regularClass.department_id),
+                teacherId ? TeacherService.findTeacherByDepartmentId(teacherId, regularClass.department_id) : null
             ]);
-            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+            const [checkSubjectByDepartment, checkTeacherByDepartment ] = checkSubjectAndRegularClass;
 
-            if (!checkSubject) {
+            if (!checkSubjectByDepartment) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
             }
-            if (!checkRegularClass) {
+            if (teacherId && !checkTeacherByDepartment ) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
             const newClassroom = await ClassroomService.createClassroom(className, semester, schoolYear, regularClassId, subjectId, transaction);
-            await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacher.id, transaction);
+            if (teacherId) {
+                await ClassroomTeacherService.addTeacherToClassroom(newClassroom.id, teacherId, transaction);
+            }
             const students = await StudentService.findStudentsByRegularClass(regularClassId);
             if (students.length !== EnumServerDefinitions.EMPTY) {
                 await ClassroomStudentService.addStudentsToNewClassroom(newClassroom.id, students, transaction);
@@ -191,26 +193,26 @@ class ClassroomController {
         const className = req.body.class_name;
         const semester = req.body.semester || 1;
         const schoolYear = req.body.school_year;
-        const regularClassId = req.body.selectedClass;
-        const subjectId = req.body.selectedSubject;
-        if (!className || !regularClassId || !subjectId || !schoolYear) {
+        //const regularClassId = req.body.regular_class_id;
+        //const subjectId = req.body.subject_id;
+        if (!className || !schoolYear) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.ERROR_CLASSROOM.REQUIRED_INFORMATION);
         }
         try {
-            const checkSubjectAndRegularClass = await Promise.all([
-                SubjectService.checkSubjectExist(subjectId),
-                RegularClassService.checkRegularClassExist(regularClassId)
-            ]);
-            const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
-            if (!checkSubject) {
-                await transaction.rollback();
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, EnumMessage.ERROR_NOT_EXIST.SUBJECT_NOT_EXIST);
-            }
-            if (!checkRegularClass) {
-                await transaction.rollback();
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,  EnumMessage.ERROR_NOT_EXIST.REGULAR_CLASS_NOT_EXIST);
-            }
+            // const checkSubjectAndRegularClass = await Promise.all([
+            //     SubjectService.checkSubjectExist(subjectId),
+            //     RegularClassService.checkRegularClassExist(regularClassId)
+            // ]);
+            // const [checkSubject, checkRegularClass] = checkSubjectAndRegularClass;
+            // if (!checkSubject) {
+            //     await transaction.rollback();
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, EnumMessage.ERROR_NOT_EXIST.SUBJECT_NOT_EXIST);
+            // }
+            // if (!checkRegularClass) {
+            //     await transaction.rollback();
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,  EnumMessage.ERROR_NOT_EXIST.REGULAR_CLASS_NOT_EXIST);
+            // }
             const isUpdate = await ClassroomService.updateClassroom(classroomId, className, semester, schoolYear, regularClassId, subjectId);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,

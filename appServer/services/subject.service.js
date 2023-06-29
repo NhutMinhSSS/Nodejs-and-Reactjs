@@ -69,14 +69,10 @@ class SubjectService {
             const subject = await Subject.findOne({
                 where: {
                     id: subjectId,
+                    department_id: departmentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }, include: [{
-                    model: Department,
-                    where: {
-                        id: departmentId,
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                    }
-                }]
+                },
+                attributes: ['id']
             });
             return subject;
         } catch (error) {
