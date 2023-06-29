@@ -146,6 +146,9 @@ const AppFaculty = () => {
                         content = 'Cần gửi đầy đủ thông tin';
                     } else if (status === 409 && errorMessage === 'Already exist') {
                         content = 'Khoa này đã tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist no active') {
+                        content =
+                            'Khoa này không thể đổi tên khoa này. Nếu muốn có khoa này xin vui lòng bạn hãy tạo khoa mới !!!';
                     } else if (status === 400 && errorMessage === 'Update not success') {
                         content = 'Cập nhật khoa không thành công';
                     } else {
