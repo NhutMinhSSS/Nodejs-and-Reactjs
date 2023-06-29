@@ -89,7 +89,7 @@ class StudentService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!isUpdate;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -111,7 +111,7 @@ class StudentService {
                     id: id
                 }, transaction
             });
-            return !!isDelete;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

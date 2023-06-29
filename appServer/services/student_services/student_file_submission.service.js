@@ -16,13 +16,13 @@ class StudentFileSubmissionService {
     }
     async deleteStudentFileSubmission(id) {
         try {
-            const studentFileSubmission = await StudentFileSubmission.update({
+            const isDelete = await StudentFileSubmission.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, { where: {
                 id: id,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, transaction });
-            return studentFileSubmission > 0;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

@@ -16,7 +16,7 @@ class PostFileService {
     }
     async deletePostFile(postId, transaction) {
         try {
-            return await PostFile.update({
+            const isDelete =  await PostFile.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -24,6 +24,7 @@ class PostFileService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

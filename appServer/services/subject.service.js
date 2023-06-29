@@ -108,7 +108,7 @@ class SubjectService {
     }
     async updateSubject(id, subjectName, credit) {
         try {
-            const subject = await Subject.update({
+            const isUpdate = await Subject.update({
                 subject_name: subjectName,
                 credit: credit
             }, {
@@ -117,7 +117,7 @@ class SubjectService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!subject;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -132,7 +132,7 @@ class SubjectService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            const subject = await Subject.update({
+            const isDelete = await Subject.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -140,7 +140,7 @@ class SubjectService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return !!subject;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -148,7 +148,7 @@ class SubjectService {
     async activeSubject(id, subjectName, departmentId, credit) {
         try {
             const dateNow = FormatUtils.formatDateNow();
-            const subject = await Subject.update({
+            const isActive = await Subject.update({
                 subject_name: subjectName,
                 department_id: departmentId,
                 credit: credit,
@@ -161,7 +161,7 @@ class SubjectService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }
             });
-            return !!subject;
+            return isActive > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

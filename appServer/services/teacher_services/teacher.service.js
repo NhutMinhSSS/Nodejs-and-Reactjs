@@ -146,7 +146,7 @@ class TeacherService {
     }
     async activeTeacher(id, transaction) {
         try  {
-            const teacher = await Teacher.update({
+            const isActive = await Teacher.update({
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
                 where: {
@@ -154,7 +154,7 @@ class TeacherService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }, transaction
             });
-            return !!teacher;
+            return isActive > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -169,7 +169,7 @@ class TeacherService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return await Teacher.update({
+            const isDelete =  await Teacher.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
@@ -177,6 +177,7 @@ class TeacherService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

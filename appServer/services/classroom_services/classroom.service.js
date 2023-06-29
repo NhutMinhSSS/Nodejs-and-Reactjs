@@ -60,7 +60,7 @@ class ClassroomService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
-            return !!isUpdate;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -132,7 +132,7 @@ class ClassroomService {
                     id: id,                   
                 }
             });
-            return !!isDelete;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -152,7 +152,7 @@ class ClassroomService {
                     id: id
                 }
             });
-            return !!isUpdate;
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
@@ -166,7 +166,7 @@ class ClassroomService {
                     id: id,                 
                 }
             });
-            return !!isDelete;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
