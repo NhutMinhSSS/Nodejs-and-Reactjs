@@ -139,6 +139,12 @@ class ClassroomService {
     }
     async StorageClassroom(id) {
         try {
+            const classroom = await Classroom.findByPk(id, {
+                attributes: ['status']
+            });
+            if (classroom && (classroom.status === EnumServerDefinitions.STATUS.NO_ACTIVE)) {
+                return false;
+            }
             const isUpdate = await Classroom.update({
                 status: EnumServerDefinitions.STATUS.STORAGE
             }, {
