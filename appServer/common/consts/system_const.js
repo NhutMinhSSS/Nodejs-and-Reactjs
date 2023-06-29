@@ -11,6 +11,8 @@ class SystemConst {
         CONFLICT: 409,
         INTERNAL_SERVER: 500,
     };
+    //API_key
+    static API_KEY = '';
     // time token
     static EXPIRES_IN = '5d';
     // Số lượng vòng lặp mã hóa

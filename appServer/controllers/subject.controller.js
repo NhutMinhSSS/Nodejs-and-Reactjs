@@ -9,7 +9,7 @@ const db = require("../config/connect_database.config");
 const sequelize = db.getPool();
 
 class SubjectController {
-    async getListSubjects() {
+    async getListSubjects(req, res) {
         try {
             const subjects = await SubjectService.findAllSubject();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, subjects);
