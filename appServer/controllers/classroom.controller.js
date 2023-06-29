@@ -41,7 +41,8 @@ class ClassroomController {
                     EnumMessage.REQUIRED_INFORMATION);
             }
             const listTeachersAndStudents = await ClassroomService.findListTeachersAndListStudentsByClassroomId(classroomId);
-            const result = listTeachersAndStudents.map(({Teacher, Student}) => ({
+            const [Teacher, Student] = listTeachersAndStudents; 
+            const result ={
                 teachers: Teacher.map(({id, first_name, last_name, Department}) => ({
                     id,
                     first_name,
@@ -54,7 +55,7 @@ class ClassroomController {
                     last_name,
                     regular_class_name: RegularClass.class_name
                 }))
-            }))
+            };
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result)
         } catch (error) {
             logger.error(error);
