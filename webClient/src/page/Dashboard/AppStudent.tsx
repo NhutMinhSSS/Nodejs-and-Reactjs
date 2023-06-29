@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Table, { ColumnsType } from 'antd/es/table';
-import { MdPersonAdd } from 'react-icons/md';
+import { MdOutlineDriveFileMove, MdPersonAdd } from 'react-icons/md';
 import { Button, Input, Modal } from 'antd';
 import './scss/styleDashboard.scss';
 import SelectOption from '../../components/SelectOption';
@@ -8,7 +8,8 @@ import { parse, format } from 'date-fns';
 import HeaderToken from '../../common/utils/headerToken';
 import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
-const BASE_URL = `${SystemConst.DOMAIN}`;
+import UnauthorizedError from '../../common/exception/unauthorized_error';
+import ErrorCommon from '../../common/Screens/ErrorCommon';
 interface DataType {
     code: string;
     surname: string;
@@ -17,7 +18,7 @@ interface DataType {
     dateofbirth: string;
     action: React.ReactNode;
 }
-
+const BASE_URL = `${SystemConst.DOMAIN}/admin`;
 const AppStudent = () => {
     const columns: ColumnsType<DataType> = [
         {
@@ -37,121 +38,60 @@ const AppStudent = () => {
             dataIndex: 'class',
         },
         {
-            title: 'Ngày Sinh',
-            dataIndex: 'dateofbirth',
-        },
-        {
             title: 'Hành động',
             dataIndex: 'action',
         },
     ];
-    const data: DataType[] = [
-        {
-            code: '0306201048',
-            surname: 'Trần Tấn',
-            name: 'Lộc',
-            class: 'CĐ TH 20PMA',
-            dateofbirth: '02/09/2002',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
+    useEffect(() => {
+        fetchDataStudent();
+    }, []);
+    const [dataStudent, setDataStudent] = useState<DataType[]>([]);
+    const fetchDataStudent = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .get(`${BASE_URL}/students`, config)
+            .then((response) => {
+                const Api_students = response.data.response_data;
+                console.log(Api_students);
+                const newData: DataType[] = Api_students.map(
+                    (item: { id: any; student_code: any; last_name: any; first_name: any; class_name: any }) => ({
+                        id: item.id,
+                        code: item.student_code,
+                        surname: item.last_name,
+                        name: item.first_name,
+                        class: item.class_name,
+                        action: (
+                            <>
+                                <div className="flex gap-x-1">
+                                    <button
+                                        className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
+                                        // onClick={() => handleEdit(item)}
+                                    >
+                                        Sửa
+                                    </button>
+                                    <button
+                                        className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
+                                        // onClick={() => handleDelete(data[0])}
+                                    >
+                                        Xóa
+                                    </button>
+                                </div>
+                            </>
+                        ),
+                    }),
+                );
+                setDataStudent(newData);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const content = 'Lỗi máy chủ';
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+            });
+    };
 
-        {
-            code: '0306201049',
-            surname: 'Trần Minh',
-            name: 'Anh',
-            class: 'CĐ TH 20PMA',
-            dateofbirth: '06/02/2002',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-
-        {
-            code: '0306201050',
-            surname: 'Lê Dương Nhựt',
-            name: 'Minh',
-            class: 'CĐ TH 20PMA',
-            dateofbirth: '04/04/2002',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-
-        {
-            code: '0306201048',
-            surname: 'Nguyễn Văn',
-            name: 'Tèo',
-            class: 'CĐ TH 20PMA',
-            dateofbirth: '06/09/2002',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-    ];
-
-    const [record, setRecords] = useState(data);
     const [openModal, setOpenModal] = useState(false);
     const [openModalEdit, setOpenModalEdit] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -165,24 +105,7 @@ const AppStudent = () => {
     const [isValuePhone, setIsValuePhone] = useState('');
     const [isValueCCCD, setIsValueCCCD] = useState('');
     const [isValueAddress, setIsValueAddress] = useState('');
-    const hanleFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newName = data.filter((row) => {
-            return row.name.toLowerCase().includes(event.target.value.toLowerCase());
-        });
-        const newSurname = data.filter((row) => {
-            return row.surname.toLowerCase().includes(event.target.value.toLowerCase());
-        });
-        const newCode = data.filter((row) => {
-            return row.code.toLowerCase().includes(event.target.value.toLowerCase());
-        });
-        const newClass = data.filter((row) => {
-            return row.class.toLowerCase().includes(event.target.value.toLowerCase());
-        });
-        setRecords(newName);
-        setRecords(newSurname);
-        setRecords(newCode);
-        setRecords(newClass);
-    };
+
     const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
     const handleEdit = (row: DataType) => {
         setEditedData(row);
@@ -290,19 +213,18 @@ const AppStudent = () => {
             <div className="container mt-5">
                 <div className="flex justify-between mb-5">
                     <div>
-                        <input
-                            className="outline-none focus:outline-blue-200 h-6 w-52"
-                            type="text"
-                            onChange={hanleFilter}
-                        />
+                        <input className="outline-none focus:outline-blue-200 h-6 w-52" type="text" />
                     </div>
-                    <div>
+                    <div className="flex  gap-x-2">
+                        <Button type="primary">
+                            <MdOutlineDriveFileMove />
+                        </Button>
                         <Button type="primary" onClick={handleShowModal}>
                             <MdPersonAdd />
                         </Button>
                     </div>
                 </div>
-                <Table columns={columns} dataSource={record} size="large" />
+                <Table columns={columns} dataSource={dataStudent} size="large" />
             </div>
             <div className="">
                 <Modal className="custom-modal" open={openModal} onCancel={handleCancel} footer={null}>

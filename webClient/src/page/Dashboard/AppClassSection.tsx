@@ -1,8 +1,15 @@
-import { Button, Col, Modal, Row, Spin } from 'antd';
+import { Button, Col, Input, Modal, Row, Spin, Tooltip } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './scss/styleDashboard.scss';
-import { MdBookmarkAdd } from 'react-icons/md';
+import {
+    MdBookmarkAdd,
+    MdDelete,
+    MdLockOpen,
+    MdLockOutline,
+    MdOutlineEditCalendar,
+    MdOutlineSave,
+} from 'react-icons/md';
 import { Header } from 'antd/es/layout/layout';
 import { title } from 'process';
 import { useNavigate } from 'react-router-dom';
@@ -11,15 +18,17 @@ import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import SystemConst from '../../common/consts/system_const';
+import Notification from '../../components/Notification';
 interface DataType {
     nameclasssection: string;
     class: string;
     semester: number;
     schoolyear: number;
     action: React.ReactNode;
-    status: 'Đang mở' | 'Đang đóng';
+    status: '1' | '2';
 }
 
+const BASE_URL = `${SystemConst.DOMAIN}/admin`;
 const option = [
     {
         key: '1',
@@ -44,6 +53,41 @@ const option = [
     },
 ];
 const AppClassSection: React.FC = () => {
+    //Khai báo các useState
+    const [selectedItemStatus, setSelectedItemStatus] = useState<{ id?: number; status?: boolean } | null>(null);
+    const [selectedItemDelete, setSelectedItemDelete] = useState<{ id?: number } | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [nameClass, setNameClass] = useState('');
+    const [selectedNameTeacher, setSelectedNameTeacher] = useState('');
+    const [schoolYear, SetSchoolYear] = useState('');
+    const [selectedClass, setSelectedClass] = useState('');
+    const [subjectRefresh, setSubjectRefresh] = useState([]);
+    const [teacherRefresh, setTeacherRefresh] = useState([]);
+    const [selectedSubject, setSelectedSubject] = useState('');
+    const [selectedSemester, setSelectedSemester] = useState('');
+    const [error, setError] = useState(false);
+    const [subjects, setSubjects] = useState([]);
+    const [teacher, setTeachers] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [classesEdit, setClassesEdit] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [statusModalVisible, setStatusModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [dataClassSection, setDataClassSection] = useState<DataType[]>([]);
+    const [isOpenModalEdit, setIsModalOpenEdit] = useState(false);
+    const [selectedItemEditClassName, setSelectedItemEditClassName] = useState<{
+        id?: number;
+        class_name: string;
+    } | null>(null);
+    const [selectedItemEditSemester, setSelectedItemEditSemester] = useState<{
+        id?: number;
+        semester: number;
+    } | null>(null);
+    const [selectedItemEditSchoolYear, setSelectedItemEditSchoolYear] = useState<{
+        id?: number;
+        school_year: number;
+    } | null>(null);
+
     const columns: ColumnsType<DataType> = [
         {
             title: 'Tên lớp học phần',
@@ -66,7 +110,13 @@ const AppClassSection: React.FC = () => {
             title: 'Trạng thái',
             dataIndex: 'status',
             render: (status: DataType['status']) => (
-                <span className="text-sm" style={{ color: statusColorMap[status] }}>
+                <span
+                    className={`text-sm ${
+                        String(status) === 'Đang mở'
+                            ? 'text-green-400 px-4 py-1 rounded-sm font-semibold'
+                            : 'text-red-400 px-3 py-1 rounded-sm font-semibold'
+                    }`}
+                >
                     {status}
                 </span>
             ),
@@ -76,233 +126,127 @@ const AppClassSection: React.FC = () => {
             dataIndex: 'action',
         },
     ];
-    const data: DataType[] = [
-        {
-            nameclasssection: 'Công nghệ phần mềm CĐ TH 19A',
-            class: 'CĐ TH 19A',
-            semester: 4,
-            schoolyear: 2021,
-            status: 'Đang mở',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            nameclasssection: 'Cơ sở dữ liệu CĐ TH 20A',
-            class: 'CĐ TH 20A',
-            semester: 2,
-            schoolyear: 2022,
-            status: 'Đang mở',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            nameclasssection: 'Nhập môn lập trình CĐ TH 20A',
-            class: 'CĐ TH 19A',
-            semester: 4,
-            schoolyear: 2021,
-            status: 'Đang đóng',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            nameclasssection: 'Phần cứng máy tính CĐ TH 18B',
-            class: 'CĐ TH 18B',
-            semester: 6,
-            schoolyear: 2019,
-            status: 'Đang đóng',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-        {
-            nameclasssection: 'Thiết kế website',
-            class: 'CĐ Th 21A',
-            semester: 2,
-            schoolyear: 2023,
-            status: 'Đang mở',
-            action: (
-                <>
-                    <div className="flex gap-x-1">
-                        <button
-                            className="bg-green-400 px-3 py-2 rounded-lg hover:bg-green-600 hover:text-white"
-                            onClick={() => handleEdit(data[0])}
-                        >
-                            Sửa
-                        </button>
-                        <button
-                            className="bg-red-500 px-3 py-2 rounded-lg hover:bg-red-700 hover:text-white"
-                            onClick={() => handleDelete(data[0])}
-                        >
-                            Xóa
-                        </button>
-                    </div>
-                </>
-            ),
-        },
-    ];
-    const statusColorMap: { [key in DataType['status']]: string } = {
-        'Đang mở': 'green',
-        'Đang đóng': 'red',
-    };
-    //Quản lí trạng thái
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const navigate = useNavigate();
-    const [nameClass, setNameClass] = useState('');
-    const [schoolYear, SetSchoolYear] = useState('');
-    const [isPopupVisibleCreateClass, setIsPopupVisibleCreateClass] = useState(false);
-    const [selectedClass, setSelectedClass] = useState('');
-    const [selectedSubject, setSelectedSubject] = useState('');
-    const [selectedSemester, setSelectedSemester] = useState('');
-    const [errorClass, setErrorClass] = useState(false);
-    const [errorSelectedClass, setErrorSelectedClass] = useState(false);
-    const [errorSelectedSubject, setErrorSelectedSubject] = useState(false);
-    const [errorSelectedSemester, setErrorSelectedSemester] = useState(false);
-    const [subjects, setSubjects] = useState([]);
-    const [classes, setClasses] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [editedData, setEditedData] = useState<DataType | null>(null); // Lưu trữ dữ liệu được chỉnh sửa
-    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [selectedDeleteData, setSelectedDeleteData] = useState<DataType | null>(null);
-    const handleEdit = (row: DataType) => {
-        setEditedData(row);
-        setIsModalOpen(true);
-    };
-    const handleDelete = (row: DataType) => {
-        setSelectedDeleteData(row);
-        setDeleteModalVisible(true);
-    };
+    useEffect(() => {
+        handleFetchData();
+    }, []);
+    const handleFetchData = () => {
+        setLoading(true);
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .get(`${BASE_URL}/classrooms`, config)
+            .then((response) => {
+                const Api_class_section = response.data.response_data;
+                console.log('Data: ', Api_class_section);
+                const newData: DataType[] = Api_class_section.map(
+                    (item: {
+                        id: any;
+                        status: number;
+                        class_name: any;
+                        regular_class_name: any;
+                        semester: any;
+                        school_year: any;
+                    }) => ({
+                        id: item.id,
+                        nameclasssection: item.class_name,
+                        class: item.regular_class_name,
+                        semester: item.semester,
+                        schoolyear: item.school_year,
+                        status: item.status === 1 ? 'Đang mở' : 'Đang đóng',
+                        action: (
+                            <>
+                                <div className=" grid grid-cols-2  gap-y-1 w-[6rem]">
+                                    <Tooltip title="Sửa lớp học phần">
+                                        <button
+                                            className="bg-blue-400 px-3 py-2 w-10 rounded-lg hover:bg-blue-700 hover:text-white flex justify-center items-center"
+                                            onClick={() => handleEdit(item)}
+                                        >
+                                            <div>
+                                                <MdOutlineEditCalendar size={20} />
+                                            </div>
+                                        </button>
+                                    </Tooltip>
 
-    const showModal = () => {
-        setIsModalOpen(true);
+                                    <Tooltip title={`${item.status === 1 ? 'Mở lớp học phần' : 'Đóng lớp học phần'}`}>
+                                        <button
+                                            className={`${colorStatus(
+                                                item.status,
+                                            )} rounded-md w-10 flex justify-center items-center  hover:text-white`}
+                                            onClick={() => handleStatus(item)}
+                                        >
+                                            {item.status === 1 ? <MdLockOutline size={20} /> : <MdLockOpen size={20} />}
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip title="Lưu trữ lớp học phần">
+                                        <button
+                                            className="bg-gray-400 px-3 py-2 rounded-lg w-10 hover:bg-gray-600 hover:text-white flex justify-center items-center"
+                                            onClick={() => handleEdit(item)}
+                                        >
+                                            <div>
+                                                <MdOutlineSave size={20} />
+                                            </div>
+                                        </button>
+                                    </Tooltip>
+                                    <Tooltip title="Xóa lớp học phần">
+                                        <button
+                                            className="bg-yellow-400 px-3 py-2 rounded-lg w-10 hover:bg-yellow-700 hover:text-white flex justify-center items-center"
+                                            onClick={() => handleDelete(item)}
+                                        >
+                                            <div>
+                                                <MdDelete size={20} />
+                                            </div>
+                                        </button>
+                                    </Tooltip>
+                                </div>
+                            </>
+                        ),
+                    }),
+                );
+                setDataClassSection(newData);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setLoading(false);
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const content = 'Lỗi máy chủ';
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+                // Xử lý lỗi nếu có
+                console.error(error);
+            });
     };
-    const handleCancel = () => {
-        setIsModalOpen(false);
+    const colorStatus = (status: any) => {
+        return status === 1 ? 'bg-red-500 hover:bg-red-700' : 'bg-green-400 hover:bg-green-700';
     };
-    const handleNameClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedValue = e.target.value;
-        setNameClass(e.target.value);
-        if (selectedValue !== '') {
-            setErrorClass(false);
-        }
-    };
-    const handleSchoolYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        SetSchoolYear(e.target.value);
-    };
-
-    const handleClassSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectValue = e.target.value;
-        setSelectedClass(e.target.value);
-        if (selectValue !== '') {
-            setErrorSelectedClass(false);
-        }
-    };
-    const handleSelectSubject = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedValue = e.target.value;
-        setSelectedSubject(e.target.value);
-        if (selectedValue !== '') {
-            setErrorSelectedSubject(false);
-        }
-    };
-    // const handleSelectSemester = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     const selectedValue = e.target.value;
-    //     setSelectedSubject(e.target.value);
-    //     if (selectedValue !== '') {
-    //         setErrorSelectedSemester(false);
-    //     }
-    // };
-    const handleSelectSemester = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedValue = event.target.value;
-        setSelectedSemester(selectedValue);
-        if (selectedValue !== '') {
-            setErrorSelectedSemester(false);
-        }
+    const title = (status: any) => {
+        return status === 1 ? 'đóng' : 'mở';
     };
     const handleCreateRoom = () => {
         const roomData = {
-            nameClass,
-            selectedSemester,
-            selectedClass,
-            selectedSubject,
+            class_name: nameClass,
+            semester: selectedSemester,
+            regular_class_id: parseInt(selectedClass),
+            subject_id: parseInt(selectedSubject),
+            teacher_id: parseInt(selectedNameTeacher),
+            school_year: parseInt(schoolYear),
         };
         console.log('Data', roomData);
         const config = HeaderToken.getTokenConfig();
-        setLoading(true);
+        setLoading(false);
         axios
-            .post('http://20.39.197.125:3000/api/classrooms/create-classroom', roomData, config)
+            .post(`${BASE_URL}/classrooms/create-classroom`, roomData, config)
             .then((response) => {
                 //Đặt lại giá trị của các ô đầu vào sau khi tạo lớp học thành công
                 setNameClass('');
                 SetSchoolYear('');
                 setSelectedSemester('');
                 setSelectedClass('');
-                setSelectedSubject('');
-                setIsPopupVisibleCreateClass(false);
-                const data = response.data.response_data;
+                handleFetchData();
+                handleSuccesCreate();
+                setIsModalOpen(false);
                 //Chuyển dữ liệu khi tạo mới phòng
-                navigate(`/giang-vien/class/${data.id}`, { state: { data } });
+                // navigate(`/giang-vien/class/${data.id}`, { state: { data } });
             })
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
@@ -327,40 +271,272 @@ const AppClassSection: React.FC = () => {
                 console.error(error);
             });
     };
-    useEffect(() => {
+    const handleClassSectionUpdate = () => {
         const config = HeaderToken.getTokenConfig();
+        const dataUpdate = {
+            classroom_id: selectedItemEditClassName?.id,
+            class_name: selectedItemEditClassName?.class_name,
+            school_year: selectedItemEditSchoolYear?.school_year,
+            semester: selectedItemEditSemester?.semester,
+        };
+        console.log('Ddataa update', dataUpdate);
         axios
-            .get(`${SystemConst.DOMAIN}/classrooms`, config)
+            .patch(`${BASE_URL}/classrooms/update-classroom`, dataUpdate, config)
             .then((response) => {
-                console.log('Data: ', response.data);
+                handleFetchData();
+                handleSuccesUpdate();
             })
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
                 if (!isError) {
-                    const content = 'Lỗi máy chủ';
+                    let content = '';
                     const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && error === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Not exist') {
+                        content = 'Khoa không tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist') {
+                        content = 'Bộ môn đã tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist no active') {
+                        content =
+                            'Bộ môn này không thể đổi tên khoa này. Nếu muốn có bộ môn này xin vui lòng bạn hãy tạo bộ môn mới !!!';
+                    } else if (status === 400 && errorMessage === 'Create not success') {
+                        content = 'Tạo bộ môn không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
                     ErrorCommon(title, content);
                 }
-                // Xử lý lỗi nếu có
                 console.error(error);
             });
-    }, []);
+    };
+    const handleClassSectionStatus = () => {
+        const config = HeaderToken.getTokenConfig();
+        const dataStatus = { classroom_id: selectedItemStatus?.id };
+        axios
+            .patch(`${BASE_URL}/classrooms/update-status-classroom`, dataStatus, config)
+            .then((response) => {
+                handleFetchData();
+                handleSuccesStatus(selectedItemStatus?.status);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Đóng bộ môn không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    const handleClassSectionDelete = () => {
+        const config = HeaderToken.getTokenConfig();
+        const dataStatus = selectedItemDelete?.id;
+        axios
+            .delete(`${BASE_URL}/classrooms/delete-classroom/${dataStatus}`, config)
+            .then((response) => {
+                handleFetchData();
+                handleSuccesDelete();
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Cần gửi đầy đủ thông tin';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Đóng bộ môn không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    const fecthDataOption = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios.get(`${BASE_URL}/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
+            const Api_option_classsection = response.data.response_data;
+            setSubjectRefresh(Api_option_classsection.subjects);
+            setTeacherRefresh(Api_option_classsection.teachers);
+            setClasses(Api_option_classsection.regular_class);
+            setClassesEdit(Api_option_classsection.regular_class);
+            // setSubjects(Api_option_classsection.subjects);
+            // setTeachers(Api_option_classsection.teachers);
+        });
+    };
+
+    const handleEdit = (item: {
+        id?: number | undefined;
+        class_name: string;
+        school_year: number;
+        semester: number;
+    }) => {
+        setIsModalOpenEdit(true);
+        setSelectedItemEditClassName(item);
+        setSelectedItemEditSemester(item);
+        setSelectedItemEditSchoolYear(item);
+    };
+    const handleNameClassEditClassName = (e: { target: { value: any } }) => {
+        setSelectedItemEditClassName({
+            ...selectedItemEditClassName,
+            class_name: e.target.value || null,
+        });
+    };
+    const handleNameClassEditSemester = (e: { target: { value: any } }) => {
+        setSelectedItemEditSemester({
+            ...selectedItemEditSemester,
+            semester: e.target.value || null,
+        });
+    };
+    const handleNameClassEditSchoolYear = (e: { target: { value: any } }) => {
+        const value = e.target.value;
+        const regex = /^\d{0,4}$/; // Biểu thức chính quy cho số và tối đa 4 chữ số
+
+        if (regex.test(value)) {
+            setSelectedItemEditSchoolYear({
+                ...selectedItemEditSchoolYear,
+                school_year: value || null,
+            });
+        }
+    };
+
+    // const handleChangeEdit = (e: { target: { value: any } }) => {
+    //     const inputValueEdit = e.target.value;
+    //     setSelectedItemEdit({
+    //         ...selectedItemEdit,
+    //         class_name: inputValueEdit,
+    //         regular_class_name: inputValueEdit,
+    //     });
+    // };
+    const handleStatus = (item: { id: number }) => {
+        setSelectedItemStatus(item);
+        setStatusModalVisible(true);
+    };
+    const handleDelete = (item: { id: number }) => {
+        setSelectedItemDelete(item);
+        setDeleteModalVisible(true);
+    };
+    const showModal = () => {
+        fecthDataOption();
+        setIsModalOpen(true);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancelEdit = () => {
+        setIsModalOpenEdit(false);
+    };
+    const handleNameClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNameClass(e.target.value);
+    };
+    const handleSchoolYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const regex = /^\d{0,4}$/; // Biểu thức chính quy cho số và tối đa 4 chữ số
+
+        if (regex.test(value)) {
+            SetSchoolYear(value);
+        }
+    };
+
+    const handleClassSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectValue = e.target.value;
+        setSelectedClass(selectValue);
+        const selectedClassData = classes.find((cls) => cls['id'] === parseInt(selectValue));
+        const selectDeparmentId = selectedClassData ? selectedClassData['department_id'] : '';
+        const filterSubjects = subjectRefresh.filter((sub) => sub['department_id'] === selectDeparmentId);
+        const filteredTeachers = teacherRefresh.filter((tch) => tch['department_id'] === selectDeparmentId);
+        // console.log('ssada', selectedClass);
+        // console.log('filteredTeachers', filteredTeachers);
+        console.log('id: ', filterSubjects);
+        if (!filterSubjects.some((sub) => sub['id'] === selectedSubject)) {
+            setSelectedSubject('');
+        } else {
+        }
+        if (!filteredTeachers.some((tch) => tch['id'] === selectedNameTeacher)) {
+            setSelectedNameTeacher('');
+        }
+        setSubjects(filterSubjects);
+        setTeachers(filteredTeachers);
+    };
+    const handleNameTeacherChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedNameTeacher(e.target.value);
+    };
+    const handleSelectSubject = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedSubject(e.target.value);
+    };
+    const handleSelectSemester = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = event.target.value;
+        setSelectedSemester(selectedValue);
+    };
+
     const handleSubmitCreateRoom = () => {
         if (nameClass.length === 0) {
-            setErrorClass(true);
-        }
-        if (!selectedClass) {
-            setErrorSelectedClass(true);
-        }
-        if (!selectedSubject) {
-            setErrorSelectedSubject(true);
-        }
-        if (selectedClass && selectedSubject && nameClass) {
+            setError(true);
+        } else if (!selectedNameTeacher) {
+            setError(true);
+        } else if (!selectedClass) {
+            setError(true);
+        } else if (!selectedSubject) {
+            setError(true);
+        } else {
             handleCreateRoom();
         }
     };
-    const handleSubmitDeleteFaculty = () => {
+    const handleSubmitEditRoom = () => {
+        handleClassSectionUpdate();
+        setIsModalOpenEdit(false);
+    };
+    const handleSubmitDeleteClassSection = () => {
+        handleClassSectionDelete();
         setDeleteModalVisible(false);
+    };
+    const handleSubmitStatusClassSection = () => {
+        handleClassSectionStatus();
+        setStatusModalVisible(false);
+    };
+
+    const handleSuccesCreate = () => {
+        Notification('success', 'Thông báo', 'Thêm lớp học phần thành công');
+    };
+    const handleSuccesUpdate = () => {
+        Notification(
+            'success',
+            'Thông báo',
+            `Cập nhật ${selectedItemEditClassName?.class_name.toLocaleLowerCase()} thành công`,
+        );
+    };
+    const handleSuccesDelete = () => {
+        Notification('success', 'Thông báo', 'Xóa lớp học phần thành công');
+    };
+    const titleStatus = (status: any) => {
+        return status === 1 ? 'mở' : 'đóng';
+    };
+    const handleSuccesStatus = (status: any) => {
+        if (status === 1) {
+            Notification('success', 'Thông báo', 'Đóng thành công lớp học phần');
+        } else {
+            Notification('success', 'Thông báo', 'Mở thành công lớp học phần');
+        }
     };
     return (
         <>
@@ -373,203 +549,389 @@ const AppClassSection: React.FC = () => {
                         <Button onClick={showModal} type="primary">
                             <MdBookmarkAdd />
                         </Button>
+                        {/* Modal Create */}
                         <div className="">
                             <Modal
                                 visible={isModalOpen}
                                 open={isModalOpen}
                                 onCancel={handleCancel}
                                 footer={null}
-                                className="custom-modal-create-class"
+                                className="custom-modal-create-class "
                             >
                                 <Spin size="large" spinning={loading}>
-                                    <Row>
-                                        <Col span={24}>
-                                            <Header className="bg-blue-300 flex items-center">
-                                                <div className="text-xl text-gray-200 font-sans">Tạo lớp học</div>
-                                            </Header>
-                                        </Col>
-                                    </Row>
-                                    <div className=" px-5 py-10 grid justify-center mt-2 ">
-                                        <Row className="w-[800px] gap-y-2">
-                                            <Col span={24} sm={24} md={24} lg={24} xl={24}>
-                                                <div className="relative mb-3 mt-2 px-2" data-te-textarea-wrapper-init>
-                                                    <input
-                                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                                        id="exampleFormControlTextarea1"
-                                                        placeholder="Your message"
-                                                        style={{ resize: 'none' }}
-                                                        value={nameClass}
-                                                        onChange={handleNameClassChange}
+                                    <Header className="bg-blue-300 flex items-center">
+                                        <div className="text-xl text-gray-200 font-sans">Tạo lớp học</div>
+                                    </Header>
+
+                                    <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
+                                        <div>
+                                            <label htmlFor=""> Tên lớp học phần</label>
+                                            <Input
+                                                value={nameClass}
+                                                className="h-10 bg-slate-200"
+                                                onChange={handleNameClassChange}
+                                                required
+                                            ></Input>
+                                            {error && nameClass.length <= 0 ? (
+                                                <label className="text-red-500 font-normal">
+                                                    Vui lòng nhập tên lớp học phần
+                                                </label>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label htmlFor="">Năm học</label>
+                                            <Input
+                                                className="h-10 bg-slate-200"
+                                                value={schoolYear}
+                                                onChange={handleSchoolYearChange}
+                                                required
+                                                pattern="^\d{4}$"
+                                            />
+                                            {error && schoolYear.length <= 0 ? (
+                                                <label className="text-red-500 font-normal">
+                                                    Vui lòng nhập tên năm học
+                                                </label>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">Học kỳ</label>
+                                            <select
+                                                className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 "
+                                                style={{ resize: 'none' }}
+                                                value={selectedSemester}
+                                                onChange={handleSelectSemester}
+                                            >
+                                                <option value="" disabled selected hidden>
+                                                    Chọn học kỳ
+                                                </option>
+                                                {option.map((item) => (
+                                                    <option key={item.key} value={item.key}>
+                                                        {item.key}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {error && !selectedSemester ? (
+                                                <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="Lớp">Lớp</label>
+                                            <select
+                                                className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                style={{ resize: 'none' }}
+                                                value={selectedClass}
+                                                onChange={handleClassSelect}
+                                            >
+                                                <option value="" disabled selected hidden>
+                                                    Chọn Lớp
+                                                </option>
+                                                {classes.map((cls) => (
+                                                    <option key={cls['id']} value={cls['id']}>
+                                                        {cls['class_name']}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {error && !selectedClass ? (
+                                                <div className="text-red-500 font-normal">Vui lòng lớp.</div>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        {selectedClass && (
+                                            <div className="grid gap-y-4">
+                                                <div>
+                                                    <label>Giảng Viên</label>
+                                                    <select
+                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                        value={selectedNameTeacher}
+                                                        onChange={handleNameTeacherChange}
                                                         required
-                                                    ></input>
-                                                    <label
-                                                        htmlFor="exampleFormControlTextarea1"
-                                                        className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
                                                     >
-                                                        Tên lớp học phần
-                                                    </label>
-                                                    {errorClass && nameClass.length <= 0 ? (
+                                                        {' '}
+                                                        <option value="" disabled selected hidden>
+                                                            Chọn Giảng Viên
+                                                        </option>
+                                                        {teacher.map((tch) => (
+                                                            <option key={tch['id']} value={tch['id']}>
+                                                                {` ${tch['last_name']} ${tch['first_name']} `}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {error && !selectedNameTeacher ? (
                                                         <label className="text-red-500 font-normal">
-                                                            Vui lòng nhập tên lớp học phần
+                                                            Vui lòng nhập tên Giảng Viên
                                                         </label>
                                                     ) : (
                                                         ''
                                                     )}
                                                 </div>
-                                            </Col>
-                                            <Col span={24}>
-                                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                                    <input
-                                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px] px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                                        id="exampleFormControlTextarea1"
-                                                        placeholder="Your message"
-                                                        style={{ resize: 'none' }}
-                                                        value={schoolYear}
-                                                        onChange={handleSchoolYearChange}
-                                                    />
-                                                    <label
-                                                        htmlFor="exampleFormControlTextarea1"
-                                                        className="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[te-input-state-active]:-translate-y-[0.9rem] peer-data-[te-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-200 dark:peer-focus:text-primary"
-                                                    >
-                                                        Năm học
-                                                    </label>
-                                                </div>
-                                            </Col>
-                                            <Col span={24}>
-                                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
+                                                <div>
+                                                    <label htmlFor="">Môn</label>
                                                     <select
-                                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                                        id="exampleFormControlTextarea1"
-                                                        placeholder="Your message"
-                                                        style={{ resize: 'none' }}
-                                                        value={selectedSemester}
-                                                        onChange={handleSelectSemester}
-                                                    >
-                                                        <option value="" disabled selected hidden>
-                                                            Chọn học kỳ
-                                                        </option>
-                                                        {option.map((item) => (
-                                                            <option key={item.key} value={item.key}>
-                                                                {item.key}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    {errorSelectedClass && (
-                                                        <div className="text-red-500 font-normal">
-                                                            Vui lòng chọn dữ liệu.
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </Col>
-                                            <Col span={24}>
-                                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                                    <select
-                                                        className="bg-slate-100 h-16 peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                                        id="exampleFormControlTextarea1"
-                                                        placeholder="Your message"
-                                                        style={{ resize: 'none' }}
-                                                        value={selectedClass}
-                                                        onChange={handleClassSelect}
-                                                    >
-                                                        <option value="" disabled selected hidden>
-                                                            Chọn Lớp
-                                                        </option>
-                                                        {classes.map((option) => (
-                                                            <option
-                                                                key={option['regular_class_id']}
-                                                                value={option['regular_class_id']}
-                                                            >
-                                                                {option['class_name']}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    {errorSelectedClass && (
-                                                        <div className="text-red-500 font-normal">
-                                                            Vui lòng chọn dữ liệu.
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </Col>
-                                            <Col span={24}>
-                                                <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
-                                                    <select
-                                                        className="bg-slate-100 h-16  peer block min-h-[auto] w-full rounded-sm border-b-2 border-indigo-400 focus:border-b-[3.5px]  px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-100 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
-                                                        id="exampleFormControlTextarea1"
-                                                        placeholder="Your message"
-                                                        style={{ resize: 'none' }}
                                                         value={selectedSubject}
+                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
                                                         onChange={handleSelectSubject}
                                                     >
                                                         <option value="" disabled selected hidden>
                                                             Chọn Môn
                                                         </option>
-                                                        {subjects.map((classItem) => (
-                                                            <option
-                                                                key={classItem['subject_id']}
-                                                                value={classItem['subject_id']}
-                                                            >
-                                                                {classItem['subject_name']}
+                                                        {subjects.map((sub) => (
+                                                            <option value={sub['id']} key={sub['id']}>
+                                                                {sub['subject_name']}
                                                             </option>
                                                         ))}
                                                     </select>
-                                                    {errorSelectedSubject && (
-                                                        <div className="text-red-500 font-normal">
-                                                            Vui lòng chọn dữ liệu.
-                                                        </div>
+                                                    {error && !selectedSubject ? (
+                                                        <div className="text-red-500 font-normal">Vui lòng lớp.</div>
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </div>{' '}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-x-4 justify-center ">
+                                        <div>
+                                            <button
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                                onClick={handleSubmitCreateRoom}
+                                            >
+                                                Tạo
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick={handleCancel}
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                            >
+                                                Hủy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Spin>
+                            </Modal>
+                        </div>
+                        {/* Modal Edit */}
+                        <div className="">
+                            <Modal
+                                visible={isOpenModalEdit}
+                                open={isOpenModalEdit}
+                                onCancel={handleCancelEdit}
+                                footer={null}
+                                className="custom-modal-create-class "
+                            >
+                                <Spin size="large" spinning={loading}>
+                                    <Header className="bg-blue-300 flex items-center">
+                                        <div className="text-xl text-gray-200 font-semibold">Sửa lớp học</div>
+                                    </Header>
+
+                                    <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
+                                        <div>
+                                            <label htmlFor="">Tên lớp học phần</label>
+                                            <Input
+                                                className="h-10 bg-slate-200"
+                                                value={selectedItemEditClassName?.class_name}
+                                                onChange={(e) =>
+                                                    handleNameClassEditClassName({ target: { value: e.target.value } })
+                                                }
+                                                required
+                                            ></Input>
+                                            {error && nameClass.length <= 0 ? (
+                                                <label className="text-red-500 font-normal">
+                                                    Vui lòng nhập tên lớp học phần
+                                                </label>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">Năm học</label>
+                                            <Input
+                                                className="h-10 bg-slate-200"
+                                                value={selectedItemEditSchoolYear?.school_year}
+                                                onChange={(e) =>
+                                                    handleNameClassEditSchoolYear({ target: { value: e.target.value } })
+                                                }
+                                                required
+                                                pattern="^\d{4}$"
+                                            />
+                                            {error && schoolYear.length <= 0 ? (
+                                                <label className="text-red-500 font-normal">
+                                                    Vui lòng nhập tên năm học
+                                                </label>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">Học kỳ</label>
+                                            <select className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 ">
+                                                <option value={selectedItemEditSemester?.id} disabled selected hidden>
+                                                    {selectedItemEditSemester?.semester}
+                                                </option>
+                                                {option.map((item) => (
+                                                    <option key={item.key} value={item.key}>
+                                                        {item.key}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {error && !selectedSemester ? (
+                                                <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        {/* <div>
+                                            <label htmlFor="Lớp">Lớp</label>
+                                            <select
+                                                className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                style={{ resize: 'none' }}
+                                                value={selectedClass}
+                                                onChange={handleClassSelect}
+                                            >
+                                                <option value="" disabled selected hidden>
+                                                    Chọn Lớp
+                                                </option>
+                                                {classesEdit.map((cls) => (
+                                                    <option key={cls['id']} value={cls['id']}>
+                                                        {cls['class_name']}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {error && !selectedClass ? (
+                                                <div className="text-red-500 font-normal">Vui lòng lớp.</div>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div> */}
+                                        {/* {selectedClass && (
+                                            <div className="grid gap-y-4">
+                                                <div>
+                                                    <label>Giảng Viên</label>
+                                                    <select
+                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                        value={selectedNameTeacher}
+                                                        onChange={handleNameTeacherChange}
+                                                        required
+                                                    >
+                                                        {' '}
+                                                        <option value="" disabled selected hidden>
+                                                            Chọn Giảng Viên
+                                                        </option>
+                                                        {teacher.map((tch) => (
+                                                            <option key={tch['id']} value={tch['id']}>
+                                                                {` ${tch['last_name']} ${tch['first_name']} `}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {error && !selectedNameTeacher ? (
+                                                        <label className="text-red-500 font-normal">
+                                                            Vui lòng nhập tên Giảng Viên
+                                                        </label>
+                                                    ) : (
+                                                        ''
                                                     )}
                                                 </div>
-                                            </Col>
-                                            <Col
-                                                className="flex justify-center mt-5"
-                                                span={24}
-                                                xs={24}
-                                                sm={24}
-                                                md={24}
-                                                lg={24}
-                                                xl={24}
-                                            >
-                                                <div className="flex gap-x-4 ">
-                                                    <div>
-                                                        <button
-                                                            className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                                            onClick={handleSubmitCreateRoom}
-                                                        >
-                                                            Tạo
-                                                        </button>
-                                                    </div>
-                                                    <div>
-                                                        <button
-                                                            onClick={handleCancel}
-                                                            className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                                        >
-                                                            Hủy
-                                                        </button>
-                                                    </div>
+                                                <div>
+                                                    <label htmlFor="">Môn</label>
+                                                    <select
+                                                        value={selectedSubject}
+                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                        onChange={handleSelectSubject}
+                                                    >
+                                                        <option value="" disabled selected hidden>
+                                                            Chọn Môn
+                                                        </option>
+                                                        {subjects.map((sub) => (
+                                                            <option value={sub['id']} key={sub['id']}>
+                                                                {sub['subject_name']}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {error && !selectedSubject ? (
+                                                        <div className="text-red-500 font-normal">Vui lòng lớp.</div>
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </div>
-                                            </Col>
-                                        </Row>
+                                            </div>
+                                        )} */}
+                                    </div>
+                                    <div className="flex gap-x-4 justify-center ">
+                                        <div>
+                                            <button
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                                onClick={handleSubmitEditRoom}
+                                            >
+                                                Sửa
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button
+                                                onClick={handleCancel}
+                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                            >
+                                                Hủy
+                                            </button>
+                                        </div>
                                     </div>
                                 </Spin>
                             </Modal>
                         </div>
                     </div>
                 </div>
-                <Table dataSource={data} columns={columns} />
+                {loading ? (
+                    <Spin className="mt-40" tip="Loading...">
+                        <div className="content"></div>
+                    </Spin>
+                ) : (
+                    <Table dataSource={dataClassSection} columns={columns} />
+                )}
             </div>
             <>
                 <div>
                     <Modal
                         className="custom-delete "
+                        title="Xác nhận đóng "
+                        visible={statusModalVisible}
+                        onCancel={() => setStatusModalVisible(false)}
+                        footer={null}
+                    >
+                        <div>
+                            <p>Bạn có chắc chắn muốn hành động việc này không ?</p>
+                        </div>
+                        <div className="flex justify-end h-full mt-20">
+                            <Button onClick={handleSubmitStatusClassSection} type="primary" className="mr-5">
+                                Đóng
+                            </Button>
+                            <Button onClick={() => setStatusModalVisible(false)} type="default" className="mr-5">
+                                Hủy
+                            </Button>
+                        </div>
+                    </Modal>
+                </div>
+            </>
+            <>
+                <div>
+                    <Modal
+                        className="custom-delete"
                         title="Xác nhận xóa"
                         visible={deleteModalVisible}
                         onCancel={() => setDeleteModalVisible(false)}
                         footer={null}
                     >
                         <div>
-                            <p>Bạn có chắc chắn muốn xóa không?</p>
+                            <p>Bạn có chắc chắn muốn xóa lớp không?</p>
                         </div>
                         <div className="flex justify-end h-full mt-20">
-                            <Button onClick={handleSubmitDeleteFaculty} type="primary" className="mr-5">
+                            <Button onClick={handleSubmitDeleteClassSection} type="primary" className="mr-5">
                                 Xóa
                             </Button>
                             <Button onClick={() => setDeleteModalVisible(false)} type="default" className="mr-5">
