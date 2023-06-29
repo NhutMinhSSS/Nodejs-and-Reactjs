@@ -1,8 +1,11 @@
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const CommonService = require("../../common/utils/common_service");
 const Classroom = require("../../models/classroom.model");
+const Department = require("../../models/department.model");
 const RegularClass = require("../../models/regular_class.model");
+const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model");
+const Teacher = require("../../models/teacher.model");
 const TeacherList = require("../../models/teacher_list.model");
 const { Op } = require("sequelize");
 
@@ -42,6 +45,58 @@ class ClassroomService {
                 attributes: ['id', 'class_name', 'semester', 'school_year', 'status']
             });
             return classrooms;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findListTeachersAndListStudentsByClassroomId(classroomId) {
+        try {
+            const result = await Classroom.findOne({
+                where: {
+                    id: classroomId,
+                    status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                },
+                include: [{
+                    model: Teacher,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'first_name', 'last_name'],
+                    include: [{
+                        model: Department,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['department_name']
+                    }],
+                    through: {
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    }
+                }, {
+                    model: Student,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'first_name', 'last_name'],
+                    include: [{
+                        model: RegularClass,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['class_name']
+                    }],
+                    through: {
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    }
+                }]
+            });
+            return result;
         } catch (error) {
             throw error;
         }
