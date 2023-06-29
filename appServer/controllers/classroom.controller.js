@@ -41,15 +41,15 @@ class ClassroomController {
                     EnumMessage.REQUIRED_INFORMATION);
             }
             const listTeachersAndStudents = await ClassroomService.findListTeachersAndListStudentsByClassroomId(classroomId);
-            const [Teacher, Student] = listTeachersAndStudents; 
+            const [Teachers, Students] = listTeachersAndStudents; 
             const result ={
-                teachers: Teacher.map(({id, first_name, last_name, Department}) => ({
+                teachers: Teachers.map(({id, first_name, last_name, Department}) => ({
                     id,
                     first_name,
                     last_name,
                     department_name: Department.department_name
                 })),
-                students: Student.map(({id, first_name, last_name, RegularClass}) => ({
+                students: Students.map(({id, first_name, last_name, RegularClass}) => ({
                     id,
                     first_name,
                     last_name,
