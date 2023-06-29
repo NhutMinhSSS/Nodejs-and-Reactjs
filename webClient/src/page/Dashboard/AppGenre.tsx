@@ -2,15 +2,13 @@ import { Modal, Input, Button } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
 import React, { useEffect, useState } from 'react';
 import { MdAddBox } from 'react-icons/md';
-import SelectOption from '../../components/SelectOption';
 import HeaderToken from '../../common/utils/headerToken';
 import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
-import { el } from 'date-fns/locale';
 import Notification from '../../components/Notification';
-const BASE_URL = `${SystemConst.DOMAIN}/admin/departments`;
+const BASE_URL = `${SystemConst.DOMAIN}/admin`;
 interface DataType {
     department_name: string;
     facultyname: string;
@@ -41,6 +39,12 @@ const AppGenre = () => {
             dataIndex: 'action',
         },
     ];
+    const [openModal, setOpenModal] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [errorGenre, setErrorGenre] = useState(false);
+    const [nameGenre, setNameGenre] = useState('');
+    const [selectedOptionGenre, setSelectedOptionGenre] = useState<number | null>(null);
     const [dataGenre, setDataGenre] = useState<DataType[]>([]);
     const [isOptions, setIsOptions] = useState<any[]>([]);
     const [isOptionEdit, setIsOptionEdit] = useState<any[]>([]);
@@ -54,7 +58,7 @@ const AppGenre = () => {
     const handleFecthData = () => {
         const config = HeaderToken.getTokenConfig();
         axios
-            .get(BASE_URL, config)
+            .get(`${BASE_URL}/departments`, config)
             .then((response) => {
                 const Api_Data_Faculty = response.data.response_data;
                 console.log('data: ', Api_Data_Faculty);
@@ -107,7 +111,7 @@ const AppGenre = () => {
     const fetchDataSelectOption = () => {
         const config = HeaderToken.getTokenConfig();
         axios
-            .get(`${BASE_URL}/get-faculty`, config)
+            .get(`${BASE_URL}/faculties/get-faculties`, config)
             .then((response) => {
                 const Api_all_faculty = response.data.response_data;
                 setIsOptions(Api_all_faculty);
@@ -130,9 +134,10 @@ const AppGenre = () => {
         const data = { department_name: nameGenre, faculty_id: selectedOptionGenre };
         console.log(data);
         axios
-            .post(`${BASE_URL}/create-department`, data, config)
+            .post(`${BASE_URL}/departments/create-department`, data, config)
             .then((response) => {
                 setNameGenre('');
+                setOpenModal(false);
                 handleSuccesCreate();
                 handleFecthData();
             })
@@ -161,12 +166,12 @@ const AppGenre = () => {
                 console.error(error);
             });
     };
-    const handleUpdateSubject = () => {
+    const handleUpdateGenre = () => {
         const config = HeaderToken.getTokenConfig();
         const dataUpdate = { department_id: selectedItemEdit?.id, department_name: selectedItemEdit?.department_name };
         console.log(dataUpdate, ' dasdsad');
         axios
-            .patch(`${BASE_URL}/update-department`, dataUpdate, config)
+            .patch(`${BASE_URL}/departments/update-department`, dataUpdate, config)
             .then((response) => {
                 handleSuccesUpdate();
                 handleFecthData();
@@ -186,6 +191,9 @@ const AppGenre = () => {
                         content = 'Khoa không tồn tại';
                     } else if (status === 409 && errorMessage === 'Already exist') {
                         content = 'Bộ môn đã tồn tại';
+                    } else if (status === 409 && errorMessage === 'Already exist no active') {
+                        content =
+                            'Bộ môn này không thể đổi tên khoa này. Nếu muốn có bộ môn này xin vui lòng bạn hãy tạo bộ môn mới !!!';
                     } else if (status === 400 && errorMessage === 'Create not success') {
                         content = 'Tạo bộ môn không thành công';
                     } else {
@@ -200,7 +208,7 @@ const AppGenre = () => {
         const config = HeaderToken.getTokenConfig();
         const dataDelete = selectedItemDetele?.id;
         axios
-            .delete(`${BASE_URL}/delete-department/${dataDelete}`, config)
+            .delete(`${BASE_URL}/departments/delete-department/${dataDelete}`, config)
             .then(() => {
                 handleSuccesDelete();
                 handleFecthData();
@@ -225,16 +233,9 @@ const AppGenre = () => {
                 }
             });
     };
-    const [openModal, setOpenModal] = useState(false);
-    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-    const [editModalVisible, setEditModalVisible] = useState(false);
-    const [errorGenre, setErrorGenre] = useState(false);
-    const [nameGenre, setNameGenre] = useState('');
-    const [selectedOptionGenre, setSelectedOptionGenre] = useState<number | null>(null);
     const handleEdit = (item: { id: number; Faculty: { faculty_name: any }; department_name: any }) => {
         setEditModalVisible(true);
         setSelectedItemEdit(item);
-        console.log(item.Faculty.faculty_name, 'dsasd');
     };
     const handleChangeEdit = (e: { target: { value: any } }) => {
         setSelectedItemEdit({
@@ -243,7 +244,6 @@ const AppGenre = () => {
             department_name: e.target.value || null,
         });
     };
-
     const handleShowModal = () => {
         setOpenModal(true);
     };
@@ -267,7 +267,7 @@ const AppGenre = () => {
         }
     };
     const handleSubmitEditGenre = () => {
-        handleUpdateSubject();
+        handleUpdateGenre();
         setEditModalVisible(false);
     };
     const handleSubmitDeleteGenre = () => {
@@ -331,11 +331,6 @@ const AppGenre = () => {
                                 <div>
                                     <label htmlFor="">Khoa</label>
                                     <div className="flex flex-col">
-                                        {/* <SelectOption
-                                            onChange={handleOptionChangeGenre}
-                                            value={selectedOptionGenre}
-                                            apiUrl={}
-                                        /> */}
                                         <select
                                             onChange={(e) => {
                                                 handleOptionChangeGenre(Number(e.target.value));
