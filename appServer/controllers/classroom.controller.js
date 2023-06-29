@@ -213,7 +213,7 @@ class ClassroomController {
             //     await transaction.rollback();
             //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,  EnumMessage.ERROR_NOT_EXIST.REGULAR_CLASS_NOT_EXIST);
             // }
-            const isUpdate = await ClassroomService.updateClassroom(classroomId, className, semester, schoolYear, regularClassId, subjectId);
+            const isUpdate = await ClassroomService.updateClassroom(classroomId, className, semester, schoolYear);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
