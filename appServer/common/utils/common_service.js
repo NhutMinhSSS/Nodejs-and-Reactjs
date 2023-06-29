@@ -9,15 +9,13 @@ class CommonService {
     //function find list classroom form student id or teacher id with condition role
     async findClassroomsByUser(userId, userRole) {
         try {
-            let listClassroomUser;
-            if (userRole === EnumServerDefinitions.ROLE.TEACHER) {
-                listClassroomUser = await Classroom.findAll({
+            const listClassroomUser = await Classroom.findAll({
                     where: {                       
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     include: [
                         {
-                            model: Teacher,
+                            model: userRole === EnumServerDefinitions.ROLE.TEACHER ? Teacher : Student,
                             where: {
                                 id: userId,
                                 status: EnumServerDefinitions.STATUS.ACTIVE
@@ -31,41 +29,7 @@ class CommonService {
                             }
                         }
                     ],
-                    attributes: ['id', 'class_name', 'semester', 'school_year']
-                });
-            } else {
-                listClassroomUser = await Classroom.findAll({
-                    where: {                        
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                    },
-                    include: [
-                        {
-                            model: Student,
-                            where: {
-                                id: userId,
-                                status: EnumServerDefinitions.STATUS.ACTIVE
-                            },
-                            attributes: [],
-                            through: {
-                                attributes: [],
-                                where: {
-                                    status: EnumServerDefinitions.STATUS.ACTIVE
-                                }
-                            }
-                        },
-                        {
-                            model: Teacher,
-                            where: {
-                                status: EnumServerDefinitions.STATUS.ACTIVE
-                            },
-                            as: 'teachers',
-                            attributes: ['first_name' ,'last_name']
-                        }
-                    ],
-                    attributes: ['id', 'class_name', 'semester', 'school_year']
-                });
-                listClassroomUser = this.getListClassroomForStudent(listClassroomUser);
-            }
+                    attributes: ['id', 'class_name', 'semester', 'school_year'] });
             return listClassroomUser;
         } catch (error) {
             throw error;

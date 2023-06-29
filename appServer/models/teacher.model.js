@@ -77,7 +77,7 @@ Teacher.init({
     updatedAt: 'updated_at'
 });
 
-Classroom.belongsTo(Teacher, {foreignKey: 'teacher_id', as: 'teachers'});
+//Classroom.belongsTo(Teacher, {foreignKey: 'teacher_id', as: 'teachers'});
 Teacher.belongsTo(Department, { foreignKey: 'department_id'});
 
 module.exports = Teacher;
