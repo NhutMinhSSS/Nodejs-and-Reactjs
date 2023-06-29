@@ -24,15 +24,18 @@ class ClassroomService {
     async findAllClassroom() {
         try {
             const classrooms = await Classroom.findAll({
+                where: {
+                    status: {
+                        [Op.notIn]: [
+                          EnumServerDefinitions.STATUS.NO_ACTIVE,
+                          EnumServerDefinitions.STATUS.STORAGE
+                        ]
+                      }
+                },
                 include: [{
                     model: RegularClass,
                     where: {
-                        status: {
-                            [Op.notIn]: [
-                              EnumServerDefinitions.STATUS.NO_ACTIVE,
-                              EnumServerDefinitions.STATUS.STORAGE
-                            ]
-                          }
+                       status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['class_name']
                 }],
