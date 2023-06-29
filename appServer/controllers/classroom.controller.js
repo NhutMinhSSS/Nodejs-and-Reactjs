@@ -18,7 +18,7 @@ class ClassroomController {
     async getAllClassroomsInit(req, res) {
         try {
             const classrooms = await ClassroomService.findAllClassroom();
-            const result = classrooms.map(({id, class_name, semester, school_year, RegularClass, status}) => ({
+            const result = classrooms.map(({ id, class_name, semester, school_year, RegularClass, status }) => ({
                 id,
                 class_name,
                 semester,
@@ -27,6 +27,35 @@ class ClassroomController {
                 status
             }));
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async getListTeachersAndListStudents(req, res) {
+        try {
+            const classroomId = req.params.classroom_id;
+            if (!classroomId) {
+                ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.REQUIRED_INFORMATION);
+            }
+            const listTeachersAndStudents = await ClassroomService.findListTeachersAndListStudentsByClassroomId(classroomId);
+            const result = listTeachersAndStudents.map(({Teacher, Student}) => ({
+                teachers: Teacher.map(({id, first_name, last_name, Department}) => ({
+                    id,
+                    first_name,
+                    last_name,
+                    department_name: Department.department_name
+                })),
+                students: Student.map(({id, first_name, last_name, RegularClass}) => ({
+                    id,
+                    first_name,
+                    last_name,
+                    regular_class_name: RegularClass.class_name
+                }))
+            }))
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result)
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
@@ -161,13 +190,13 @@ class ClassroomController {
                 SubjectService.findSubjectByDepartmentId(subjectId, regularClass.department_id),
                 teacherId ? TeacherService.findTeacherByDepartmentId(teacherId, regularClass.department_id) : null
             ]);
-            const [checkSubjectByDepartment, checkTeacherByDepartment ] = checkSubjectAndRegularClass;
+            const [checkSubjectByDepartment, checkTeacherByDepartment] = checkSubjectAndRegularClass;
 
             if (!checkSubjectByDepartment) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_SUBJECT);
             }
-            if (teacherId && !checkTeacherByDepartment ) {
+            if (teacherId && !checkTeacherByDepartment) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.TEACHER_NOT_REGULAR_CLASS);
             }
@@ -256,7 +285,7 @@ class ClassroomController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_DELETE);
             }
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS); 
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
@@ -275,7 +304,7 @@ class ClassroomController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_DELETE);
             }
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS); 
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
