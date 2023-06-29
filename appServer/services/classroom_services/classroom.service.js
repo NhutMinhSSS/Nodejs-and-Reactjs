@@ -58,6 +58,7 @@ class ClassroomService {
                 },
                 include: [{
                     model: Teacher,
+                    required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
@@ -77,6 +78,7 @@ class ClassroomService {
                     }
                 }, {
                     model: Student,
+                    required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
