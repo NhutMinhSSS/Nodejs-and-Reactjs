@@ -27,8 +27,12 @@ class ClassroomService {
                 include: [{
                     model: RegularClass,
                     where: {
-                        status: {[Op.ne]: {[Op.in]: [EnumServerDefinitions.STATUS.NO_ACTIVE,
-                        EnumServerDefinitions.STATUS.STORAGE]}}
+                        status: {
+                            [Op.notIn]: [
+                              EnumServerDefinitions.STATUS.NO_ACTIVE,
+                              EnumServerDefinitions.STATUS.STORAGE
+                            ]
+                          }
                     },
                     attributes: ['class_name']
                 }],
@@ -39,14 +43,14 @@ class ClassroomService {
             throw error;
         }
     }
-    async updateClassroom(id, className, semester, schoolYear, regularClassId, subjectId){
+    async updateClassroom(id, className, semester, schoolYear){
         try {
             const isUpdate =  await Classroom.update({
                 class_name: className,
                 semester: semester,
                 school_year: schoolYear,
-                regular_class_id: regularClassId,
-                subject_id: subjectId
+                //regular_class_id: regularClassId,
+                //subject_id: subjectId
             }, {
                 where: {
                     id: id,
