@@ -96,7 +96,8 @@ class ClassroomService {
                         },
                         attributes: []
                     }
-                }]
+                }],
+                attributes: ['id']
             });
             return result;
         } catch (error) {
