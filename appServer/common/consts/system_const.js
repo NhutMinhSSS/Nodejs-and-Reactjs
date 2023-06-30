@@ -1,5 +1,5 @@
 class SystemConst {
-    static PORT = 3000;
+    static PORT_HTTP = 3000;
     static DOMAIN = '0.0.0.0';
     static STATUS_CODE = {
         SUCCESS: 200,
