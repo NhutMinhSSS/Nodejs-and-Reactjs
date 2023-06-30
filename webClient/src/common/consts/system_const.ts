@@ -1,5 +1,5 @@
 class SystemConst {
-    static DOMAIN = 'http://20.39.197.125:3000/api';
+    static DOMAIN = 'https://20.39.197.125:3443/api';
     static STATUS_CODE = {
         SUCCESS: 200,
         BAD_REQUEST: 400,
