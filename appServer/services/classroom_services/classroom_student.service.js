@@ -54,7 +54,7 @@ class ClassroomStudentService {
         try {
             const listStudent = studentIds.map(item => ({
                 classroom_id: classroomId,
-                student_id: item
+                student_id: item.id
             }));
             const newStudentsToClassroom = await StudentList.bulkCreate(listStudent, { transaction});
             return newStudentsToClassroom;
