@@ -50,11 +50,11 @@ class ClassroomStudentService {
                 throw error;
             }
     }
-    async addStudentsToNewClassroom(classroomId, student, transaction) {
+    async addStudentsToNewClassroom(classroomId, studentIds, transaction) {
         try {
-            const listStudent = student.map(student => ({
+            const listStudent = studentIds.map(item => ({
                 classroom_id: classroomId,
-                student_id: student.id
+                student_id: item
             }));
             const newStudentsToClassroom = await StudentList.bulkCreate(listStudent, { transaction});
             return newStudentsToClassroom;

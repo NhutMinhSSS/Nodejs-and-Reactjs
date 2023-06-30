@@ -8,8 +8,10 @@ const RegularClassService = require("../services/regular_class.service");
 const StudentService = require("../services/student_services/student.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
 const StudentFileSubmissionService = require("../services/student_services/student_file_submission.service");
+const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
 const db = require("../config/connect_database.config");
 const FormatUtils = require("../common/utils/format.utils");
+const PostService = require("../services/post_services/post.service");
 const PostDetailService = require("../services/post_services/post_detail.service");
 const sequelize = db.getPool();
 
@@ -133,6 +135,36 @@ class StudentController {
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async addStudentsToClassroom(req, res) {
+        const classroomId = req.body.classroom_id;
+        const studentIds = req.body.student_ids;
+        if (studentIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        const transaction = await sequelize.transaction();
+        try {
+            await ClassroomStudentService.addStudentsToNewClassroom(classroomId, studentIds, transaction);
+            const listPosts = await PostService.findAllPostsByClassroomId(classroomId);
+            if (listPosts) {
+                const publicPosts = listPosts.filter(post => post.post_details.is_public === true);
+                if (publicPosts.length > 0) {
+                    const studentExams = publicPosts.flatMap(post => studentIds.map(studentId => ({
+                      post_id: post.id,
+                      student_id: studentId
+                    })));
+                    await StudentExamService.addStudentExams(studentExams, transaction);
+                  }
+            }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            await transaction.rollback();
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);

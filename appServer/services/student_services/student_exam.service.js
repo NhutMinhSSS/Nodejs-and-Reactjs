@@ -46,13 +46,13 @@ class StudentExamService {
             throw error;
         }
     }
-    async addStudentExams(postId, studentIds, transaction) {
+    async addStudentExams(studentExams, transaction) {
         try {
-            const listStudentExams = studentIds.map(item => ({
-                exam_id: postId,
-                student_id: item
-            }));
-            const newStudentExams = await StudentExam.bulkCreate(listStudentExams, { transaction: transaction });
+            // const listStudentExams = studentIds.map(item => ({
+            //     exam_id: postId,
+            //     student_id: item
+            // }));
+            const newStudentExams = await StudentExam.bulkCreate(studentExams, { transaction });
             return newStudentExams;
         } catch (error) {
             throw error;
