@@ -32,7 +32,7 @@ class LoginController {
                         EnumMessage.LOGIN.INVALID_PASSWORD);
                 }
             } else {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
                     EnumMessage.LOGIN.NO_EXISTS_EMAIL);
             }
         } catch (error) {
