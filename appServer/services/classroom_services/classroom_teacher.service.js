@@ -59,5 +59,17 @@ class ClassroomTeacherService {
             throw error;
         }
     }
+    async addTeachersToClassroom(teacherIds, classroomId, transaction) {
+        try {
+            const listTeachers = teacherIds.map(item => ({
+                classroom_id: classroomId,
+                teacher_id: item
+            }));
+            const newListTeachers = await TeacherList.bulkCreate(listTeachers, { transaction });
+            return newListTeachers;
+        } catch (error) {
+
+        }
+    }
 }
 module.exports = new ClassroomTeacherService;
