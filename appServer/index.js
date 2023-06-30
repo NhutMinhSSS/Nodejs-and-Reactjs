@@ -6,20 +6,33 @@ const SystemConst = require('./common/consts/system_const');
 const EnumServerDefinitions = require('./common/enums/enum_server_definitions');
 const customCorsOptions = require('./config/custom_cors_options.config');
 const app = express();
-//const http = require('http').Server(app);
-//const io = require('socket.io')(http);
+const http = require('http').Server(app);
+//const https = require('https');
+//const fs = require('fs');
+//const socketIO = require('socket.io');
 
-const port = SystemConst.PORT;
+// Cấu hình server HTTP
+
+const port = SystemConst.PORT_HTTP;
 const domain = SystemConst.DOMAIN;
+
+// const httpsOptions = {
+//     key: fs.readFileSync('path/to/private.key'),
+//     cert: fs.readFileSync('path/to/certificate.crt')
+//   };
+//const httpsServer = https.createServer(app);
+
+// Khởi tạo socket.io và gắn nó với server HTTPS
+//const io = socketIO(httpsServer);
 
 //global._io = io;
 // Sử dụng middleware cors
 app.use(customCorsOptions);
 app.use('/api', routes);
-const start = async () => {
+const start = async (server, port) => {
     try {
         await db.connectDatabase();
-        app.listen(port, domain, async () => {
+        server.listen(port, domain, async () => {
             logger.info(`Example app listening on port: ${port}`);
         }).on(EnumServerDefinitions.ERROR, (error) => {
             logger.error(`Failed to start server: ${error}`);
@@ -30,4 +43,5 @@ const start = async () => {
         logger.error(error);
     }
 };
-start();
+start(http, port);
+//start(httpsServer, 443);
