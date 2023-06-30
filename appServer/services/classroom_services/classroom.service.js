@@ -131,19 +131,6 @@ class ClassroomService {
             throw error;
         }
     }
-    // async findClassroomByClassCode(classCode) {
-    //     try {
-    //         const result = await Classroom.findOne({
-    //             where: {
-    //                 class_code: classCode,
-    //                 status: EnumServerDefinitions.STATUS.ACTIVE
-    //             }
-    //         });
-    //         return result;
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
     async checkRoomMember(classroomId, userId, role) {
         try {
             const userRole = role === EnumServerDefinitions.ROLE.TEACHER ? { model: TeacherList, filed: 'teacher_id' } : { model: StudentList, filed: 'student_id' };
@@ -229,28 +216,20 @@ class ClassroomService {
             throw error;
         }
     }
-    // async isCodeExist(classCode) {
-    //     try {
-    //         const result = await this.findClassroomByClassCode(classCode);
-    //         return !!result;
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
-    // async generateCodeWithCheck() {
-    //     try {
-    //         let code = generateCode.classCode();
-    //         let exist = await this.isCodeExist(code);
-
-    //         while (exist) {
-    //             code = generateCode.classCode();
-    //             exist = await this.isCodeExist(code);
-    //         }
-    //         return code;
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
+   async checkClassroomExist(classroomId) {
+        try {
+            const classroom = await Classroom.findOne({
+                where: {
+                    id: classroomId,
+                status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]} 
+                },
+                attributes: ['id']
+            });
+            return !!classroom;
+        } catch (error) {
+            throw error;
+        }
+   }
 }
 
 module.exports = new ClassroomService;

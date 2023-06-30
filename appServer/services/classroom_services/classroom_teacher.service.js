@@ -40,21 +40,11 @@ class ClassroomTeacherService {
     }
     async addTeacherToClassroom(classroomId, teacherId, transaction) {
         try{
-            const teacherExistsClassroom = await this.checkTeacherNoActive(classroomId, teacherId);
-            if (teacherExistsClassroom) {
-                 await TeacherList.update({
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                }, { where: {
-                    id: teacherExistsClassroom.id
-                }, transaction: transaction});
-                return teacherExistsClassroom;
-            } else {
-               const  newTeacherToClassroom = await TeacherList.create({
-                    classroom_id: classroomId,
-                    teacher_id: teacherId
-                }, { transaction: transaction});
-                return newTeacherToClassroom;
-            } 
+            const newTeacher = await TeacherList.create({
+                classroom_id: classroomId,
+                teacher_id: teacherId
+            }, { transaction });
+            return newTeacher;
         } catch(error) {
             throw error;
         }
@@ -65,10 +55,10 @@ class ClassroomTeacherService {
                 classroom_id: classroomId,
                 teacher_id: item
             }));
-            const newListTeachers = await TeacherList.bulkCreate(listTeachers, { transaction });
+            const newListTeachers = await TeacherList.bulkCreate(listTeachers, { updateOnDuplicate: ['teacher_id', 'classroom_id'], transaction });
             return newListTeachers;
         } catch (error) {
-
+            throw error;
         }
     }
 }

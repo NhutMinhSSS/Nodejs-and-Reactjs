@@ -142,6 +142,12 @@ class TeacherController {
         }
         const transaction = await sequelize.transaction();
         try {
+            const classroom = await ClassroomService.checkClassroomExist(classroomId);
+            if (!classroom) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+            } 
             const newTeacherToClassroom = ClassroomTeacherService.addTeachersToClassroom(teacherIds, classroomId, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newTeacherToClassroom);
