@@ -1,4 +1,3 @@
-import './App.css';
 import React from 'react';
 import Content from './page/Main/HomeScreen';
 import JoinClassedStudent from './page/JoinClassed/JoinClassedStudent';
@@ -18,6 +17,7 @@ import AppSubject from './page/Dashboard/AppSubject';
 import AppTeacher from './page/Dashboard/AppTeacher';
 
 import HomeScreenStudent from './page/Main/HomeScreenStudent';
+import Detail from './page/Dashboard/Screen/Detail/Detail';
 
 function App() {
     return (
@@ -44,6 +44,14 @@ function App() {
                         element={
                             <div>
                                 <AppClassSection />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-class-section/detail"
+                        element={
+                            <div className="">
+                                <Detail />
                             </div>
                         }
                     ></Route>

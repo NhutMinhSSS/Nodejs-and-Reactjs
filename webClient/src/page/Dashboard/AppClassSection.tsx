@@ -9,10 +9,10 @@ import {
     MdLockOutline,
     MdOutlineEditCalendar,
     MdOutlineSave,
+    MdPreview,
 } from 'react-icons/md';
 import { Header } from 'antd/es/layout/layout';
-import { title } from 'process';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import HeaderToken from '../../common/utils/headerToken';
 import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
@@ -26,6 +26,7 @@ interface DataType {
     schoolyear: number;
     action: React.ReactNode;
     status: '1' | '2';
+    detail: React.ReactNode;
 }
 
 const BASE_URL = `${SystemConst.DOMAIN}/admin`;
@@ -54,6 +55,7 @@ const option = [
 ];
 const AppClassSection: React.FC = () => {
     //Khai báo các useState
+    const navigate = useNavigate();
     const [selectedItemStatus, setSelectedItemStatus] = useState<{ id?: number; status?: boolean } | null>(null);
     const [selectedItemDelete, setSelectedItemDelete] = useState<{ id?: number } | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,6 +77,7 @@ const AppClassSection: React.FC = () => {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [dataClassSection, setDataClassSection] = useState<DataType[]>([]);
     const [isOpenModalEdit, setIsModalOpenEdit] = useState(false);
+    const [isOpenModalRowTable, setIsModalOpenModalRowTable] = useState(false);
     const [selectedItemEditClassName, setSelectedItemEditClassName] = useState<{
         id?: number;
         class_name: string;
@@ -124,6 +127,10 @@ const AppClassSection: React.FC = () => {
         {
             title: 'Hành động ',
             dataIndex: 'action',
+        },
+        {
+            title: '',
+            dataIndex: 'details',
         },
     ];
     useEffect(() => {
@@ -246,7 +253,6 @@ const AppClassSection: React.FC = () => {
                 handleSuccesCreate();
                 setIsModalOpen(false);
                 //Chuyển dữ liệu khi tạo mới phòng
-                // navigate(`/giang-vien/class/${data.id}`, { state: { data } });
             })
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
@@ -372,6 +378,10 @@ const AppClassSection: React.FC = () => {
                 }
             });
     };
+    const getListTeacher = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios.get(`${BASE_URL}/admin/get-`);
+    };
     const fecthDataOption = () => {
         const config = HeaderToken.getTokenConfig();
         axios.get(`${BASE_URL}/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
@@ -457,6 +467,9 @@ const AppClassSection: React.FC = () => {
             SetSchoolYear(value);
         }
     };
+    // const handleSelectRowDetail = (selectedRow: DataType) => {
+    //     navigate(`/giang-vien/class/${data.id}`, { state: { data } });
+    // };
 
     const handleClassSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectValue = e.target.value;
@@ -550,245 +563,257 @@ const AppClassSection: React.FC = () => {
                             <MdBookmarkAdd />
                         </Button>
                         {/* Modal Create */}
-                        <div className="">
-                            <Modal
-                                visible={isModalOpen}
-                                open={isModalOpen}
-                                onCancel={handleCancel}
-                                footer={null}
-                                className="custom-modal-create-class "
-                            >
-                                <Spin size="large" spinning={loading}>
-                                    <Header className="bg-blue-300 flex items-center">
-                                        <div className="text-xl text-gray-200 font-sans">Tạo lớp học</div>
-                                    </Header>
+                        {/* Modal Edit */}
+                    </div>
+                </div>
+                {loading ? (
+                    <Spin className="mt-40" tip="Loading...">
+                        <div className="content"></div>
+                    </Spin>
+                ) : (
+                    <Table
+                        onRow={(i) => ({
+                            onClick: (e) => navigate(`/admin/app-class-section/detail`),
+                        })}
+                        dataSource={dataClassSection}
+                        columns={columns}
+                    />
+                )}
 
-                                    <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
-                                        <div>
-                                            <label htmlFor=""> Tên lớp học phần</label>
-                                            <Input
-                                                value={nameClass}
-                                                className="h-10 bg-slate-200"
-                                                onChange={handleNameClassChange}
-                                                required
-                                            ></Input>
-                                            {error && nameClass.length <= 0 ? (
-                                                <label className="text-red-500 font-normal">
-                                                    Vui lòng nhập tên lớp học phần
-                                                </label>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
+                <div className="">
+                    <Modal
+                        visible={isModalOpen}
+                        open={isModalOpen}
+                        onCancel={handleCancel}
+                        footer={null}
+                        className="custom-modal-create-class "
+                    >
+                        <Spin size="large" spinning={loading}>
+                            <Header className="bg-blue-300 flex items-center">
+                                <div className="text-xl text-gray-200 font-sans">Tạo lớp học</div>
+                            </Header>
 
+                            <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
+                                <div>
+                                    <label htmlFor=""> Tên lớp học phần</label>
+                                    <Input
+                                        value={nameClass}
+                                        className="h-10 bg-slate-200"
+                                        onChange={handleNameClassChange}
+                                        required
+                                    ></Input>
+                                    {error && nameClass.length <= 0 ? (
+                                        <label className="text-red-500 font-normal">
+                                            Vui lòng nhập tên lớp học phần
+                                        </label>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="">Năm học</label>
+                                    <Input
+                                        className="h-10 bg-slate-200"
+                                        value={schoolYear}
+                                        onChange={handleSchoolYearChange}
+                                        required
+                                        pattern="^\d{4}$"
+                                    />
+                                    {error && schoolYear.length <= 0 ? (
+                                        <label className="text-red-500 font-normal">Vui lòng nhập tên năm học</label>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                <div>
+                                    <label htmlFor="">Học kỳ</label>
+                                    <select
+                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 "
+                                        style={{ resize: 'none' }}
+                                        value={selectedSemester}
+                                        onChange={handleSelectSemester}
+                                    >
+                                        <option value="" disabled selected hidden>
+                                            Chọn học kỳ
+                                        </option>
+                                        {option.map((item) => (
+                                            <option key={item.key} value={item.key}>
+                                                {item.key}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {error && !selectedSemester ? (
+                                        <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                <div>
+                                    <label htmlFor="Lớp">Lớp</label>
+                                    <select
+                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                        style={{ resize: 'none' }}
+                                        value={selectedClass}
+                                        onChange={handleClassSelect}
+                                    >
+                                        <option value="" disabled selected hidden>
+                                            Chọn Lớp
+                                        </option>
+                                        {classes.map((cls) => (
+                                            <option key={cls['id']} value={cls['id']}>
+                                                {cls['class_name']}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {error && !selectedClass ? (
+                                        <div className="text-red-500 font-normal">Vui lòng lớp.</div>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                {selectedClass && (
+                                    <div className="grid gap-y-4">
                                         <div>
-                                            <label htmlFor="">Năm học</label>
-                                            <Input
-                                                className="h-10 bg-slate-200"
-                                                value={schoolYear}
-                                                onChange={handleSchoolYearChange}
-                                                required
-                                                pattern="^\d{4}$"
-                                            />
-                                            {error && schoolYear.length <= 0 ? (
-                                                <label className="text-red-500 font-normal">
-                                                    Vui lòng nhập tên năm học
-                                                </label>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label htmlFor="">Học kỳ</label>
-                                            <select
-                                                className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 "
-                                                style={{ resize: 'none' }}
-                                                value={selectedSemester}
-                                                onChange={handleSelectSemester}
-                                            >
-                                                <option value="" disabled selected hidden>
-                                                    Chọn học kỳ
-                                                </option>
-                                                {option.map((item) => (
-                                                    <option key={item.key} value={item.key}>
-                                                        {item.key}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            {error && !selectedSemester ? (
-                                                <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label htmlFor="Lớp">Lớp</label>
+                                            <label>Giảng Viên</label>
                                             <select
                                                 className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
-                                                style={{ resize: 'none' }}
-                                                value={selectedClass}
-                                                onChange={handleClassSelect}
+                                                value={selectedNameTeacher}
+                                                onChange={handleNameTeacherChange}
+                                                required
                                             >
+                                                {' '}
                                                 <option value="" disabled selected hidden>
-                                                    Chọn Lớp
+                                                    Chọn Giảng Viên
                                                 </option>
-                                                {classes.map((cls) => (
-                                                    <option key={cls['id']} value={cls['id']}>
-                                                        {cls['class_name']}
+                                                {teacher.map((tch) => (
+                                                    <option key={tch['id']} value={tch['id']}>
+                                                        {` ${tch['last_name']} ${tch['first_name']} `}
                                                     </option>
                                                 ))}
                                             </select>
-                                            {error && !selectedClass ? (
+                                            {error && !selectedNameTeacher ? (
+                                                <label className="text-red-500 font-normal">
+                                                    Vui lòng nhập tên Giảng Viên
+                                                </label>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">Môn</label>
+                                            <select
+                                                value={selectedSubject}
+                                                className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
+                                                onChange={handleSelectSubject}
+                                            >
+                                                <option value="" disabled selected hidden>
+                                                    Chọn Môn
+                                                </option>
+                                                {subjects.map((sub) => (
+                                                    <option value={sub['id']} key={sub['id']}>
+                                                        {sub['subject_name']}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {error && !selectedSubject ? (
                                                 <div className="text-red-500 font-normal">Vui lòng lớp.</div>
                                             ) : (
                                                 ''
                                             )}
-                                        </div>
-                                        {selectedClass && (
-                                            <div className="grid gap-y-4">
-                                                <div>
-                                                    <label>Giảng Viên</label>
-                                                    <select
-                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
-                                                        value={selectedNameTeacher}
-                                                        onChange={handleNameTeacherChange}
-                                                        required
-                                                    >
-                                                        {' '}
-                                                        <option value="" disabled selected hidden>
-                                                            Chọn Giảng Viên
-                                                        </option>
-                                                        {teacher.map((tch) => (
-                                                            <option key={tch['id']} value={tch['id']}>
-                                                                {` ${tch['last_name']} ${tch['first_name']} `}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    {error && !selectedNameTeacher ? (
-                                                        <label className="text-red-500 font-normal">
-                                                            Vui lòng nhập tên Giảng Viên
-                                                        </label>
-                                                    ) : (
-                                                        ''
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <label htmlFor="">Môn</label>
-                                                    <select
-                                                        value={selectedSubject}
-                                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
-                                                        onChange={handleSelectSubject}
-                                                    >
-                                                        <option value="" disabled selected hidden>
-                                                            Chọn Môn
-                                                        </option>
-                                                        {subjects.map((sub) => (
-                                                            <option value={sub['id']} key={sub['id']}>
-                                                                {sub['subject_name']}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    {error && !selectedSubject ? (
-                                                        <div className="text-red-500 font-normal">Vui lòng lớp.</div>
-                                                    ) : (
-                                                        ''
-                                                    )}
-                                                </div>{' '}
-                                            </div>
-                                        )}
+                                        </div>{' '}
                                     </div>
-                                    <div className="flex gap-x-4 justify-center ">
-                                        <div>
-                                            <button
-                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                                onClick={handleSubmitCreateRoom}
-                                            >
-                                                Tạo
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <button
-                                                onClick={handleCancel}
-                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                            >
-                                                Hủy
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Spin>
-                            </Modal>
-                        </div>
-                        {/* Modal Edit */}
-                        <div className="">
-                            <Modal
-                                visible={isOpenModalEdit}
-                                open={isOpenModalEdit}
-                                onCancel={handleCancelEdit}
-                                footer={null}
-                                className="custom-modal-create-class "
-                            >
-                                <Spin size="large" spinning={loading}>
-                                    <Header className="bg-blue-300 flex items-center">
-                                        <div className="text-xl text-gray-200 font-semibold">Sửa lớp học</div>
-                                    </Header>
+                                )}
+                            </div>
+                            <div className="flex gap-x-4 justify-center ">
+                                <div>
+                                    <button
+                                        className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                        onClick={handleSubmitCreateRoom}
+                                    >
+                                        Tạo
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={handleCancel}
+                                        className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                    >
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        </Spin>
+                    </Modal>
+                </div>
+                <div className="">
+                    <Modal
+                        visible={isOpenModalEdit}
+                        open={isOpenModalEdit}
+                        onCancel={handleCancelEdit}
+                        footer={null}
+                        className="custom-modal-create-class "
+                    >
+                        <Spin size="large" spinning={loading}>
+                            <Header className="bg-blue-300 flex items-center">
+                                <div className="text-xl text-gray-200 font-semibold">Sửa lớp học</div>
+                            </Header>
 
-                                    <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
-                                        <div>
-                                            <label htmlFor="">Tên lớp học phần</label>
-                                            <Input
-                                                className="h-10 bg-slate-200"
-                                                value={selectedItemEditClassName?.class_name}
-                                                onChange={(e) =>
-                                                    handleNameClassEditClassName({ target: { value: e.target.value } })
-                                                }
-                                                required
-                                            ></Input>
-                                            {error && nameClass.length <= 0 ? (
-                                                <label className="text-red-500 font-normal">
-                                                    Vui lòng nhập tên lớp học phần
-                                                </label>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label htmlFor="">Năm học</label>
-                                            <Input
-                                                className="h-10 bg-slate-200"
-                                                value={selectedItemEditSchoolYear?.school_year}
-                                                onChange={(e) =>
-                                                    handleNameClassEditSchoolYear({ target: { value: e.target.value } })
-                                                }
-                                                required
-                                                pattern="^\d{4}$"
-                                            />
-                                            {error && schoolYear.length <= 0 ? (
-                                                <label className="text-red-500 font-normal">
-                                                    Vui lòng nhập tên năm học
-                                                </label>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
-                                        <div>
-                                            <label htmlFor="">Học kỳ</label>
-                                            <select className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 ">
-                                                <option value={selectedItemEditSemester?.id} disabled selected hidden>
-                                                    {selectedItemEditSemester?.semester}
-                                                </option>
-                                                {option.map((item) => (
-                                                    <option key={item.key} value={item.key}>
-                                                        {item.key}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            {error && !selectedSemester ? (
-                                                <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
-                                            ) : (
-                                                ''
-                                            )}
-                                        </div>
-                                        {/* <div>
+                            <div className="px-5 py-10 grid grid-cols-2 mt-2 gap-x-4 gap-y-6">
+                                <div>
+                                    <label htmlFor="">Tên lớp học phần</label>
+                                    <Input
+                                        className="h-10 bg-slate-200"
+                                        value={selectedItemEditClassName?.class_name}
+                                        onChange={(e) =>
+                                            handleNameClassEditClassName({ target: { value: e.target.value } })
+                                        }
+                                        required
+                                    ></Input>
+                                    {error && nameClass.length <= 0 ? (
+                                        <label className="text-red-500 font-normal">
+                                            Vui lòng nhập tên lớp học phần
+                                        </label>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                <div>
+                                    <label htmlFor="">Năm học</label>
+                                    <Input
+                                        className="h-10 bg-slate-200"
+                                        value={selectedItemEditSchoolYear?.school_year}
+                                        onChange={(e) =>
+                                            handleNameClassEditSchoolYear({ target: { value: e.target.value } })
+                                        }
+                                        required
+                                        pattern="^\d{4}$"
+                                    />
+                                    {error && schoolYear.length <= 0 ? (
+                                        <label className="text-red-500 font-normal">Vui lòng nhập tên năm học</label>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                <div>
+                                    <label htmlFor="">Học kỳ</label>
+                                    <select className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 ">
+                                        <option value={selectedItemEditSemester?.id} disabled selected hidden>
+                                            {selectedItemEditSemester?.semester}
+                                        </option>
+                                        {option.map((item) => (
+                                            <option key={item.key} value={item.key}>
+                                                {item.key}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {error && !selectedSemester ? (
+                                        <div className="text-red-500 font-normal">Vui lòng chọn học kỳ.</div>
+                                    ) : (
+                                        ''
+                                    )}
+                                </div>
+                                {/* <div>
                                             <label htmlFor="Lớp">Lớp</label>
                                             <select
                                                 className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2"
@@ -811,7 +836,7 @@ const AppClassSection: React.FC = () => {
                                                 ''
                                             )}
                                         </div> */}
-                                        {/* {selectedClass && (
+                                {/* {selectedClass && (
                                             <div className="grid gap-y-4">
                                                 <div>
                                                     <label>Giảng Viên</label>
@@ -863,37 +888,28 @@ const AppClassSection: React.FC = () => {
                                                 </div>
                                             </div>
                                         )} */}
-                                    </div>
-                                    <div className="flex gap-x-4 justify-center ">
-                                        <div>
-                                            <button
-                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                                onClick={handleSubmitEditRoom}
-                                            >
-                                                Sửa
-                                            </button>
-                                        </div>
-                                        <div>
-                                            <button
-                                                onClick={handleCancel}
-                                                className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
-                                            >
-                                                Hủy
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Spin>
-                            </Modal>
-                        </div>
-                    </div>
+                            </div>
+                            <div className="flex gap-x-4 justify-center ">
+                                <div>
+                                    <button
+                                        className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                        onClick={handleSubmitEditRoom}
+                                    >
+                                        Sửa
+                                    </button>
+                                </div>
+                                <div>
+                                    <button
+                                        onClick={handleCancel}
+                                        className="text-lg bg-blue-400 px-4 py-2 rounded-lg hover:bg-blue-600"
+                                    >
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        </Spin>
+                    </Modal>
                 </div>
-                {loading ? (
-                    <Spin className="mt-40" tip="Loading...">
-                        <div className="content"></div>
-                    </Spin>
-                ) : (
-                    <Table dataSource={dataClassSection} columns={columns} />
-                )}
             </div>
             <>
                 <div>

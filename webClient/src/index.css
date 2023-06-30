@@ -11,3 +11,23 @@ input:focus ~ label,
 input:not(:placeholder-shown) ~ label {
     transform: translate(-0.25rem, -1rem) scale(0.8);
 }
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #e5e5e5;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #808080;
+    border-radius: 1px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
