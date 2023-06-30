@@ -12,9 +12,7 @@ const path = require('path');
 const fs = require('fs');
 //const socketIO = require('socket.io');
 
-// Cấu hình server HTTP
-
-//const portHttp = SystemConst.PORT_HTTP;
+// Cấu hình server HTTPS
 const portHttps = SystemConst.PORT_HTTPS;
 const domain = SystemConst.DOMAIN;
 
@@ -46,4 +44,3 @@ const start = async (server, port) => {
     }
 };
 start(httpsServer, portHttps);
-//start(httpsServer, 443);
