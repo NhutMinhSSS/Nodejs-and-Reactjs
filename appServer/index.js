@@ -6,21 +6,23 @@ const SystemConst = require('./common/consts/system_const');
 const EnumServerDefinitions = require('./common/enums/enum_server_definitions');
 const customCorsOptions = require('./config/custom_cors_options.config');
 const app = express();
-const http = require('http').Server(app);
-//const https = require('https');
-//const fs = require('fs');
+//const http = require('http').Server(app);
+const https = require('https');
+const path = require('path');
+const fs = require('fs');
 //const socketIO = require('socket.io');
 
 // Cấu hình server HTTP
 
-const port = SystemConst.PORT_HTTP;
+//const portHttp = SystemConst.PORT_HTTP;
+const portHttps = SystemConst.PORT_HTTPS;
 const domain = SystemConst.DOMAIN;
 
-// const httpsOptions = {
-//     key: fs.readFileSync('path/to/private.key'),
-//     cert: fs.readFileSync('path/to/certificate.crt')
-//   };
-//const httpsServer = https.createServer(app);
+const httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+  };
+const httpsServer = https.createServer(httpsOptions, app);
 
 // Khởi tạo socket.io và gắn nó với server HTTPS
 //const io = socketIO(httpsServer);
@@ -43,5 +45,5 @@ const start = async (server, port) => {
         logger.error(error);
     }
 };
-start(http, port);
+start(httpsServer, portHttps);
 //start(httpsServer, 443);
