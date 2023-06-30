@@ -91,6 +91,33 @@ class TeacherService {
             throw error;
         }
     }
+    async findTeachersNotInClassroom(classroomId) {
+        try {
+            const teachersNotInClassroom = await Teacher.findAll({
+                include: [{
+                  model: Department,
+                  where: {
+                    id: {
+                      [Op.eq]: Teacher.sequelize.literal(
+                        `(SELECT department_id FROM classrooms WHERE id = ${classroomId})`
+                      )
+                    }
+                  }
+                }],
+                where: {
+                  id: {
+                    [Op.notIn]: Teacher.sequelize.literal(
+                      `(SELECT teacher_id FROM teacher_lists WHERE classroom_id = ${classroomId} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`
+                    )
+                  },
+                  status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+              });
+              return teachersNotInClassroom;
+        } catch (error) {
+            throw error;
+        }
+    }
     async checkTeacherByDepartmentId(teacherId, departmentId) {
         try {
             const isTeacher = await Teacher.findOne({

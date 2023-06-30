@@ -1,5 +1,6 @@
+const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
-const CommonService = require("../../common/utils/common_service");
+const Classroom = require("../../models/classroom.model");
 const RegularClass = require("../../models/regular_class.model");
 const Student = require("../../models/student.model");
 const StudentList = require("../../models/student_list.model"); 
@@ -60,6 +61,45 @@ class StudentService {
                 attributes: ['id']
             });
             return students;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findStudentNotInClassroom(classroomId) {
+        try {
+            const listStudentsNotInClassroom = await Student.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE,
+                },
+                include: [
+                    {
+                      model: Classroom,
+                      where: {
+                        id: classroomId,
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                      },
+                      through: {
+                        where: {
+                          student_id: {
+                            [Op.ne]: Sequelize.col('student.id')
+                          },
+                          status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: [],
+                        as: 'student_lists'
+                      }
+                    },
+                    {
+                      model: RegularClass,
+                      where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                      },
+                      attributes: ['class_name']
+                    }
+                  ],
+                attributes: ['id', 'first_name', 'last_name']
+            });
+            return listStudentsNotInClassroom;
         } catch (error) {
             throw error;
         }
