@@ -1,7 +1,7 @@
 class SystemConst {
     static PORT_HTTP = 3000;
     static PORT_HTTPS = 3443;
-    static DOMAIN = '192.168.10.14';
+    static DOMAIN = '0.0.0.0';
     static STATUS_CODE = {
         SUCCESS: 200,
         BAD_REQUEST: 400,
