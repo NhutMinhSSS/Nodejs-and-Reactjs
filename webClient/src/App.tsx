@@ -50,7 +50,7 @@ function App() {
                     <Route
                         path="/admin/app-class-section/detail"
                         element={
-                            <div>
+                            <div className="">
                                 <Detail />
                             </div>
                         }
