@@ -30,15 +30,15 @@ class ClassroomService {
                 where: {
                     status: {
                         [Op.notIn]: [
-                          EnumServerDefinitions.STATUS.NO_ACTIVE,
-                          EnumServerDefinitions.STATUS.STORAGE
+                            EnumServerDefinitions.STATUS.NO_ACTIVE,
+                            EnumServerDefinitions.STATUS.STORAGE
                         ]
-                      }
+                    }
                 },
                 include: [{
                     model: RegularClass,
                     where: {
-                       status: EnumServerDefinitions.STATUS.ACTIVE
+                        status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['class_name']
                 }],
@@ -49,12 +49,12 @@ class ClassroomService {
             throw error;
         }
     }
-    async findListTeachersAndListStudentsByClassroomId(classroomId) {
+    async findTeachersAndStudentsBelongToClassByClassroomId(classroomId) {
         try {
             const result = await Classroom.findOne({
                 where: {
                     id: classroomId,
-                    status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 },
                 include: [{
                     model: Teacher,
@@ -104,9 +104,9 @@ class ClassroomService {
             throw error;
         }
     }
-    async updateClassroom(id, className, semester, schoolYear){
+    async updateClassroom(id, className, semester, schoolYear) {
         try {
-            const isUpdate =  await Classroom.update({
+            const isUpdate = await Classroom.update({
                 class_name: className,
                 semester: semester,
                 school_year: schoolYear,
@@ -115,7 +115,7 @@ class ClassroomService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;
@@ -146,13 +146,13 @@ class ClassroomService {
     // }
     async checkRoomMember(classroomId, userId, role) {
         try {
-            const userRole = role === EnumServerDefinitions.ROLE.TEACHER ? {model: TeacherList, filed: 'teacher_id'} : {model: StudentList, filed: 'student_id'};
+            const userRole = role === EnumServerDefinitions.ROLE.TEACHER ? { model: TeacherList, filed: 'teacher_id' } : { model: StudentList, filed: 'student_id' };
             const isClassroom = await (userRole.model).findOne({
-               where: {
-                classroom_id: classroomId,
-                [userRole.filed]: userId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-               },
+                where: {
+                    classroom_id: classroomId,
+                    [userRole.filed]: userId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
             });
             return !!isClassroom;
         } catch (error) {
@@ -168,7 +168,7 @@ class ClassroomService {
                 regular_class_id: regularClassId,
                 // teacher_id: teacherId,
                 subject_id: subjectId
-            }, { transaction: transaction});
+            }, { transaction: transaction });
             return newClassroom;
         } catch (error) {
             throw error;
@@ -183,11 +183,11 @@ class ClassroomService {
                 return false;
             }
             let status = classroom && classroom.status === 1 ? EnumServerDefinitions.STATUS.CLOSE : EnumServerDefinitions.STATUS.ACTIVE
-            const isDelete =  await Classroom.update({
+            const isDelete = await Classroom.update({
                 status: status
             }, {
                 where: {
-                    id: id,                   
+                    id: id,
                 }
             });
             return isDelete > EnumServerDefinitions.EMPTY;
@@ -217,11 +217,11 @@ class ClassroomService {
     }
     async deleteClassroom(id) {
         try {
-            const isDelete =  await Classroom.update({
+            const isDelete = await Classroom.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: id,                 
+                    id: id,
                 }
             });
             return isDelete > EnumServerDefinitions.EMPTY;
