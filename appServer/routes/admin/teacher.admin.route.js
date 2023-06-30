@@ -6,5 +6,6 @@ TeacherAdminRouter.get('/', TeacherController.getAllTeacherInit);
 TeacherAdminRouter.post('/create-teacher', TeacherController.addTeacher);
 TeacherAdminRouter.patch('/update-teacher', TeacherController.updateTeacher);
 TeacherAdminRouter.delete('/delete/:teacher_id', TeacherController.deleteTeacher);
+TeacherAdminRouter.post('add-teacher-to-classroom', TeacherController.addTeachersToClassroom);
 
 module.exports = TeacherAdminRouter;

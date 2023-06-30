@@ -13,6 +13,7 @@ const db = require("../config/connect_database.config");
 const FormatUtils = require("../common/utils/format.utils");
 const PostService = require("../services/post_services/post.service");
 const PostDetailService = require("../services/post_services/post_detail.service");
+const ClassroomService = require("../services/classroom_services/classroom.service");
 const sequelize = db.getPool();
 
 
@@ -149,6 +150,12 @@ class StudentController {
         }
         const transaction = await sequelize.transaction();
         try {
+            const classroom = await ClassroomService.checkClassroomExist(classroomId);
+            if (!classroom) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+            } 
             await ClassroomStudentService.addStudentsToNewClassroom(classroomId, studentIds, transaction);
             const listPosts = await PostService.findAllPostsByClassroomId(classroomId);
             if (listPosts) {

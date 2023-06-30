@@ -62,25 +62,14 @@ class ClassroomStudentService {
             throw error;
         }
     }
-    async addStudentToClassroom(classroomId, studentId, transaction) {
+    async addStudentsAlterToClassroom(classroomId, studentIds, transaction) {
         try {
-            const studentExistsClassroom = await this.checkStudentNoActive(classroomId, studentId);
-            if (studentExistsClassroom) {
-                await StudentList.update({
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                }, {
-                    where: {
-                       id: studentExistsClassroom.id
-                    }, transaction: transaction
-                });
-                return studentExistsClassroom;
-            } else {
-                const newStudentToClassroom = await StudentList.create({
-                    classroom_id: classroomId,
-                    student_id: studentId
-                }, { transaction: transaction});
-                return newStudentToClassroom;
-            }
+            const listStudent = studentIds.map(item => ({
+                classroom_id: classroomId,
+                student_id: item.id
+            }));
+            const newStudentToClassroom = await StudentList.bulkCreate(listStudent, { updateOnDuplicate: ['classroom_id', 'student_id'], transaction});
+            return newStudentToClassroom;
         } catch (error) {
             throw error;
         }
