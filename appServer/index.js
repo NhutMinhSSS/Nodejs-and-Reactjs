@@ -16,11 +16,11 @@ const fs = require('fs');
 const portHttps = SystemConst.PORT_HTTPS;
 const domain = SystemConst.DOMAIN;
 
-const httpsOptions = {
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
-  };
-const httpsServer = https.createServer(httpsOptions, app);
+// const httpsOptions = {
+//     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+//     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem'))
+//   };
+const httpsServer = https.createServer(app);
 
 // Khởi tạo socket.io và gắn nó với server HTTPS
 //const io = socketIO(httpsServer);
