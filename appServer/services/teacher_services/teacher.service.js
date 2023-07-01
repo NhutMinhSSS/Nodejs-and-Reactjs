@@ -102,9 +102,18 @@ class TeacherService {
                   required: true,
                     include: [{
                         model: RegularClass,
+                        required: true,
                         where: {
-                            id: { [Op.eq]: Teacher.sequelize.literal(`(SELECT regular_class_id FROM classrooms WHERE id = ${classroomId})`)}
+                            status: EnumServerDefinitions.STATUS.ACTIVE
                         },
+                        include: [{
+                            model: Classroom,
+                            where: {
+                                id: classroomId,
+                                status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                            },
+                            attributes: []
+                        }],
                         attributes: []
                     }],
                     attributes: ['department_name']
