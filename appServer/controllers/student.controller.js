@@ -212,7 +212,7 @@ class StudentController {
         }
         const transaction = await sequelize.transaction();
         try {
-            const isRemove = await ClassroomStudentService.removeTeachersFromClassroom(classroomId, studentIds);
+            const isRemove = await ClassroomStudentService.removeStudentsFromClassroom(classroomId, studentIds);
             if (!isRemove) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
