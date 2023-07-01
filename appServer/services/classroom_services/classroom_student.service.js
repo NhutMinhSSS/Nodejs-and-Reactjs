@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const EnumServerDefinitions = require('../../common/enums/enum_server_definitions');
 const CommonService = require('../../common/utils/common_service');
 const StudentList = require('../../models/student_list.model');
@@ -64,13 +65,36 @@ class ClassroomStudentService {
     }
     async addStudentsAlterToClassroom(classroomId, studentIds, transaction) {
         try {
-            const listStudent = studentIds.map(item => ({
-                classroom_id: classroomId,
-                student_id: item.id,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-            }));
-            const newStudentToClassroom = await StudentList.bulkCreate(listStudent, { updateOnDuplicate: ['status'], transaction});
-            return newStudentToClassroom;
+            const existingStudentIds = await StudentList.findAll({
+                where: {
+                    classroom_id: classroomId,
+                    student_id: {[Op.in]: studentIds}
+                },
+                attributes: ['student_id'],
+                transaction
+            });
+            const studentsToUpdate = existingStudentIds.map(({ student_id}) => student_id);
+            const studentsToInsert = studentIds.filter(studentId => !studentToUpdate.includes(studentId));
+            if (studentsToInsert.length !== EnumServerDefinitions.EMPTY) {
+                const studentListInsert = studentsToInsert.map(studentId => ({
+                    classroom_id: classroomId,
+                    student_id: studentId,
+                }));
+                await StudentList.bulkCreate(studentListInsert, { transaction, updateOnDuplicate: ['status']});
+            }
+            if (studentsToUpdate.length !== EnumServerDefinitions.EMPTY) {
+                await StudentList.update({status: EnumServerDefinitions.STATUS.ACTIVE}, {
+                    where: {
+                        classroom_id: classroomId,
+                        student_id: {[Op.in]: studentToUpdate}
+                    }, transaction
+                })
+            }
+            const result = {
+                student_insert: studentsToInsert,
+                student_update: studentsToUpdate 
+            }
+            return result;
         } catch (error) {
             throw error;
         }

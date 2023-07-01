@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const StudentExam = require("../../models/student_exam.model");
 const StudentList = require("../../models/student_list.model");
@@ -48,13 +49,34 @@ class StudentExamService {
     }
     async addStudentExams(studentExams, transaction) {
         try {
-            // const listStudentExams = studentIds.map(item => ({
-            //     exam_id: postId,
-            //     student_id: item
-            // }));
-            const newStudentExams = await StudentExam.bulkCreate(studentExams,
-                     { transaction, updateOnDuplicate: ['status'] });
-            return newStudentExams;
+            const existingStudentExams = await StudentExam.findAll({
+                where: {
+                    exam_id: studentExams.map(({ exam_id }) => exam_id),
+                    student_id: studentExams.map(({ student_id }) => student_id)
+                },
+                attributes: ['exam_id', 'student_id']
+            });
+
+            const existingStudentExamsMap = existingStudentExams.reduce((map, { exam_id, student_id }) => {
+                map[`${exam_id}-${student_id}`] = true;
+                return map;
+            }, {});
+            const studentExamsToCreate = studentExams.filter(({ exam_id, student_id }) => !existingStudentExamsMap[`${exam_id}-${student_id}`]);
+            const studentExamsToUpdate = studentExams.filter(({ exam_id, student_id }) => existingStudentExamsMap[`${exam_id}-${student_id}`]);
+            if (studentExamsToCreate.length !== EnumServerDefinitions.EMPTY) {
+                await StudentExam.bulkCreate(studentExamsToCreate, { transaction });
+            }
+    
+            if (studentExamsToUpdate.length !== EnumServerDefinitions.EMPTY) {
+                const updatePromises = studentExamsToUpdate.map(({ exam_id, student_id }) =>
+                    StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
+                        where: { exam_id, student_id },
+                        transaction
+                    })
+                );
+                await Promise.all(updatePromises);
+            }
+            return true;
         } catch (error) {
             throw error;
         }
