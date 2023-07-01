@@ -81,7 +81,7 @@ class StudentService {
                       through: {
                         where: {
                           student_id: {
-                            [Op.ne]: Sequelize.col('student.id')
+                            [Op.ne]: Student.sequelize.col('student.id')
                           },
                           status: EnumServerDefinitions.STATUS.ACTIVE
                         },
