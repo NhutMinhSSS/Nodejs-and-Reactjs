@@ -174,7 +174,7 @@ class TeacherController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             } 
-            const newTeacherToClassroom = ClassroomTeacherService.addTeachersToClassroom(teacherIds, classroomId, transaction);
+            const newTeacherToClassroom = await ClassroomTeacherService.addTeachersToClassroom(teacherIds, classroomId, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newTeacherToClassroom);
         } catch (error) {
