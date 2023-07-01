@@ -100,6 +100,9 @@ class TeacherService {
                 include: [{
                   model: Department,
                   required: true,
+                  where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                  },
                     include: [{
                         model: RegularClass,
                         required: true,
