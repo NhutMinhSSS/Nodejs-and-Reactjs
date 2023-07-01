@@ -1,6 +1,7 @@
 const EnumServerDefinitions = require('../../common/enums/enum_server_definitions');
 const CommonService = require('../../common/utils/common_service');
 const TeacherList = require('../../models/teacher_list.model');
+const { Op } = require('sequelize');
 
 class ClassroomTeacherService {
     //Function find list classroom form teacher id
@@ -53,10 +54,27 @@ class ClassroomTeacherService {
         try {
             const listTeachers = teacherIds.map(item => ({
                 classroom_id: classroomId,
-                teacher_id: item
+                teacher_id: item,
+                status: EnumServerDefinitions.STATUS.ACTIVE
             }));
-            const newListTeachers = await TeacherList.bulkCreate(listTeachers, { updateOnDuplicate: ['teacher_id', 'classroom_id'], transaction });
+            const newListTeachers = await TeacherList.bulkCreate(listTeachers, { updateOnDuplicate: ['status'], transaction });
             return newListTeachers;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async removeTeachersFromClassroom(classroomId, teacherIds) {
+        try {
+            const isRemove = await TeacherList.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    classroom_id: classroomId,
+                    teacher_id: {[Op.in]: teacherIds},
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return isRemove > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

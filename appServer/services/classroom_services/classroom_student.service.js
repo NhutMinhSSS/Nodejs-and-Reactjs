@@ -66,10 +66,27 @@ class ClassroomStudentService {
         try {
             const listStudent = studentIds.map(item => ({
                 classroom_id: classroomId,
-                student_id: item.id
+                student_id: item.id,
+                status: EnumServerDefinitions.STATUS.ACTIVE
             }));
-            const newStudentToClassroom = await StudentList.bulkCreate(listStudent, { updateOnDuplicate: ['classroom_id', 'student_id'], transaction});
+            const newStudentToClassroom = await StudentList.bulkCreate(listStudent, { updateOnDuplicate: ['status'], transaction});
             return newStudentToClassroom;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async removeStudentsFromClassroom(classroomId, studentIds) {
+        try {
+            const isRemove = await StudentList.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    classroom_id: classroomId,
+                    student_id: {[Op.in]: studentIds},
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return isRemove > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
