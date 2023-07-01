@@ -64,7 +64,7 @@ class ClassroomController {
         }
     }
     async getListTeachersByDepartmentIdAndStudents(req, res) {
-        const classroomId = req.body.classroom_id;
+        const classroomId = req.params.classroom_id;
         if (!classroomId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
