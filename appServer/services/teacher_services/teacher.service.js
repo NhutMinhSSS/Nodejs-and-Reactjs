@@ -3,6 +3,8 @@ const EnumServerDefinitions = require("../../common/enums/enum_server_definition
 const TeacherList = require("../../models/teacher_list.model");
 const Department = require("../../models/department.model");
 const { Op } = require("sequelize");
+const Classroom = require('../../models/classroom.model');
+const RegularClass = require('../../models/regular_class.model');
 class TeacherService {
     async findTeacherByTeacherCode(teacherCode) {
         try {
@@ -97,13 +99,15 @@ class TeacherService {
             const teachersNotInClassroom = await Teacher.findAll({
                 include: [{
                   model: Department,
-                  where: {
-                    id: {
-                      [Op.eq]: Teacher.sequelize.literal(
-                        `(SELECT department_id FROM classrooms WHERE id = ${classroomId})`
-                      )
-                    }
-                  }
+                  required: true,
+                    include: [{
+                        model: RegularClass,
+                        where: {
+                            id: { [Op.eq]: Teacher.sequelize.literal(`(SELECT regular_class_id FROM classrooms WHERE id = ${classroomId})`)}
+                        },
+                        attributes: []
+                    }],
+                    attributes: ['department_name']
                 }],
                 where: {
                   id: {
@@ -112,7 +116,8 @@ class TeacherService {
                     )
                   },
                   status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id', 'first_name', 'last_name']
               });
               return teachersNotInClassroom;
         } catch (error) {

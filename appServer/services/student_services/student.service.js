@@ -70,25 +70,11 @@ class StudentService {
             const listStudentsNotInClassroom = await Student.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE,
+                    id: {
+                        [Op.notIn]: Student.sequelize.literal(`(SELECT student_id FROM student_lists WHERE classroom_id = ${classroomId} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                      },
                 },
                 include: [
-                    {
-                      model: Classroom,
-                      where: {
-                        id: classroomId,
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                      },
-                      through: {
-                        where: {
-                          student_id: {
-                            [Op.ne]: Student.sequelize.col('student.id')
-                          },
-                          status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        attributes: [],
-                        as: 'student_lists'
-                      }
-                    },
                     {
                       model: RegularClass,
                       where: {
@@ -97,7 +83,7 @@ class StudentService {
                       attributes: ['class_name']
                     }
                   ],
-                attributes: ['id', 'first_name', 'last_name']
+                attributes: ['id', 'first_name', 'last_name'],
             });
             return listStudentsNotInClassroom;
         } catch (error) {
