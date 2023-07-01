@@ -47,6 +47,11 @@ class StudentController {
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
+            const classroom = await ClassroomService.checkClassroomExist(classroomId);
+            if (!classroom) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+            }
             const studentsList = await StudentService.findStudentNotInClassroom(classroomId);
             const result = studentsList.map(({ id, first_name, last_name, RegularClass }) => ({
                 id,
