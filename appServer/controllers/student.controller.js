@@ -10,6 +10,8 @@ const StudentExamService = require("../services/student_services/student_exam.se
 const StudentFileSubmissionService = require("../services/student_services/student_file_submission.service");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
 const db = require("../config/connect_database.config");
+const AccountService = require("../services/account_services/account.service");
+const CommonService = require("../common/utils/common_service");
 const FormatUtils = require("../common/utils/format.utils");
 const PostService = require("../services/post_services/post.service");
 const PostDetailService = require("../services/post_services/post_detail.service");
@@ -29,6 +31,30 @@ class StudentController {
                 class_name: RegularClass.class_name
             }));
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
+        }
+    }
+    async getStudentsListNotInClassroom(req, res) {
+        const classroomId = req.params.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const studentsList = await StudentService.findStudentNotInClassroom(classroomId);
+            const result = studentsList.map(({ id, first_name, last_name, RegularClass }) => ({
+                id,
+                first_name,
+                last_name,
+                class_name: RegularClass.class_name,
+              }));
+              return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(

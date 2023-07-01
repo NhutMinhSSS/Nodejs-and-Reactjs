@@ -23,6 +23,32 @@ class TeacherController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async getTeachersListNotInClassroom(req, res) {
+        const classroomId = req.params.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const classroom = await ClassroomService.checkClassroomExist(classroomId);
+            if (!classroom) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
+            }
+           const teacherList = await TeacherService.findTeachersNotInClassroom(classroomId);
+           const result = teacherList.map(({ id, first_name, last_name, Department }) => ({
+            id,
+            first_name,
+            last_name,
+            department_name: Department.department_name,
+          }))
+           return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async addTeacher(req, res) {
         const teacherCode = req.body.teacher_code;
         const firstName = req.body.first_name;

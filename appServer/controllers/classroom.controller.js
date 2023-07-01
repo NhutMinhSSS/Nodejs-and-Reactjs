@@ -68,43 +68,6 @@ class ClassroomController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async getListTeachersByDepartmentIdAndStudents(req, res) {
-        const classroomId = req.params.classroom_id;
-        if (!classroomId) {
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.REQUIRED_INFORMATION);
-        }
-        try {
-            const classroom = await ClassroomService.checkClassroomExist(classroomId);
-            if (!classroom) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
-            }
-            const [listTeachers, listStudents] = await Promise.all([
-                TeacherService.findTeachersNotInClassroom(classroomId),
-                StudentService.findStudentNotInClassroom(classroomId)
-            ]);
-            const result = {
-                list_teachers: listTeachers.map(({ id, first_name, last_name, Department }) => ({
-                  id,
-                  first_name,
-                  last_name,
-                  department_name: Department.department_name,
-                })),
-                list_students: listStudents.map(({ id, first_name, last_name, RegularClass }) => ({
-                  id,
-                  first_name,
-                  last_name,
-                  class_name: RegularClass.class_name,
-                })),
-              };
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
-        } catch (error) {
-            logger.error(error);
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
-        }
-    }
     async getTeacherAndSubjectAndRegularClass(req, res) {
         try {
             const teachers = await TeacherService.findAllTeachers();
