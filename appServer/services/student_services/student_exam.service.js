@@ -52,7 +52,8 @@ class StudentExamService {
             //     exam_id: postId,
             //     student_id: item
             // }));
-            const newStudentExams = await StudentExam.bulkCreate(studentExams, { transaction });
+            const newStudentExams = await StudentExam.bulkCreate(studentExams,
+                     { transaction, updateOnDuplicate: ['status'] });
             return newStudentExams;
         } catch (error) {
             throw error;

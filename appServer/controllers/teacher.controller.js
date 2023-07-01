@@ -184,6 +184,30 @@ class TeacherController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async removeTeachersFromClassroom(req, res) {
+        const teacherIds = req.body.teacher_ids;
+        const classroomId = req.body.classroom_id;
+        if (teacherIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        const transaction = await sequelize.transaction();
+        try {
+            const isRemove = await ClassroomTeacherService.removeTeachersFromClassroom(classroomId, teacherIds);
+            if (!isRemove) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            await transaction.rollback();
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
 }
 
 module.exports = new TeacherController;
