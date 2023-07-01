@@ -187,7 +187,7 @@ class StudentController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             } 
-            await ClassroomStudentService.addStudentsToNewClassroom(classroomId, studentIds, transaction);
+            await ClassroomStudentService.addStudentsAlterToClassroom(classroomId, studentIds, transaction);
             const listPosts = await PostService.findAllPostsByClassroomId(classroomId);
             if (listPosts) {
                 const publicPosts = listPosts.filter(post => post.post_details.is_public === true);

@@ -52,47 +52,34 @@ class ClassroomTeacherService {
     }
     async addTeachersToClassroom(teacherIds, classroomId, transaction) {
         try {
-            // const existingTeacherIds = await TeacherList.findAll({
-            //     where: {
-            //         teacher_id: {[Op.in]: teacherIds},
-            //         classroom_id: classroomId
-            //     },
-            //     attributes: ['teacher_id'],
-            //     transaction
-            // });
-            // const teachersToUpdate = existingTeacherIds.map(({ teacher_id }) => teacher_id);
-            // const teachersToInsert = teacherIds.filter(teacherId => !teachersToUpdate.includes(teacherId));
-            // if (teachersToInsert.length !== EnumServerDefinitions.EMPTY) {
-            //     const teacherListInsert =  teachersToInsert.map(teacherId => ({
-            //         classroom_id: classroomId,
-            //         teacher_id: teacherId,
-            //       }));
-            //     await TeacherList.bulkCreate(teacherListInsert ,
-            //         { transaction, updateOnDuplicate: ['status'] }
-            //       );
-            // }
-            // if (teachersToUpdate.length !== EnumServerDefinitions.EMPTY) {
-            //     await TeacherList.update({ status: EnumServerDefinitions.STATUS.ACTIVE}, {
-            //         where: {
-            //             classroom_id: classroomId,
-            //             teacher_id: {[Op.in]: teacherIds}
-            //         }, transaction
-            //     });
-            // }
-            // return true;
-            const query = `
-            INSERT INTO teacher_lists (classroom_id, teacher_id, status)
-            VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE status = ?
-        `;
-        const values = teacherIds.map(teacherId => [classroomId, teacherId, EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.ACTIVE]);
-
-        await TeacherList.sequelize.query(query, {
-            replacements: values,
-            transaction
-        });
-
-        return true;
+            const existingTeacherIds = await TeacherList.findAll({
+                where: {
+                    teacher_id: {[Op.in]: teacherIds},
+                    classroom_id: classroomId
+                },
+                attributes: ['teacher_id'],
+                transaction
+            });
+            const teachersToUpdate = existingTeacherIds.map(({ teacher_id }) => teacher_id);
+            const teachersToInsert = teacherIds.filter(teacherId => !teachersToUpdate.includes(teacherId));
+            if (teachersToInsert.length !== EnumServerDefinitions.EMPTY) {
+                const teacherListInsert =  teachersToInsert.map(teacherId => ({
+                    classroom_id: classroomId,
+                    teacher_id: teacherId,
+                  }));
+                await TeacherList.bulkCreate(teacherListInsert ,
+                    { transaction, updateOnDuplicate: ['status'] }
+                  );
+            }
+            if (teachersToUpdate.length !== EnumServerDefinitions.EMPTY) {
+                await TeacherList.update({ status: EnumServerDefinitions.STATUS.ACTIVE}, {
+                    where: {
+                        classroom_id: classroomId,
+                        teacher_id: {[Op.in]: teachersToUpdate}
+                    }, transaction
+                });
+            }
+            return true;
         } catch (error) {
             throw error;
         }
