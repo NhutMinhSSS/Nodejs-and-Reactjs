@@ -6,7 +6,6 @@ const LoginController = require('../controllers/login.controller');
 const classroomRouter = require('./classroom.route');
 const postRouter = require('./post.route');
 const AdminRouter = require('./admin/admin.route');
-const Student = require('../models/student.model');
 
 
 
@@ -22,32 +21,6 @@ router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', /* authenticateToken, */ postRouter);
 
-router.get('/add', async(req, res) => {
-    const list = [];
-    for (let i =0; i< 30 ; i++) {
-        let s;
-        if (i < 10){
-            s = `0${i}`
-        } else {
-            s = i;
-        }
-        const student = {
-            student_code: `03062010${s}`,
-            first_name: i,
-            last_name: 'Lê Văn',
-            date_of_birth: '2002-01-01',
-            gender: i % 2 === 0 ? true : false,
-            phone_number: `03958355${i}`,
-            CCCD: `test${s}`,
-            regular_class_id: 1,
-            address: 'Bình Dương'
-
-        }
-        list.push(student);
-    }
-    await Student.bulkCreate(list);
-    return res.json({success});
-})
 router.get('/test', (req, res) => {
     const questions = [
         {
