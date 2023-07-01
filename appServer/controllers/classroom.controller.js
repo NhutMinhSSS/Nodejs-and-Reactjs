@@ -41,7 +41,7 @@ class ClassroomController {
                     EnumMessage.REQUIRED_INFORMATION);
             }
             const classroom = await ClassroomService.checkClassroomExist(classroomId);
-            if (classroom) {
+            if (!classroom) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             }
