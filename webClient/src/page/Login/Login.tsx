@@ -74,13 +74,13 @@ const Login: React.FC = () => {
                 .catch((error) => {
                     if (axios.isAxiosError(error)) {
                         if (
-                            error.response?.status === systemConst.STATUS_CODE.NOT_FOUND &&
-                            error.response.data.result_message === 'Failed'
+                            error.response?.status === systemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                            error.response.data.error_message === 'No exist email'
                         ) {
                             setMessage('Tài khoản không tồn tại');
                         } else if (
-                            error.response?.status === systemConst.STATUS_CODE.FORBIDDEN_REQUEST &&
-                            error.response.data.result_message === 'Invalid password'
+                            error.response?.status === systemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                            error.response.data.error_message === 'Invalid password'
                         ) {
                             setMessage('Sai mật khẩu');
                         } else if (error.response?.status === systemConst.STATUS_CODE.BAD_REQUEST) {

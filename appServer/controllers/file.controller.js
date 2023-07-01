@@ -4,6 +4,7 @@ const logger = require("../config/logger.config");
 const fs = require("fs");
 const EnumMessage = require("../common/enums/enum_message");
 const FileService = require("../services/file_service/file.service");
+const path = require("path");
 
 
 class FileController {
@@ -15,7 +16,7 @@ class FileController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
-            const filePath = fs.readFileSync(file.file_path);
+            const filePath = path.join(__dirname, file.file_path)
             if (filePath) {
                 return res.download(filePath);
             }
