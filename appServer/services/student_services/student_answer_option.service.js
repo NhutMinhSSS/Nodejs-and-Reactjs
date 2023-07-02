@@ -14,3 +14,5 @@ class StudentAnswerOptionService {
         }
     }
 }
+
+module.exports = new StudentAnswerOptionService;
