@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Question = require('./question.model');
 const sequelize = db.getPool();
 
 class StudentRandomizedQuestionList extends Model{}
@@ -45,5 +46,7 @@ StudentRandomizedQuestionList.init({
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+
+StudentRandomizedQuestionList.hasOne(Question, {foreignKey: 'question_id'})
 
 module.exports = StudentRandomizedQuestionList;
