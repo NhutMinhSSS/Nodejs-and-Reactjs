@@ -3,8 +3,8 @@ const router = express.Router();
 const responseMiddleware = require('../middlewares/response.middleware');
 const authenticateToken = require('../middlewares/authenticate.middleware');
 const LoginController = require('../controllers/login.controller');
-const classroomRouter = require('./classroom.route');
-const postRouter = require('./post.route');
+const classroomRouter = require('./users/classroom.route');
+const postRouter = require('./users/post.route');
 const AdminRouter = require('./admin/admin.route');
 
 
