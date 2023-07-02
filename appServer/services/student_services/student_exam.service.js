@@ -62,20 +62,20 @@ class StudentExamService {
                 return map;
             }, {});
             const studentExamsToCreate = studentExams.filter(({ exam_id, student_id }) => !existingStudentExamsMap[`${exam_id}-${student_id}`]);
-            const studentExamsToUpdate = studentExams.filter(({ exam_id, student_id }) => existingStudentExamsMap[`${exam_id}-${student_id}`]);
+            //const studentExamsToUpdate = studentExams.filter(({ exam_id, student_id }) => existingStudentExamsMap[`${exam_id}-${student_id}`]);
             if (studentExamsToCreate.length !== EnumServerDefinitions.EMPTY) {
                 await StudentExam.bulkCreate(studentExamsToCreate, { transaction });
             }
     
-            if (studentExamsToUpdate.length !== EnumServerDefinitions.EMPTY) {
-                const updatePromises = studentExamsToUpdate.map(({ exam_id, student_id }) =>
-                    StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
-                        where: { exam_id, student_id },
-                        transaction
-                    })
-                );
-                await Promise.all(updatePromises);
-            }
+            // if (studentExamsToUpdate.length !== EnumServerDefinitions.EMPTY) {
+            //     const updatePromises = studentExamsToUpdate.map(({ exam_id, student_id }) =>
+            //         StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
+            //             where: { exam_id, student_id },
+            //             transaction
+            //         })
+            //     );
+            //     await Promise.all(updatePromises);
+            // }
             return true;
         } catch (error) {
             throw error;
