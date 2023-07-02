@@ -1,4 +1,3 @@
-const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const Answer = require("../../models/answer.model");
 const Question = require("../../models/question.model");
 
