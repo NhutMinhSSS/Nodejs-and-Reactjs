@@ -42,7 +42,8 @@ class StudentController {
     }
     async getStudentsListNotInClassroom(req, res) {
         const classroomId = req.params.classroom_id;
-        if (!classroomId) {
+        const regularClassId = req.params.regular_class_id;
+        if (!classroomId || !regularClassId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
@@ -52,7 +53,7 @@ class StudentController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             }
-            const studentsList = await StudentService.findStudentNotInClassroom(classroomId);
+            const studentsList = await StudentService.findStudentNotInClassroom(classroomId, regularClassId);
             const result = studentsList.map(({ id, first_name, last_name, RegularClass }) => ({
                 id,
                 first_name,

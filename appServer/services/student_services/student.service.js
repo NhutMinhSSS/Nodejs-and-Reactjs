@@ -65,11 +65,12 @@ class StudentService {
             throw error;
         }
     }
-    async findStudentNotInClassroom(classroomId) {
+    async findStudentNotInClassroom(classroomId, regularClassId) {
         try {
             const listStudentsNotInClassroom = await Student.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE,
+                    regular_class_id: regularClassId,
                     id: {
                         [Op.notIn]: Student.sequelize.literal(`(SELECT student_id FROM student_lists WHERE classroom_id = ${classroomId} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
                       },
