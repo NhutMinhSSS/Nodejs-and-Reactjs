@@ -51,8 +51,8 @@ class StudentExamService {
         try {
             const existingStudentExams = await StudentExam.findAll({
                 where: {
-                    exam_id: studentExams.map(({ exam_id }) => exam_id),
-                    student_id: studentExams.map(({ student_id }) => student_id)
+                    exam_id: {[Op.in]: studentExams.map(({ exam_id }) => exam_id)},
+                    student_id: {[Op.in]: studentExams.map(({ student_id }) => student_id)}
                 },
                 attributes: ['exam_id', 'student_id']
             });
