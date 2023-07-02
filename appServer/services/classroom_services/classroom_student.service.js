@@ -74,7 +74,7 @@ class ClassroomStudentService {
                 transaction
             });
             const studentsToUpdate = existingStudentIds.map(({ student_id}) => student_id);
-            const studentsToInsert = studentIds.filter(studentId => !studentToUpdate.includes(studentId));
+            const studentsToInsert = studentIds.filter(studentId => !studentsToUpdate.includes(studentId));
             if (studentsToInsert.length !== EnumServerDefinitions.EMPTY) {
                 const studentListInsert = studentsToInsert.map(studentId => ({
                     classroom_id: classroomId,
