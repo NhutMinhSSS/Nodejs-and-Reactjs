@@ -43,7 +43,15 @@ class ClassroomController {
                 teacherId = teacher.id;
             }
             const classroomsStorage = await ClassroomService.findAllClassroomsStorage(teacherId);
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, classroomsStorage);
+            const result = classroomsStorage.map(({id, class_name, semester, school_year, status, RegularClass}) => ({
+                id,
+                class_name,
+                semester,
+                school_year,
+                regular_class_name: RegularClass.class_name,
+                status
+            }));
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
