@@ -60,19 +60,32 @@ router.get('/test', (req, res) => {
                 { id: 4, answer_id: 11 }
             ]
         }
-    ];
-    let score = 0;
-
-    questions.forEach(itemQ => {
+    ]
+      let totalScore = 0; // Biến tích lũy tổng điểm
+      
+      questions.forEach(itemQ => {
+        const questionScore = itemQ.score; // Điểm của câu hỏi
+        totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
+      });
+      
+      let finalScore = 0; // Điểm cuối cùng
+      
+      questions.forEach(itemQ => {
         const cau_dung = itemQ.answers.filter(item => item.isCorrect).length;
-
         const dung = itemQ.answers.reduce((total, itemA) => {
-            const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
-            return total + (itemA.isCorrect && isChosen ? 1 : 0);
+          const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
+          return total + (itemA.isCorrect && isChosen ? 1 : 0);
         }, 0);
-
-        score += (itemQ.score * dung / cau_dung);
-    });
+      
+        const questionScore = itemQ.score; // Điểm của câu hỏi
+        finalScore += (dung / cau_dung) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
+      });
+      
+      finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+      
+      console.log('Điểm cuối cùng:', finalScore);
+      
+    //totalscore điểm * 100 / tổng điểm
     console.log(score);
     return res.send('Success');
 });

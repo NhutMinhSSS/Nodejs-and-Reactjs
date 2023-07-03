@@ -111,15 +111,22 @@ class PostController {
                     const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
                     studentIds = listStudents.map(item => item.student_id);
                 } else {
-                    const listStudents = req.body.list_student || [];
+                    const listStudents = req.body.list_student;
                     studentIds = listStudents.map(item => item.id);
                 }
+                const studentExams = studentIds.map(item => ({
+                    exam_id: newPost.id,
+                    student_id: item
+                }))
+                await StudentExamService.addStudentExams(studentExams, transaction);
                 if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                     //create question
                     const listQuestionAndAnswers = req.body.list_questions_and_answers;
-                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction);
+                    //tổng điểm
+                    //update postDeatil
+                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction); 
                 }
-                await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
+                //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
             if (files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files);
