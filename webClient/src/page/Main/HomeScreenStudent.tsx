@@ -28,7 +28,7 @@ const HomeScreenStudent: React.FC = () => {
     useEffect(() => {
         setIsLoading(true);
         axios
-            .get('http://20.39.197.125:3000/api/classrooms', config)
+            .get('https://20.39.197.125:3443/api/classrooms', config)
             .then((response) => {
                 // Xử lý dữ liệu từ response
                 const data = response.data.response_data;
@@ -52,39 +52,39 @@ const HomeScreenStudent: React.FC = () => {
     }, []);
     return (
         <>
+            <div>
+                <HeaderHomeStudent />
                 <div>
-                    <HeaderHomeStudent />
-                    <div>
-                        <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
-                            {screenClass.map((item) => (
-                                <div
-                                    className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300 w-auto max-h-80 h-[25rem]"
-                                    key={item['id']}
-                                >
-                                    <div className="p-5 bg-gray-400 rounded-t-md">
-                                        <Link
-                                            className="text-xl font-semibold hover:underline underline-offset-[5px]"
-                                            to={`class/${item['id']}`}
-                                        >
-                                            {item['class_name']}
-                                            <br />
-                                            {item['title']}
-                                        </Link>
+                    <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
+                        {screenClass.map((item) => (
+                            <div
+                                className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300 w-auto max-h-80 h-[25rem]"
+                                key={item['id']}
+                            >
+                                <div className="p-5 bg-gray-400 rounded-t-md">
+                                    <Link
+                                        className="text-xl font-semibold hover:underline underline-offset-[5px]"
+                                        to={`class/${item['id']}`}
+                                    >
+                                        {item['class_name']}
+                                        <br />
+                                        {item['title']}
+                                    </Link>
 
-                                        <div className="w-14 h-14 float-right">
-                                            <MdAccountCircle size={40} />
-                                        </div>
+                                    <div className="w-14 h-14 float-right">
+                                        <MdAccountCircle size={40} />
                                     </div>
-
-                                    <div className="mt-8 p-5 flex justify-between items-center"></div>
                                 </div>
-                            ))}
-                        </section>
-                    </div>
-                    <div className="flex justify-center">
-                        <Spin size="large" className="" spinning={isLoading} />
-                    </div>
+
+                                <div className="mt-8 p-5 flex justify-between items-center"></div>
+                            </div>
+                        ))}
+                    </section>
                 </div>
+                <div className="flex justify-center">
+                    <Spin size="large" className="" spinning={isLoading} />
+                </div>
+            </div>
             )
         </>
     );
