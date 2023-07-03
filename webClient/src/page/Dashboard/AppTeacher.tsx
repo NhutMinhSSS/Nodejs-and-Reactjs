@@ -50,7 +50,6 @@ const AppTeacher: React.FC = () => {
 
     useEffect(() => {
         handleFecthData();
-        selectOptionAPITeacher();
     }, []);
     const handleFecthData = () => {
         const config = HeaderToken.getTokenConfig();
@@ -233,6 +232,7 @@ const AppTeacher: React.FC = () => {
             setError(true);
         } else {
             handleCreateTeacher();
+            selectOptionAPITeacher();
             setOpenModal(false);
         }
     };

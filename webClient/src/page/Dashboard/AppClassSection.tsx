@@ -1,4 +1,4 @@
-import { Button, Col, Input, Modal, Row, Spin, Tooltip } from 'antd';
+import { Button, Col, Dropdown, Input, Menu, Modal, Row, Space, Spin, Tooltip } from 'antd';
 import Table, { ColumnsType } from 'antd/es/table';
 import React, { useState, useEffect } from 'react';
 import './scss/styleDashboard.scss';
@@ -7,7 +7,9 @@ import {
     MdDelete,
     MdLockOpen,
     MdLockOutline,
+    MdManageSearch,
     MdOutlineEditCalendar,
+    MdOutlineMoreHoriz,
     MdOutlineSave,
     MdPreview,
 } from 'react-icons/md';
@@ -58,6 +60,7 @@ const AppClassSection: React.FC = () => {
     const navigate = useNavigate();
     const [selectedItemStatus, setSelectedItemStatus] = useState<{ id?: number; status?: boolean } | null>(null);
     const [selectedItemDelete, setSelectedItemDelete] = useState<{ id?: number } | null>(null);
+    const [selectedItemDetail, setSelectedItemDetail] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [nameClass, setNameClass] = useState('');
     const [selectedNameTeacher, setSelectedNameTeacher] = useState('');
@@ -90,6 +93,41 @@ const AppClassSection: React.FC = () => {
         id?: number;
         school_year: number;
     } | null>(null);
+
+    const items = [
+        {
+            key: '1',
+            label: (
+                <div>
+                    <MdOutlineEditCalendar />
+                </div>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <div>
+                    <MdOutlineEditCalendar />
+                </div>
+            ),
+        },
+        {
+            key: '3',
+            label: (
+                <div>
+                    <MdOutlineEditCalendar />
+                </div>
+            ),
+        },
+        {
+            key: '4',
+            label: (
+                <div>
+                    <MdOutlineEditCalendar />
+                </div>
+            ),
+        },
+    ];
 
     const columns: ColumnsType<DataType> = [
         {
@@ -161,6 +199,9 @@ const AppClassSection: React.FC = () => {
                         status: item.status === 1 ? 'Đang mở' : 'Đang đóng',
                         action: (
                             <>
+                                {/* <Space>
+                                    <Dropdown>đasad</Dropdown>
+                                </Space>
                                 <div className=" grid grid-cols-2  gap-y-1 w-[6rem]">
                                     <Tooltip title="Sửa lớp học phần">
                                         <button
@@ -203,7 +244,59 @@ const AppClassSection: React.FC = () => {
                                             </div>
                                         </button>
                                     </Tooltip>
-                                </div>
+                                </div> */}
+                                <Dropdown
+                                    trigger={['click']}
+                                    overlay={
+                                        <Menu>
+                                            <Menu.Item
+                                                onClick={() => {
+                                                    handleDetail(item.id);
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-x-1">
+                                                    <MdManageSearch size={22} />
+                                                    Xem chi tiết
+                                                </div>
+                                            </Menu.Item>
+                                            <Menu.Item onClick={() => handleEdit(item)}>
+                                                <div className="flex items-center gap-x-1 ">
+                                                    <MdOutlineEditCalendar size={20} /> Sửa lớp học phần
+                                                </div>
+                                            </Menu.Item>
+                                            <Menu.Item onClick={() => handleStatus(item)}>
+                                                {item.status === 1 ? (
+                                                    <div className="flex items-center gap-x-1">
+                                                        <MdLockOutline size={20} /> Đóng lớp học phần
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-x-1">
+                                                        <MdLockOpen size={20} />
+                                                        Mở lớp học phần
+                                                    </div>
+                                                )}
+                                            </Menu.Item>
+                                            <Menu.Item onClick={() => handleEdit(item)}>
+                                                <div className="flex items-center gap-x-1">
+                                                    <MdOutlineSave size={20} />
+                                                    Lưu trữ lớp học phần
+                                                </div>
+                                            </Menu.Item>
+                                            <Menu.Item onClick={() => handleDelete(item)}>
+                                                <div className="flex items-center gap-x-1">
+                                                    <MdDelete size={20} />
+                                                    Xóa lớp học phần
+                                                </div>
+                                            </Menu.Item>
+                                        </Menu>
+                                    }
+                                >
+                                    <button className="bg-blue-400 px-3 py-2 w-10 rounded-lg hover:bg-blue-700 hover:text-white flex justify-center items-center">
+                                        <div>
+                                            <MdOutlineMoreHoriz size={18} />
+                                        </div>
+                                    </button>
+                                </Dropdown>
                             </>
                         ),
                     }),
@@ -222,6 +315,9 @@ const AppClassSection: React.FC = () => {
                 // Xử lý lỗi nếu có
                 console.error(error);
             });
+    };
+    const customItemMenu = () => {
+        return 'flex items-center gap-x-1 hover:bg-slate-300 w-full px-2 rounded-md py-1';
     };
     const colorStatus = (status: any) => {
         return status === 1 ? 'bg-red-500 hover:bg-red-700' : 'bg-green-400 hover:bg-green-700';
@@ -378,10 +474,20 @@ const AppClassSection: React.FC = () => {
                 }
             });
     };
-    const getListTeacher = () => {
-        const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/admin/get-`);
-    };
+    // const handleClassSectionDetail = () => {
+    //     const config = HeaderToken.getTokenConfig();
+    //     const dataDetail = selectedItemDetail;
+    //     axios.get(`${BASE_URL}/classrooms/get-classroom-detail/${dataDetail}`, config).then((response) => {
+    //         navigate(``);
+    //     });
+    // };
+    // const getListTeacher = () => {
+    //     const config = HeaderToken.getTokenConfig();
+    //     axios.get(`${BASE_URL}/get-classroom-detail${selectedClass}`, config).then((response) => {
+    //         const Api_data = response.data.response_data;
+    //         console.log('data list: ', Api_data);
+    //     });
+    // };
     const fecthDataOption = () => {
         const config = HeaderToken.getTokenConfig();
         axios.get(`${BASE_URL}/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
@@ -446,6 +552,13 @@ const AppClassSection: React.FC = () => {
         setSelectedItemDelete(item);
         setDeleteModalVisible(true);
     };
+    const handleDetail = (id: number) => {
+        setSelectedItemDetail(id);
+        navigate(`/admin/app-class-section/detail/${id}`);
+        console.log('id: ', id);
+        // handleClassSectionDetail();
+    };
+
     const showModal = () => {
         fecthDataOption();
         setIsModalOpen(true);
@@ -551,6 +664,9 @@ const AppClassSection: React.FC = () => {
             Notification('success', 'Thông báo', 'Mở thành công lớp học phần');
         }
     };
+    // onRow={(i) => ({
+    //     onClick: (e) => navigate(`/admin/app-class-section/detail`),
+    // })}
     return (
         <>
             <div className="container mt-5">
@@ -571,13 +687,7 @@ const AppClassSection: React.FC = () => {
                         <div className="content"></div>
                     </Spin>
                 ) : (
-                    <Table
-                        onRow={(i) => ({
-                            onClick: (e) => navigate(`/admin/app-class-section/detail`),
-                        })}
-                        dataSource={dataClassSection}
-                        columns={columns}
-                    />
+                    <Table dataSource={dataClassSection} columns={columns} />
                 )}
 
                 <div className="">
@@ -746,6 +856,8 @@ const AppClassSection: React.FC = () => {
                         </Spin>
                     </Modal>
                 </div>
+
+                {/* Modal Sửa Lớp Học */}
                 <div className="">
                     <Modal
                         visible={isOpenModalEdit}

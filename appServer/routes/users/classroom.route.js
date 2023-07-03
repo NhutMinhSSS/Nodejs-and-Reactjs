@@ -12,5 +12,6 @@ ClassroomRouter.get('/', authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServ
 ClassroomRouter.get('/:classroom_id',  authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), checkRoomMember, PostController.showPostsByUser);
 //classroomRouter.post('/create-classroom', authorize([EnumServerDefinitions.ROLE.TEACHER]), classroomController.createClassroom);
 //classroomRouter.post('/join-classroom', classroomController.joinClassroom);
+ClassroomRouter.get('/get-storage-classrooms', authorize([EnumServerDefinitions.ROLE.ADMIN, EnumServerDefinitions.ROLE.TEACHER]), ClassroomController.getAllStorageClassrooms);
 
 module.exports = ClassroomRouter;

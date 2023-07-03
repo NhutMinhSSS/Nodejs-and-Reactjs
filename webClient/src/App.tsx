@@ -18,6 +18,7 @@ import AppTeacher from './page/Dashboard/AppTeacher';
 
 import HomeScreenStudent from './page/Main/HomeScreenStudent';
 import Detail from './page/Dashboard/Screen/Detail/Detail';
+import { MdArrowBack } from 'react-icons/md';
 
 function App() {
     return (
@@ -48,7 +49,7 @@ function App() {
                         }
                     ></Route>
                     <Route
-                        path="/admin/app-class-section/detail"
+                        path="/admin/app-class-section/detail/:id"
                         element={
                             <div className="">
                                 <Detail />

@@ -165,8 +165,8 @@ const AppClass = () => {
     };
     // Hàm hiển thị Modal
     const handleShowModal = () => {
-        handleFecthDataOption();
         setOpenModal(true);
+        handleFecthDataOption();
     };
     const handleCancel = () => {
         setOpenModal(false);

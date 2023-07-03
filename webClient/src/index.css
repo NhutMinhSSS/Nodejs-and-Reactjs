@@ -23,7 +23,7 @@ input:not(:placeholder-shown) ~ label {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #808080;
+    background-color: rgba(122, 129, 89, 0.2);
     border-radius: 1px;
 }
 
