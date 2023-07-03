@@ -86,7 +86,7 @@ class ClassroomStudentService {
                 await StudentList.update({status: EnumServerDefinitions.STATUS.ACTIVE}, {
                     where: {
                         classroom_id: classroomId,
-                        student_id: {[Op.in]: studentToUpdate}
+                        student_id: {[Op.in]: studentsToUpdate}
                     }, transaction
                 })
             }
