@@ -25,7 +25,9 @@ router.get('/test', (req, res) => {
     const questions = [
         {
             content: 'Câu hỏi 1',
+            exam_id: 1,
             score: 10,
+            question_category_id: 2,
             answers: [
                 { id: 3, content: 'Đáp án 1.1', isCorrect: true },
                 { id: 4, content: 'Đáp án 1.2', isCorrect: true },
@@ -39,6 +41,8 @@ router.get('/test', (req, res) => {
         {
             content: 'Câu hỏi 2',
             score: 10,
+            exam_id: 1,
+            question_category_id: 1,
             answers: [
                 { id: 6, content: 'Đáp án 2.1', isCorrect: true },
                 { id: 7, content: 'Đáp án 2.2', isCorrect: false },
@@ -51,6 +55,8 @@ router.get('/test', (req, res) => {
         {
             content: 'Câu hỏi 3',
             score: 10,
+            exam_id: 1,
+            question_category_id: 1,
             answers: [
                 { id: 9, content: 'Đáp án 3.1', isCorrect: true },
                 { id: 10, content: 'Đáp án 3.2', isCorrect: false },
@@ -61,33 +67,33 @@ router.get('/test', (req, res) => {
             ]
         }
     ]
-      let totalScore = 0; // Biến tích lũy tổng điểm
+    //   let totalScore = 0; // Biến tích lũy tổng điểm
       
-      questions.forEach(itemQ => {
-        const questionScore = itemQ.score; // Điểm của câu hỏi
-        totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
-      });
+    //   questions.forEach(itemQ => {
+    //     const questionScore = itemQ.score; // Điểm của câu hỏi
+    //     totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
+    //   });
       
-      let finalScore = 0; // Điểm cuối cùng
+    //   let finalScore = 0; // Điểm cuối cùng
       
-      questions.forEach(itemQ => {
-        const cau_dung = itemQ.answers.filter(item => item.isCorrect).length;
-        const dung = itemQ.answers.reduce((total, itemA) => {
-          const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
-          return total + (itemA.isCorrect && isChosen ? 1 : 0);
-        }, 0);
+    //   questions.forEach(itemQ => {
+    //     const cau_dung = itemQ.answers.filter(item => item.isCorrect).length;
+    //     const dung = itemQ.answers.reduce((total, itemA) => {
+    //       const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
+    //       return total + (itemA.isCorrect && isChosen ? 1 : 0);
+    //     }, 0);
       
-        const questionScore = itemQ.score; // Điểm của câu hỏi
-        finalScore += (dung / cau_dung) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
-      });
+    //     const questionScore = itemQ.score; // Điểm của câu hỏi
+    //     finalScore += (dung / cau_dung) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
+    //   });
       
-      finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+    //   finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
       
-      console.log('Điểm cuối cùng:', finalScore);
+    //   console.log('Điểm cuối cùng:', finalScore);
       
-    //totalscore điểm * 100 / tổng điểm
-    console.log(score);
-    return res.send('Success');
+    // //totalscore điểm * 100 / tổng điểm
+    // console.log(score);
+    return res.json(questions);
 });
 //post check detail, edit, delete, send exam
 module.exports = router;
