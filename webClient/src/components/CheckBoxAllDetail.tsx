@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-type CheckBoxAllProps = {
+type CheckBoxAllDetailProps = {
     options: { label: string; icon: React.ReactNode }[];
     onChange: (selectedOptions: string[]) => void;
+    className?: string;
 };
 
-const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
+const CheckBoxAllDetail: React.FC<CheckBoxAllDetailProps> = ({ options, onChange, className }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [selectAll, setSelectAll] = useState(true);
 
@@ -41,7 +42,7 @@ const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
     };
 
     return (
-        <div className="p-2">
+        <div className={`p-2 ${className}`}>
             <label className="flex items-center flex-row gap-x-2 text-base">
                 <input className="mt-1" type="checkbox" checked={selectAll} onChange={handleSelectAll} />
                 Chọn tất cả
@@ -62,4 +63,4 @@ const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
     );
 };
 
-export default CheckBoxAll;
+export default CheckBoxAllDetail;

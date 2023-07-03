@@ -127,7 +127,6 @@ const AppGenre = () => {
     };
     useEffect(() => {
         handleFecthData();
-        fetchDataSelectOption();
     }, []);
     const handleCreateSubject = () => {
         const config = HeaderToken.getTokenConfig();
@@ -264,6 +263,7 @@ const AppGenre = () => {
             setErrorGenre(true);
         } else {
             handleCreateSubject();
+            fetchDataSelectOption();
         }
     };
     const handleSubmitEditGenre = () => {
