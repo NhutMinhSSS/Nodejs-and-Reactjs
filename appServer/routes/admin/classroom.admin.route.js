@@ -8,7 +8,6 @@ ClassroomAdminRouter.get('/get-teachers-subjects-regularclass', ClassroomControl
 ClassroomAdminRouter.post('/create-classroom', ClassroomController.createClassroom);
 ClassroomAdminRouter.patch('/update-classroom', ClassroomController.updateClassroom);
 ClassroomAdminRouter.patch('/update-status-classroom', ClassroomController.CloseAndActiveClassroom);
-ClassroomAdminRouter.patch('/set-storage-classroom', ClassroomController.StorageClassroom);
 ClassroomAdminRouter.delete('/delete-classroom/:classroom_id', ClassroomController.deleteClassroom);
 
 module.exports = ClassroomAdminRouter;
