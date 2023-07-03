@@ -78,27 +78,30 @@ class PostController {
     //Create Post
     async createPost(req, res) {
         const accountId = req.user.account_id;
-        // const role = req.user.role;
+        const role = req.user.role;
         const title = req.body.title;
         const content = req.body.content || null;
         const classroomId = req.classroom.classroom_id;
-        const topicId = req.body.topic_id || null;
-        const startDate = req.body.start_date || null;
-        const finishDate = req.body.finish_date || null;
-        const invertedQuestion = req.body.inverted_question || 0;
-        const invertedAnswer = req.body.inverted_answer || 0;
-        const isPublic = req.body.is_public || false;
+        const topicId = req.body.topic_id;
         const postCategoryId = req.body.post_category_id;
-        // if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
-        //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
-        //         EnumMessage.NO_PERMISSION)
-        // }
-        const files = req.files || [];
+        if (!title || !postCategoryId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        } 
+        if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                EnumMessage.NO_PERMISSION)
+        }
+        const files = req.files;
         const transaction = await sequelize.transaction();
         try {
-
             const newPost = await PostService.createPost(title, content, postCategoryId, accountId, classroomId, topicId, transaction);
             if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                const startDate = req.body.start_date;
+                const finishDate = req.body.finish_date;
+                const invertedQuestion = req.body.inverted_question || 0;
+                const invertedAnswer = req.body.inverted_answer || 0;
+                const isPublic = req.body.is_public || false;
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, transaction);
                 //student exam

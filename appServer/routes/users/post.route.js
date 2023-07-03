@@ -6,7 +6,7 @@ const checkPostBelongToClassroom = require('../../middlewares/check_post_classro
 
 const postRouter = express.Router();
 
-postRouter.post('/create-post'/* ,checkRoomMember */, download.array('files'), PostController.createPost);
+postRouter.post('/create-post',checkRoomMember, download.array('files'), PostController.createPost);
 postRouter.get('/:post_details', checkPostBelongToClassroom,PostController.getPostDetail);
 
 module.exports = postRouter;
