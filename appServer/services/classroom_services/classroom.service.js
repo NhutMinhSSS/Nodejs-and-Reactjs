@@ -56,7 +56,7 @@ class ClassroomService {
                     status: EnumServerDefinitions.STATUS.STORAGE
                 },
                 include: teacherId &&  {
-                    model: TeacherList,
+                    model: Teacher,
                     required: true,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
