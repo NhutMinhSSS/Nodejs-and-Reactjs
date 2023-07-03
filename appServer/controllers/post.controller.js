@@ -10,6 +10,7 @@ const PostDetailService = require("../services/post_services/post_detail.service
 const FileService = require("../services/file_service/file.service");
 const PostFileService = require("../services/post_services/post_file.service");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
+const StudentService = require("../services/student_services/student.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
 const FormatUtils = require("../common/utils/format.utils");
 const QuestionService = require("../services/question_services/question.service");
