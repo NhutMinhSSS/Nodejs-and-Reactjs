@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 router.post('/login', LoginController.login);
 router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
-router.use('/posts', /* authenticateToken, */ postRouter);
+router.use('/posts', authenticateToken, postRouter);
 
 router.get('/test', (req, res) => {
     const questions = [
