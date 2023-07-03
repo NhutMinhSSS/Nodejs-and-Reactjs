@@ -14,12 +14,12 @@ const checkRoomMember = async (req, res, next) => {
         const user = role === EnumServerDefinitions.ROLE.TEACHER
             ? await TeacherService.findTeacherByAccountId(accountId)
             : await StudentService.findStudentByAccountId(accountId);
-            if (!user) {
-                const errorMessage = role === EnumServerDefinitions.ROLE.TEACHER
-                  ? EnumMessage.TEACHER_NOT_EXISTS
-                  : EnumMessage.STUDENT_NOT_EXISTS;
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, errorMessage);
-              }
+        //     if (!user) {
+        //         const errorMessage = role === EnumServerDefinitions.ROLE.TEACHER
+        //           ? EnumMessage.TEACHER_NOT_EXISTS
+        //           : EnumMessage.STUDENT_NOT_EXISTS;
+        //         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, errorMessage);
+        //       }
         const classroom = await ClassroomService.findClassroomById(classroomId);
         if (!classroom) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
