@@ -33,6 +33,23 @@ class ClassroomController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async getAllStorageClassrooms(req, res) {
+        const role = req.user.role;
+        const accountId = req.user.account_id;
+        try {
+            let teacherId = null;
+            if (role === EnumServerDefinitions.ROLE.TEACHER) {
+                const teacher = await TeacherService.findTeacherByAccountId(accountId);
+                teacherId = teacher.id;
+            }
+            const classroomsStorage = await ClassroomService.findAllClassroomsStorage(teacherId);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, classroomsStorage);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async getListTeachersAndListStudentsByClassroomId(req, res) {
         try {
             const classroomId = req.params.classroom_id;

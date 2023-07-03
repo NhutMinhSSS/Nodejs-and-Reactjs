@@ -49,6 +49,32 @@ class ClassroomService {
             throw error;
         }
     }
+    async findAllClassroomsStorage(teacherId = null) {
+        try {
+            const classroomsList = await Classroom.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.STORAGE
+                },
+                include: teacherId &&  {
+                    model: TeacherList,
+                    required: true,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    through: {
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    },
+                    attributes: []
+                }
+            });
+            return classroomsList;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findTeachersAndStudentsBelongToClassByClassroomId(classroomId) {
         try {
             const result = await Classroom.findOne({
