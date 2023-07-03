@@ -67,21 +67,54 @@ router.get('/test', (req, res) => {
           ]
         },
         {
-            "content": "Tình yêu là gì?",
-            "exam_id": 1,
-            "score": 10,
-            "question_category_id": 2,
-            "answers": [
-              { "id": 12, "content": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "isCorrect": true },
-              { "id": 13, "content": "Một loại bệnh", "isCorrect": false },
-              { "id": 14, "content": "Một trạng thái của tâm hồn", "isCorrect": true },
-              { "id": 15, "content": "Sự hợp tác và chia sẻ giữa hai người", "isCorrect": false }
+            content: "Tình yêu là gì?",
+            exam_id: 1,
+            score: 10,
+            question_category_id: 2,
+            answers: [
+              { id: 12, "content": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "isCorrect": true },
+              { id: 13, "content": "Một loại bệnh", "isCorrect": false },
+              { id: 14, "content": "Một trạng thái của tâm hồn", "isCorrect": true },
+              { id: 15, "content": "Sự hợp tác và chia sẻ giữa hai người", "isCorrect": false }
             ],
-            "student_exam": [
-              { "id": 3, "answer_id": 14 },
-              { "id": 4, "answer_id": 15 }
+            student_exam: [
+              { id: 3, "answer_id": 14 },
+              { id: 4, "answer_id": 15 }
+            ]
+          },
+          {
+            content: "Tình yêu có thể đến bất ngờ ở đâu?",
+            exam_id: 1,
+            score: 10,
+            question_category_id: 2,
+            answers: [
+              { id: 16, "content": "Trong một buổi hẹn đầu tiên", "isCorrect": false },
+              { id: 17, "content": "Ở nơi làm việc", "isCorrect": true },
+              { id: 18, "content": "Trên mạng xã hội", "isCorrect": true },
+              { id: 19, "content": "Chỉ trong tiểu thuyết và phim ảnh", "isCorrect": false }
+            ],
+            student_exam: [
+              { id: 5, "answer_id": 17 },
+              { id: 6, "answer_id": 19 }
+            ]
+          },
+          {
+            content: "Tình yêu có thể tồn tại trong thời gian dài không?",
+            xam_id: 1,
+            score: 10,
+            question_category_id: 2,
+            answers: [
+              { id: 14, "content": "Có, nếu có sự cố gắng và tôn trọng", "isCorrect": true },
+              { id: 15, "content": "Không, tình yêu chỉ là tạm thời", "isCorrect": false },
+              { id: 16, "content": "Tùy thuộc vào tình huống", "isCorrect": true },
+              { id: 17, "content": "Chỉ trong truyện cổ tích", "isCorrect": false }
+            ],
+            student_exam: [
+              { id: 7, "answer_id": 14 },
+              { id: 8, "answer_id": 16 }
             ]
           }
+          
         // Các câu hỏi khác...
       ];
     //   let totalScore = 0; // Biến tích lũy tổng điểm
