@@ -55,10 +55,11 @@ class ClassroomService {
                 where: {
                     status: EnumServerDefinitions.STATUS.STORAGE
                 },
-                include: teacherId &&  {
-                    model: TeacherList,
+                include: [teacherId &&  {
+                    model: Teacher,
                     required: true,
                     where: {
+                        id: teacherId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     through: {
@@ -68,7 +69,15 @@ class ClassroomService {
                         attributes: []
                     },
                     attributes: []
-                }
+                }, {
+                    model: RegularClass,
+                    required: true,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['class_name']
+                }],
+                attributes: ['id', 'class_name', 'semester', 'school_year', 'status']
             });
             return classroomsList;
         } catch (error) {
