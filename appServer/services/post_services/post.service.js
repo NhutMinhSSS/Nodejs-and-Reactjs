@@ -54,8 +54,12 @@ class PostService {
     }
     async findPostsByClassroomIdAndAccountId(classroomId, studentId = null) {
         try {
+            const dateTimeNow = FormatUtils.dateTimeNow().format('YYYY-MM-DD HH:mm:ss');
             const isTeacher = { '$post_category_id$': { [Op.ne]: EnumServerDefinitions.POST_CATEGORY.NEWS } };
-            const condition = studentId ? { '$student_exams.student_id$': studentId } : isTeacher;
+            const condition = studentId ? {
+                '$student_exams.student_id$': studentId,
+                [Op.or]: [{ '$post_details.is_hidden$': false }, { '$post_details.start_date$': { [Op.lt]: dateTimeNow } }]
+            } : isTeacher;
             const listPost = await Post.findAll({
                 where: {
                     classroom_id: classroomId,
@@ -196,90 +200,90 @@ class PostService {
         try {
             const whereCondition = {
                 id: postId,
-                post_category_id: {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.NEWS},
+                post_category_id: { [Op.ne]: EnumServerDefinitions.POST_CATEGORY.NEWS },
                 status: EnumServerDefinitions.STATUS.ACTIVE
-              };
-              if (studentId) {
+            };
+            if (studentId) {
                 whereCondition['$student_exams.student_id$'] = studentId;
-              }
+            }
             const postDetails = await Post.findOne({
                 where: whereCondition,
                 include: [{
-                        model: PostFile,
+                    model: PostFile,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id'],
+                    as: 'post_files',
+                    include: [{
+                        model: File,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
+                    }],
+                }, {
+                    model: PostDetail,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['start_date', 'finish_date', 'inverted_question', 'inverted_answer'],
+                    as: 'post_details',
+                }, {
+                    model: Comment,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [{
+                        model: Account,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        include: [{
+                            model: Student,
+                            required: false,
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            attributes: ['last_name', 'first_name']
+                        }, {
+                            model: Teacher,
+                            required: false,
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            attributes: ['last_name', 'first_name']
+                        }],
+                        attributes: ['id', 'role']
+                    }],
+                    attributes: ['id', 'content', 'comment_date'],
+                    order: [['comment_date', 'ASC']]
+                }, {
+                    model: StudentExam,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'finish_date', 'total_score', 'submission'],
+                    include: [{
+                        model: StudentFileSubmission,
                         required: false,
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
                         attributes: ['id'],
-                        as: 'post_files',
+                        as: 'student_file_submissions',
                         include: [{
                             model: File,
                             where: {
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
                             attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
-                        }],
-                    }, {
-                        model: PostDetail,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        attributes: ['start_date', 'finish_date', 'inverted_question', 'inverted_answer'],
-                        as: 'post_details',
-                    }, {
-                        model: Comment,
-                        required: false,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        include: [{
-                            model: Account,
-                            where: {
-                                status: EnumServerDefinitions.STATUS.ACTIVE
-                            },
-                            include: [{
-                                model: Student,
-                                required: false,
-                                where: {
-                                    status: EnumServerDefinitions.STATUS.ACTIVE
-                                },
-                                attributes: ['last_name', 'first_name']
-                            }, {
-                                model: Teacher,
-                                required: false,
-                                where: {
-                                    status: EnumServerDefinitions.STATUS.ACTIVE
-                                },
-                                attributes: ['last_name', 'first_name']
-                            }],
-                            attributes: ['id', 'role']
-                        }],
-                        attributes: ['id', 'content', 'comment_date'],
-                        order: [['comment_date', 'ASC']]
-                    }, {
-                        model: StudentExam,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        attributes: ['id', 'finish_date', 'total_score', 'submission'],
-                        include: [{
-                            model: StudentFileSubmission,
-                            required: false,
-                            where: {
-                                status: EnumServerDefinitions.STATUS.ACTIVE
-                            },
-                            attributes: ['id'],
-                            as: 'student_file_submissions',
-                            include: [{
-                                model: File,
-                                where: {
-                                    status: EnumServerDefinitions.STATUS.ACTIVE
-                                },
-                                attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
-                            }]
-                        }],
-                        as: 'student_exams',
+                        }]
                     }],
+                    as: 'student_exams',
+                }],
                 attributes: ['id']
             });
             return FormatUtils.formatPostDetail(postDetails);

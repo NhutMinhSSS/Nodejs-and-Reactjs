@@ -49,8 +49,12 @@ class FormatUtils {
         }).filter(item => item !== null);
         return listFiles;
     }
-    //format date time now
+    //get date time now
     dateTimeNow() {
+        return moment.tz(SystemConst.TIME_ZONE);
+    }
+    //format date time now
+    dateTimeNowString() {
         return moment().tz(SystemConst.TIME_ZONE).format('YYYYMMDDHHmmss');
     }
     //// Format post

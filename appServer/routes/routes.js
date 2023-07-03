@@ -24,49 +24,50 @@ router.use('/posts', authenticateToken, postRouter);
 router.get('/test', (req, res) => {
     const questions = [
         {
-            content: 'Câu hỏi 1',
-            exam_id: 1,
-            score: 10,
-            question_category_id: 2,
-            answers: [
-                { id: 3, content: 'Đáp án 1.1', isCorrect: true },
-                { id: 4, content: 'Đáp án 1.2', isCorrect: true },
-                { id: 5, content: 'Đáp án 1.3', isCorrect: false }
-            ],
-            student_exam: [
-                { id: 1, answer_id: 3 },
-                { id: 2, answer_id: 5 }
-            ]
+          content: 'Đâu là thủ đô của Việt Nam?',
+          exam_id: 1,
+          score: 10,
+          question_category_id: 1,
+          answers: [
+            { id: 3, content: 'Hà Nội', isCorrect: true },
+            { id: 4, content: 'Hồ Chí Minh', isCorrect: false },
+            { id: 5, content: 'Đà Nẵng', isCorrect: false }
+          ],
+          student_exam: [
+            { id: 1, answer_id: 3 },
+            { id: 2, answer_id: 4 }
+          ]
         },
         {
-            content: 'Câu hỏi 2',
-            score: 10,
-            exam_id: 1,
-            question_category_id: 1,
-            answers: [
-                { id: 6, content: 'Đáp án 2.1', isCorrect: true },
-                { id: 7, content: 'Đáp án 2.2', isCorrect: false },
-                { id: 8, content: 'Đáp án 2.3', isCorrect: false }
-            ],
-            student_exam: [
-                { id: 3, answer_id: 6 }
-            ]
+          content: 'Ai là người đầu tiên đặt chân lên mặt trăng?',
+          exam_id: 1,
+          score: 10,
+          question_category_id: 1,
+          answers: [
+            { id: 6, content: 'Neil Armstrong', isCorrect: true },
+            { id: 7, content: 'Buzz Aldrin', isCorrect: false },
+            { id: 8, content: 'Michael Collins', isCorrect: false }
+          ],
+          student_exam: [
+            { id: 3, answer_id: 6 }
+          ]
         },
         {
-            content: 'Câu hỏi 3',
-            score: 10,
-            exam_id: 1,
-            question_category_id: 1,
-            answers: [
-                { id: 9, content: 'Đáp án 3.1', isCorrect: true },
-                { id: 10, content: 'Đáp án 3.2', isCorrect: false },
-                { id: 11, content: 'Đáp án 3.3', isCorrect: false }
-            ],
-            student_exam: [
-                { id: 4, answer_id: 11 }
-            ]
-        }
-    ]
+          content: 'Ai là vị tướng lừng danh trong lịch sử Việt Nam?',
+          exam_id: 1,
+          score: 10,
+          question_category_id: 1,
+          answers: [
+            { id: 9, content: 'Võ Nguyên Giáp', isCorrect: true },
+            { id: 10, content: 'Trần Hưng Đạo', isCorrect: false },
+            { id: 11, content: 'Lê Lợi', isCorrect: false }
+          ],
+          student_exam: [
+            { id: 4, answer_id: 9 }
+          ]
+        },
+        // Các câu hỏi khác...
+      ];
     //   let totalScore = 0; // Biến tích lũy tổng điểm
       
     //   questions.forEach(itemQ => {
