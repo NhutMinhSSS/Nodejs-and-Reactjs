@@ -66,6 +66,22 @@ router.get('/test', (req, res) => {
             { id: 4, answer_id: 9 }
           ]
         },
+        {
+            "content": "Tình yêu là gì?",
+            "exam_id": 1,
+            "score": 10,
+            "question_category_id": 2,
+            "answers": [
+              { "id": 12, "content": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "isCorrect": true },
+              { "id": 13, "content": "Một loại bệnh", "isCorrect": false },
+              { "id": 14, "content": "Một trạng thái của tâm hồn", "isCorrect": true },
+              { "id": 15, "content": "Sự hợp tác và chia sẻ giữa hai người", "isCorrect": false }
+            ],
+            "student_exam": [
+              { "id": 3, "answer_id": 14 },
+              { "id": 4, "answer_id": 15 }
+            ]
+          }
         // Các câu hỏi khác...
       ];
     //   let totalScore = 0; // Biến tích lũy tổng điểm
