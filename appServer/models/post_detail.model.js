@@ -48,6 +48,11 @@ PostDetail.init({
         allowNull: false,
         defaultValue: true
     },
+    is_hidden: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: 0
+    },
     status: {
         type: DataTypes.SMALLINT,
         allowNull: false,

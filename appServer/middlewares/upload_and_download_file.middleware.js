@@ -13,7 +13,7 @@ const uploadStorage = multer.diskStorage({
             } else {
                 studentCode = req.user.student_code;
             }
-            const timestamp = FormatUtils.dateTimeNow();
+            const timestamp = FormatUtils.dateTimeNowString();
             const folderName = `${studentCode}_SV_${timestamp}_exercise`;
             const directory = `public/uploads/${folderName}/`;
             fs.mkdirSync(directory, { recursive: true });
@@ -23,7 +23,7 @@ const uploadStorage = multer.diskStorage({
         cb(null, req.directoryPath);
     },
     filename: (req, file, cb) => {
-        const timestamp = FormatUtils.dateTimeNow();
+        const timestamp = FormatUtils.dateTimeNowString();
         const fileExtension = getFileExtension(file.originalname);
         const studentCode = req.user.student_code;
         const fileName = `${studentCode}_SV_${timestamp}.${fileExtension}`
@@ -42,7 +42,7 @@ const downloadStorage = multer.diskStorage(
                 } else {
                     userCode = req.user.user_code;
                 }
-                const timestamp = FormatUtils.dateTimeNow();
+                const timestamp = FormatUtils.dateTimeNowString();
                 const folderName = `${userCode}_${FormatUtils.getGVOrST(role)}_${timestamp}_document`
                 const directory = `public/downloads/${folderName}/`;
                 fs.mkdirSync(directory, { recursive: true });
@@ -52,7 +52,7 @@ const downloadStorage = multer.diskStorage(
             cb(null, req.directoryPath);
         },
         filename: (req, file, cb) => {
-            const timestamp = FormatUtils.dateTimeNow();
+            const timestamp = FormatUtils.dateTimeNowString();
             const userCode = req.user.user_code;
             const role = req.user.role;
             const fileExtension = getFileExtension(file.originalname);
