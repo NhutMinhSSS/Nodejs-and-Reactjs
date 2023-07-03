@@ -80,12 +80,15 @@ class PostController {
     async createPost(req, res) {
         const accountId = req.user.account_id;
         const role = req.user.role;
-        const title = req.body.title;
+        let title = req.body.title;
         const content = req.body.content || null;
         const classroomId = req.classroom.classroom_id;
         const topicId = req.body.topic_id;
         const postCategoryId = req.body.post_category_id;
-        if (!title || !postCategoryId) {
+        if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+            title = "Bảng tin";
+        }
+        if (!postCategoryId || !title) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         } 
