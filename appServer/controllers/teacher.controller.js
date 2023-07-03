@@ -162,7 +162,7 @@ class TeacherController {
     async addTeachersToClassroom(req, res) {
         const teacherIds = req.body.teacher_ids;
         const classroomId = req.body.classroom_id;
-        if (teacherIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
+        if (!teacherIds || teacherIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
@@ -187,7 +187,7 @@ class TeacherController {
     async removeTeachersFromClassroom(req, res) {
         const teacherIds = req.body.teacher_ids;
         const classroomId = req.body.classroom_id;
-        if (teacherIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
+        if (!teacherIds || teacherIds.length === EnumServerDefinitions.EMPTY || !classroomId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
