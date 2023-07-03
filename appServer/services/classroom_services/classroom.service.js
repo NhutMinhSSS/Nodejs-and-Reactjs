@@ -227,7 +227,7 @@ class ClassroomService {
             throw error;
         }
     }
-    async StorageClassroom(id) {
+    async closeStorageClassroom(id) {
         try {
             const classroom = await Classroom.findByPk(id, {
                 attributes: ['status']
@@ -239,7 +239,29 @@ class ClassroomService {
                 status: EnumServerDefinitions.STATUS.STORAGE
             }, {
                 where: {
-                    id: id
+                    id: id,
+                    status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                }
+            });
+            return isUpdate > EnumServerDefinitions.EMPTY;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async openStorageClassroom(id) {
+        try {
+            const classroom = await Classroom.findByPk(id, {
+                attributes: ['status']
+            });
+            if (classroom && (classroom.status === EnumServerDefinitions.STATUS.NO_ACTIVE)) {
+                return false;
+            }
+            const isUpdate = await Classroom.update({
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.STORAGE
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

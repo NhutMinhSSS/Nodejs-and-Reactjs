@@ -304,17 +304,36 @@ class ClassroomController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async StorageClassroom(req, res) {
-        const classroomId = req.body.classroom_id;
+    async closeStorageClassroom(req, res) {
+        const classroomId = req.params.classroom_id;
         if (!classroomId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
         try {
-            const isUpdate = await ClassroomService.StorageClassroom(classroomId);
+            const isUpdate = await ClassroomService.closeStorageClassroom(classroomId);
             if (!isUpdate) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_DELETE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async openStorageClassroom(req, res) {
+        const classroomId = req.params.classroom_id;
+        if (!classroomId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            const isUpdate = await ClassroomService.openStorageClassroom(classroomId);
+            if (!isUpdate) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
