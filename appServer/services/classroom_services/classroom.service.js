@@ -51,11 +51,19 @@ class ClassroomService {
     }
     async findAllClassroomsStorage(teacherId = null) {
         try {
-            const classroomsList = await Classroom.findAll({
-                where: {
-                    status: EnumServerDefinitions.STATUS.STORAGE
-                },
-                include: [teacherId &&  {
+            const includeOptions = [
+                {
+                    model: RegularClass,
+                    required: true,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['class_name']
+                }
+            ];
+    
+            if (teacherId) {
+                includeOptions.push({
                     model: Teacher,
                     required: true,
                     where: {
@@ -69,21 +77,23 @@ class ClassroomService {
                         attributes: []
                     },
                     attributes: []
-                }, {
-                    model: RegularClass,
-                    required: true,
-                    where: {
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                    },
-                    attributes: ['class_name']
-                }],
+                });
+            }
+    
+            const classroomsList = await Classroom.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.STORAGE
+                },
+                include: includeOptions,
                 attributes: ['id', 'class_name', 'semester', 'school_year', 'status']
             });
+    
             return classroomsList;
         } catch (error) {
             throw error;
         }
     }
+    
     async findTeachersAndStudentsBelongToClassByClassroomId(classroomId) {
         try {
             const result = await Classroom.findOne({
