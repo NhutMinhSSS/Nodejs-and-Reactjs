@@ -100,18 +100,11 @@ router.get('/test', (req, res) => {
           },
           {
             content: "Tình yêu có thể tồn tại trong thời gian dài không?",
-            xam_id: 1,
+            exam_id: 1,
             score: 10,
-            question_category_id: 2,
-            answers: [
-              { id: 14, "content": "Có, nếu có sự cố gắng và tôn trọng", "isCorrect": true },
-              { id: 15, "content": "Không, tình yêu chỉ là tạm thời", "isCorrect": false },
-              { id: 16, "content": "Tùy thuộc vào tình huống", "isCorrect": true },
-              { id: 17, "content": "Chỉ trong truyện cổ tích", "isCorrect": false }
-            ],
+            question_category_id: 3,
             student_exam: [
-              { id: 7, "answer_id": 14 },
-              { id: 8, "answer_id": 16 }
+              { id: 7, "answer_id": 'Yêu em nhiều hahahah' },
             ]
           }
           

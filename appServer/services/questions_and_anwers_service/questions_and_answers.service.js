@@ -2,7 +2,7 @@ const EnumServerDefinitions = require("../../common/enums/enum_server_definition
 const Answer = require("../../models/answer.model");
 const Question = require("../../models/question.model");
 const StudentRandomizedQuestion = require("../../models/student_randomized_question_list.model");
-
+const StudentRandomizedAnswerList = require("../../models/student_randomized_answer_list.model");
 
 class QuestionsAndAnswersService {
     async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, randomAnswers = false) {
@@ -16,6 +16,7 @@ class QuestionsAndAnswersService {
                 },
                 include: {
                     model: Answer,
+                    required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
@@ -55,7 +56,74 @@ class QuestionsAndAnswersService {
                     as: 'answers'
                 },
                 attributes: [], //cần thêm 
-                order: [['order']]
+                order: [['order', 'ASC']]
+            });
+            return listQuestionAndAnswer;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findQuestionsAndAnswersRandomizedByExamId(studentExamId) {
+        try {
+            const listQuestionAndAnswer  = await Question.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: [{
+                    model: StudentRandomizedAnswerList,
+                    where: {
+                        student_exam_id: studentExamId,
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [{
+                        model: Answer,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: []
+                    }],
+                    attributes: [],
+                    order: [['order', 'ACS']]
+                }]
+            });
+            return listQuestionAndAnswer;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExamId) {
+        try {
+            const listQuestionAndAnswer = await StudentRandomizedQuestion.findAll({
+                where: {
+                    student_exam_id: studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: {
+                    model: Question,
+                    required: true,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [{
+                        model: StudentRandomizedAnswerList,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        include: [{
+                            model: Answer,
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            attributes: ['id']
+                        }],
+                        attributes: [], //cần thêm
+                        order: [['order', 'ASC']]
+                    }],
+                    attributes: [], //cần thêm
+                    as: 'answers'
+                },
+                attributes: [], //cần thêm 
+                order: [['order', 'ASC']]
             });
             return listQuestionAndAnswer;
         } catch (error) {
