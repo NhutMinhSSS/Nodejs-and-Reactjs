@@ -35,7 +35,6 @@ router.get('/test', (req, res) => {
           ],
           student_exam: [
             { id: 1, answer_id: 3 },
-            { id: 2, answer_id: 4 }
           ]
         },
         {
@@ -104,7 +103,15 @@ router.get('/test', (req, res) => {
             score: 10,
             question_category_id: 3,
             student_exam: [
-              { id: 7, "answer_id": 'Yêu em nhiều hahahah' },
+              { id: 7, "answer_id": 'Tình yêu là một cảm xúc tuyệt vời, mạnh mẽ và tràn đầy ý nghĩa. Nó là một sức mạnh biết trỗi dậy từ sâu thẳm trong trái tim, là sự kết nối tinh thần giữa hai người, và có thể làm thay đổi cả cuộc sống.'+
+
+              'Tình yêu là sự chia sẻ, sự quan tâm và sự hi sinh vô điều kiện. Nó là khả năng cảm nhận và đồng cảm với người khác, và sẵn sàng đặt mình vào vị trí của họ. Tình yêu không chỉ dừng lại ở lời nói, mà còn được thể hiện qua hành động nhỏ nhặt hàng ngày.'+
+              
+              'Tình yêu cũng có thể truyền cảm hứng và khơi gợi sự sáng tạo. Nó khiến chúng ta cảm thấy tự tin và mạnh mẽ hơn, và đôi khi cũng có thể đưa chúng ta vượt qua những giới hạn của bản thân.'+
+              
+              'Tuy nhiên, tình yêu cũng không hoàn hảo. Nó đòi hỏi sự cống hiến và sự cam kết từ hai người để xây dựng và duy trì một mối quan hệ khỏe mạnh. Có những thử thách và khó khăn, nhưng khi tình yêu thực sự tồn tại, nó có thể vượt qua mọi trở ngại và trở nên ngọt ngào hơn bao giờ hết.'+
+              
+              'Tình yêu là một điều tuyệt vời và quý giá trong cuộc sống. Nó là nguồn động lực và niềm vui, và có thể mang lại sự hạnh phúc và ý nghĩa đích thực. Khi ta tìm thấy tình yêu và được yêu thương, ta đã tìm thấy một mảnh ghép quan trọng trong cuộc sống của mình.' },
             ]
           }
           
