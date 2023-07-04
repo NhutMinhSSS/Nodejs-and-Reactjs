@@ -31,7 +31,7 @@ File.init({
         allowNull: false
     },
     file_type: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(20),
         allowNull: false
     },
     account_id: {
