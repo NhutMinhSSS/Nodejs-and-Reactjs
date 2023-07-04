@@ -12,8 +12,8 @@ dist
 dist-ssr
 *.local
 cert
-/uploads/
-/downloads/
+public/downloads/
+public/uploads/
 
 # Editor directories and files
 .vscode/*
