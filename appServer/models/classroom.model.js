@@ -65,12 +65,6 @@ Classroom.init({
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    indexes: [
-        {
-            unique: true,
-            fields: ['class_code']
-        }
-    ]
 });
 
 module.exports = Classroom;
