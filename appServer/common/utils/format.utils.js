@@ -39,7 +39,7 @@ class FormatUtils {
             // const data = fs.readFileSync(item.path);
             // const base64 = data.toString('base64');
             return {
-                file_name: item.originalname,
+                file_name: Buffer.from(item.originalname, 'ascii').toString('utf8'),
                 physical_name: item.filename,
                 file_path: item.path,
                 file_type: item.mimetype,
