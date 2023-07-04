@@ -93,15 +93,15 @@ class PostController {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         } 
-        if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+        if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION)
         }
         const files = req.files;
         const transaction = await sequelize.transaction();
         try {
-            const newPost = await PostService.createPost(title, content, postCategoryId, accountId, classroomId, topicId, transaction);
-            if (postCategoryId !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
+            const newPost = await PostService.createPost(title, content, postCategoryIdParseInt, accountId, classroomId, topicId, transaction);
+            if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
                 const finishDate = req.body.finish_date;
                 const invertedQuestion = req.body.inverted_question || 0;
@@ -124,7 +124,7 @@ class PostController {
                     student_id: item
                 }))
                 await StudentExamService.addStudentExams(studentExams, transaction);
-                if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
+                if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                     //create question
                     const listQuestionAndAnswers = req.body.list_questions_and_answers;
                     //tổng điểm
