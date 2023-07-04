@@ -4,7 +4,7 @@ const PostFile = require("../../models/post_file.model");
 class PostFileService {
     async addPostFiles(postId, listFileIds, transaction) {
         try {
-            listPostFile = listFileIds.map(fileId  => ({
+            const listPostFile = listFileIds.map(fileId  => ({
                 post_id: postId,
                 file_id: fileId 
             }));
