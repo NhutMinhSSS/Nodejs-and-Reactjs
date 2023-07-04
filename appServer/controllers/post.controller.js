@@ -133,7 +133,7 @@ class PostController {
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
-            if (!files && files.length > EnumServerDefinitions.EMPTY) {
+            if (files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
