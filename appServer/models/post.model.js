@@ -15,7 +15,7 @@ Post.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrementL: true,
+        autoIncrement: true,
         allowNull: false
     },
     title: {
