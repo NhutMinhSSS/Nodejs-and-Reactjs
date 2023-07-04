@@ -133,8 +133,8 @@ class PostController {
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
-            if (!files && files.length > EnumServerDefinitions.EMPTY) {
-                const listFiles = FormatUtils.formatFileRequest(files);
+            if (files.length > EnumServerDefinitions.EMPTY) {
+                const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
                 await PostFileService.addPostFiles(newPost.id, fileIds, transaction);

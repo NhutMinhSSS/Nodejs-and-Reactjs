@@ -236,6 +236,7 @@ class StudentController {
     async studentSubmissionExam(req, res) {
         try {
             const studentId = req.student_id;
+            const accountId = req.user.account_id;
             const studentExamId = req.body.student_exam_id;
             const postId = req.post_id;
             const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId, studentId);
@@ -260,7 +261,7 @@ class StudentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         'Nộp cc à không có file');
                 }
-                await this.submissionExercise(studentExamId, submissionDate, files);
+                await this.submissionExercise(studentExamId, submissionDate, files, accountId);
             } else if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
             } else {
@@ -273,10 +274,10 @@ class StudentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async submissionExercise(studentExamId, submissionDate, files) {
+    async submissionExercise(studentExamId, submissionDate, files, accountId) {
         const transaction = await sequelize.transaction();
         try {
-            const listFiles = FormatUtils.formatFileRequest(files);
+            const listFiles = FormatUtils.formatFileRequest(files, accountId);
             const newFile = await FileService.createFiles(listFiles, transaction);
             const listFileIds = newFile.map(item => item.id);
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
