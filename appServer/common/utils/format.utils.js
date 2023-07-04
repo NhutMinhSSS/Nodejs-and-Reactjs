@@ -1,6 +1,7 @@
+const path = require("path");
 const SystemConst = require("../consts/system_const");
 const EnumServerDefinitions = require("../enums/enum_server_definitions");
-const moment = require('moment-timezone');
+const moment = require("moment-timezone");
 
 
 class FormatUtils {
@@ -41,7 +42,7 @@ class FormatUtils {
             return {
                 file_name: Buffer.from(item.originalname, 'ascii').toString('utf8'),
                 physical_name: item.filename,
-                file_path: item.path,
+                file_path: patch.dirname(item.path),
                 file_type: item.mimetype,
                 account_id: accountId,
                 file_data: item.size / SystemConst.KB
