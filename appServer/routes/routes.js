@@ -142,7 +142,11 @@ router.get('/test', (req, res) => {
       
     // //totalscore điểm * 100 / tổng điểm
     // console.log(score);
-    const randomQuestions = questions.sort(() => Math.random() - 0.5);
+    const randomQuestions = questions.sort(() => Math.random() - 0.5).map(question => {
+      const answersRandom = question.answers.sort(() => Math.random() - 0.5);
+
+      return {...question, answers: answersRandom}
+    });
     return res.json(randomQuestions);
 });
 //post check detail, edit, delete, send exam

@@ -106,8 +106,9 @@ class PostController {
                 const invertedQuestion = req.body.inverted_question || 0;
                 const invertedAnswer = req.body.inverted_answer || 0;
                 const isPublic = req.body.is_public || false;
+                const isHidden = req.body.is_hidden || false;
                 //PostDetail
-                const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, transaction);
+                const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
                 //student exam
                 let studentIds
                 if (newPostDetail.is_public) {
