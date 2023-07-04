@@ -42,7 +42,7 @@ class FormatUtils {
             return {
                 file_name: Buffer.from(item.originalname, 'ascii').toString('utf8'),
                 physical_name: item.filename,
-                file_path: patch.dirname(item.path),
+                file_path: path.dirname(item.path),
                 file_type: item.mimetype,
                 account_id: accountId,
                 file_data: item.size / SystemConst.KB
