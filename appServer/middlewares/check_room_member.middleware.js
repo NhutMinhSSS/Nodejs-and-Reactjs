@@ -6,6 +6,8 @@ const ServerResponse = require('../common/utils/server_response');
 const SystemConst = require('../common/consts/system_const');
 const EnumMessage = require("../common/enums/enum_message");
 const logger = require("../config/logger.config");
+const fs = require('fs-extra');
+
 const checkRoomMember = async (req, res, next) => {
     try {
         const classroomId = req.params.classroom_id || req.body.classroom_id;
@@ -14,18 +16,19 @@ const checkRoomMember = async (req, res, next) => {
         const user = role === EnumServerDefinitions.ROLE.TEACHER
             ? await TeacherService.findTeacherByAccountId(accountId)
             : await StudentService.findStudentByAccountId(accountId);
-        //     if (!user) {
-        //         const errorMessage = role === EnumServerDefinitions.ROLE.TEACHER
-        //           ? EnumMessage.TEACHER_NOT_EXISTS
-        //           : EnumMessage.STUDENT_NOT_EXISTS;
-        //         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, errorMessage);
-        //       }
-        const classroom = await ClassroomService.findClassroomById(classroomId);
+        const classroomIdParseInt = parseInt(classroomId)
+        const classroom = await ClassroomService.findClassroomById(classroomIdParseInt);
         if (!classroom) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND, EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
         }
         const isCheckRoom = await ClassroomService.checkRoomMember(classroomId, user.id, role);
         if (!isCheckRoom) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION);
         }
@@ -33,6 +36,9 @@ const checkRoomMember = async (req, res, next) => {
         next();
     } catch (error) {
         logger.error(error);
+        if (req.directoryPath) {
+            fs.removeSync(req.directoryPath);
+        }
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
             EnumMessage.DEFAULT_ERROR);
     }
