@@ -142,7 +142,8 @@ router.get('/test', (req, res) => {
       
     // //totalscore điểm * 100 / tổng điểm
     // console.log(score);
-    return res.json(questions);
+    const randomQuestions = questions.sort(() => Math.random() - 0.5);
+    return res.json(randomQuestions);
 });
 //post check detail, edit, delete, send exam
 module.exports = router;
