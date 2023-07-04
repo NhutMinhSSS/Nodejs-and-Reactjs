@@ -104,15 +104,13 @@ router.get('/test', (req, res) => {
             question_category_id: 3,
             answers: [],
             student_exam: [
-              { id: 7, "answer_id": 'Tình yêu là một cảm xúc tuyệt vời, mạnh mẽ và tràn đầy ý nghĩa. Nó là một sức mạnh biết trỗi dậy từ sâu thẳm trong trái tim, là sự kết nối tinh thần giữa hai người, và có thể làm thay đổi cả cuộc sống.'+
+              { id: 7, "answer_id": 'Tình yêu có thể tồn tại trong thời gian dài nếu được xây dựng trên cơ sở của sự hiểu biết, tôn trọng, lòng tin và cống hiến. Một mối quan hệ tình yêu bền vững yêu cầu cả hai bên cùng đồng ý và làm việc với nhau để duy trì và phát triển tình yêu qua thời gian.'+
 
-              'Tình yêu là sự chia sẻ, sự quan tâm và sự hi sinh vô điều kiện. Nó là khả năng cảm nhận và đồng cảm với người khác, và sẵn sàng đặt mình vào vị trí của họ. Tình yêu không chỉ dừng lại ở lời nói, mà còn được thể hiện qua hành động nhỏ nhặt hàng ngày.'+
+              'Để tình yêu tồn tại lâu dài, cần có sự chăm sóc và quan tâm đến nhau. Hai người cần dành thời gian để hiểu và chia sẻ với nhau, xây dựng sự gắn kết và tạo nên một môi trường ủng hộ và an lành cho mối quan hệ. Đồng thời, việc tôn trọng và tin tưởng lẫn nhau cũng rất quan trọng. Tình yêu cần được xây dựng trên nền tảng của sự chung thuỷ, trung thực và tôn trọng giữa hai người.'+
               
-              'Tình yêu cũng có thể truyền cảm hứng và khơi gợi sự sáng tạo. Nó khiến chúng ta cảm thấy tự tin và mạnh mẽ hơn, và đôi khi cũng có thể đưa chúng ta vượt qua những giới hạn của bản thân.'+
+              'Tuy nhiên, để tình yêu tồn tại lâu dài, cũng cần phải thích nghi và điều chỉnh trong quá trình hình thành và phát triển. Cuộc sống và môi trường xung quanh có thể thay đổi, và cả hai người trong mối quan hệ cần hỗ trợ và thích nghi với những thay đổi đó. Quan trọng nhất là sẵn lòng làm việc với nhau để vượt qua khó khăn và tạo nên sự cân bằng và hạnh phúc trong mối quan hệ.'+
               
-              'Tuy nhiên, tình yêu cũng không hoàn hảo. Nó đòi hỏi sự cống hiến và sự cam kết từ hai người để xây dựng và duy trì một mối quan hệ khỏe mạnh. Có những thử thách và khó khăn, nhưng khi tình yêu thực sự tồn tại, nó có thể vượt qua mọi trở ngại và trở nên ngọt ngào hơn bao giờ hết.'+
-              
-              'Tình yêu là một điều tuyệt vời và quý giá trong cuộc sống. Nó là nguồn động lực và niềm vui, và có thể mang lại sự hạnh phúc và ý nghĩa đích thực. Khi ta tìm thấy tình yêu và được yêu thương, ta đã tìm thấy một mảnh ghép quan trọng trong cuộc sống của mình.' },
+              'Tình yêu có thể tồn tại trong thời gian dài nếu cả hai người trong mối quan hệ cam kết và làm việc với nhau để nuôi dưỡng và phát triển tình yêu đó. Nó có thể trở nên sâu sắc và mãnh liệt hơn qua thời gian và đem lại hạnh phúc và sự an lành cho cả hai người.'},
             ]
           }
           
