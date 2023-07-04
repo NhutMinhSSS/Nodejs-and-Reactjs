@@ -55,7 +55,7 @@ class FormatUtils {
     }
     //format date time now
     dateTimeNowString() {
-        return moment().tz(SystemConst.TIME_ZONE).format('YYYYMMDDHHmmss');
+        return moment().tz(SystemConst.TIME_ZONE).format('YYYYMMDDHHmmssSSS');
     }
     //// Format post
     //format file
