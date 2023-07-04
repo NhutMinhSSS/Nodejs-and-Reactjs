@@ -82,10 +82,11 @@ class PostController {
         const role = req.user.role;
         let title = req.body.title;
         const content = req.body.content || null;
-        const classroomId = req.classroom.classroom_id;
+        const classroomId = req.classroom.id;
         const topicId = req.body.topic_id;
         const postCategoryId = req.body.post_category_id;
-        if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+        const postCategoryIdParseInt = parseInt(postCategoryId);
+        if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.NEWS) {
             title = "Bảng tin";
         }
         if (!postCategoryId || !title) {
