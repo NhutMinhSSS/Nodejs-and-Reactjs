@@ -103,6 +103,7 @@ router.get('/test', (req, res) => {
             exam_id: 1,
             score: 10,
             question_category_id: 3,
+            answers: [],
             student_exam: [
               { id: 7, "answer_id": 'Yêu em nhiều hahahah' },
             ]
