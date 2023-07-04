@@ -34,7 +34,7 @@ class FormatUtils {
         return false;
     }
     // format file request
-    formatFileRequest(files) {
+    formatFileRequest(files, accountId) {
         const listFiles =  files.map(item => {
             // const data = fs.readFileSync(item.path);
             // const base64 = data.toString('base64');
