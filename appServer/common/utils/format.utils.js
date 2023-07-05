@@ -64,6 +64,7 @@ class FormatUtils {
         return listFile.map(postFile => ({
             file_id: postFile.File.id,
             file_name: postFile.File.file_name,
+            file_type: postFile.File.file_type
             // physical_name: postFile.File.physical_name,
             // file_path: postFile.File.file_path
         }));
