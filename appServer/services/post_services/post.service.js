@@ -188,7 +188,7 @@ class PostService {
                         ]
                     }
                 ],
-                attributes: ['id', 'title', 'content', 'post_category_id'],
+                attributes: ['id', 'title', 'content', 'post_category_id', 'create_date'],
                 order: [['create_date', 'DESC']]
             });
             return FormatUtils.formatPost(listPost);
