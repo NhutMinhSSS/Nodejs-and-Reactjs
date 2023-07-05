@@ -21,7 +21,10 @@ class FileController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
-            return res.download(filePath);
+           // Đọc file từ đường dẫn và gửi về client với tên mới
+           const fileStream = fs.createReadStream(filePath);
+           res.set('Content-Disposition', `attachment; filename="${file.file_name}"`);
+           fileStream.pipe(res);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
