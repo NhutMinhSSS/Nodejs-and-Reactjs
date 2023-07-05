@@ -10,13 +10,13 @@ const path = require("path");
 class FileController {
     async sendFileToClient(req, res) {
         try {
-            const fileId = req.params.file_id || null;
+            const fileId = req.params.file_id;
             const file = await FileService.findFileById(fileId);
             if(!file) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
-            const filePath = path.join(__dirname, file.file_path)
+            const filePath = path.join(__dirname, '../public', file.file_path, file.physical_name);
             if (filePath) {
                 return res.download(filePath);
             }

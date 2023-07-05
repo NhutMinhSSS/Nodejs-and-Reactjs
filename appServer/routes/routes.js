@@ -6,6 +6,7 @@ const LoginController = require('../controllers/login.controller');
 const classroomRouter = require('./users/classroom.route');
 const postRouter = require('./users/post.route');
 const AdminRouter = require('./admin/admin.route');
+const FileRouter = require('./users/file.route');
 
 
 router.use(express.json());
@@ -18,6 +19,7 @@ router.post('/login', LoginController.login);
 router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', authenticateToken, postRouter);
+router.use('/files', authenticateToken, FileRouter);
 
 router.get('/test', (req, res) => {
     const questions = [
