@@ -303,7 +303,8 @@ class PostService {
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: []
+                    attributes: [],
+                    as: 'classrooms'
                 }]
             });
             return post;
