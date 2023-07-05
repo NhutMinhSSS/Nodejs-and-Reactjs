@@ -106,7 +106,7 @@ class PostController {
                 const finishDate = req.body.finish_date;
                 const invertedQuestion = req.body.inverted_question || 0;
                 const invertedAnswer = req.body.inverted_answer || 0;
-                const isPublic = req.body.is_public || false;
+                const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
@@ -127,13 +127,16 @@ class PostController {
                 if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                     //create question
                     const listQuestionAndAnswers = req.body.list_questions_and_answers;
-                    //tổng điểm
-                    //update postDeatil
-                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction); 
+                    if (!listQuestionAndAnswers || listQuestionAndAnswers.length === EnumServerDefinitions.EMPTY) {
+                        await transaction.rollback();
+                        return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                            EnumMessage.REQUIRED_INFORMATION);
+                    }
+                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, newPost.id, transaction);
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
-            if (files.length > EnumServerDefinitions.EMPTY) {
+            if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);

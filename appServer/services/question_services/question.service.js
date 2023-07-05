@@ -2,14 +2,17 @@ const Answer = require("../../models/answer.model");
 const Question = require("../../models/question.model");
 
 class QuestionService {
-    async addQuestionsAndAnswers(questionDataList, transaction) {
+    async addQuestionsAndAnswers(questionDataList, postId, transaction) {
         try {
+            const DataList = questionDataList.map((item) => ({
+                exam_id: postId,
+                ...item
+            }));
             // Tạo danh sách câu hỏi
-            const createdQuestions = await Question.bulkCreate(questionDataList, { transaction });
-
+            const createdQuestions = await Question.bulkCreate(DataList, { transaction });
             // Tạo danh sách câu trả lời
             const answerDataList = [];
-            for (const questionData of questionDataList) {
+            for (const questionData of DataList) {
                 if (questionData.question_category_id !== 3 && questionData.answers && questionData.answers.length > 0) {
                     const questionId = createdQuestions.find(q => q.exam_id === questionData.exam_id && q.question === questionData.question)?.id;
                     if (questionId) {

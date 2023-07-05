@@ -123,15 +123,56 @@ Json initial classroom
 //question
   Json Question And Answer
 
-[{
-	exam_id: int,
-	content: text,
-	score: float,
-	question_category_id: int,
-	Answer: [{
-		question_id: int,
-		answer: text,
-		correct_answer: bool,
-		
-	}]
-}]
+{
+    "title": "Bài tập",
+    "content": "nhutminhsss",
+    "post_category_id": 4,
+    "list_questions_and_answers": [
+  {
+    "content": "Đâu là thủ đô của Việt Nam?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      { "answer": "Hà Nội", "correct_answer": true},
+      { "answer": "Hồ Chí Minh", "correct_answer": false},
+      { "answer": "Đà Nẵng", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Ai là người đầu tiên đặt chân lên mặt trăng?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      {"answer": "Neil Armstrong", "correct_answer": true},
+      { "answer": "Buzz Aldrin", "correct_answer": false},
+      { "answer": "Michael Collins", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu là gì?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      { "answer": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "correct_answer": true},
+      { "answer": "Một loại bệnh", "correct_answer": false},
+      { "answer": "Một trạng thái của tâm hồn", "correct_answer": true},
+      { "answer": "Sự hợp tác và chia sẻ giữa hai người", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu có thể đến bất ngờ ở đâu?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      {"answer": "Trong một buổi hẹn đầu tiên", "correct_answer": false},
+      {"answer": "Ở nơi làm việc", "correct_answer": true},
+      { "answer": "Trên mạng xã hội", "correct_answer": true},
+      { "answer": "Chỉ trong tiểu thuyết và phim ảnh", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu có thể tồn tại trong thời gian dài không?",
+    "score": 10,
+    "question_category_id": 3
+  }]
+}
