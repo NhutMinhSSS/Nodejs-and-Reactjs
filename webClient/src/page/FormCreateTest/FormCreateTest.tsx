@@ -1,3 +1,4 @@
+import { Input } from 'antd';
 import React, { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -5,20 +6,20 @@ interface Option {
     id: number;
     value: string;
     isCorrect: boolean;
+    answer: string;
 }
 
 interface Question {
     id: number;
     title: string;
     options: Option[];
-    inputType: 'checkbox' | 'radio';
+    inputType: 'checkbox' | 'radio' | 'text'; // Added 'text' as an option
 }
 
 const FormCreateTest: React.FC = () => {
-    const [questions, setQuestions] = useState<Question[]>([
-        { id: 1, title: '', options: [], inputType: 'checkbox' },
-    ]);
-
+    const [questions, setQuestions] = useState<Question[]>([{ id: 1, title: '', options: [], inputType: 'checkbox' }]);
+    const [questionPoints, setQuestionPoints] = useState<{ [key: number]: number }>({});
+    const [point, setPoint] = useState<number>(0);
     const handleAddQuestion = () => {
         setQuestions((prevQuestions) => [
             ...prevQuestions,
@@ -33,9 +34,7 @@ const FormCreateTest: React.FC = () => {
 
     const handleQuestionChange = (questionId: number, title: string) => {
         setQuestions((prevQuestions) =>
-            prevQuestions.map((question) =>
-                question.id === questionId ? { ...question, title } : question,
-            ),
+            prevQuestions.map((question) => (question.id === questionId ? { ...question, title } : question)),
         );
     };
 
@@ -84,7 +83,6 @@ const FormCreateTest: React.FC = () => {
             ),
         );
     };
-
     const handleRemoveOption = (questionId: number, optionId: number) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
@@ -100,7 +98,16 @@ const FormCreateTest: React.FC = () => {
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(questions);
+        const questionsWithoutId = questions.map((question) => {
+            return {
+                id: question.id,
+                title: question.title,
+                options: question.options,
+                inputType: question.inputType,
+                point: questionPoints[question.id],
+            };
+        });
+        console.log(questionsWithoutId);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>, questionId: number) => {
@@ -108,7 +115,13 @@ const FormCreateTest: React.FC = () => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
                 question.id === questionId
-                    ? { ...question, inputType: value as 'checkbox' | 'radio' }
+                    ? {
+                          ...question,
+                          inputType: value as 'checkbox' | 'radio' | 'text', // Added 'text' as an option
+                          options: question.options.map((option) =>
+                              option.isCorrect ? { ...option, isCorrect: false } : option,
+                          ),
+                      }
                     : question,
             ),
         );
@@ -117,7 +130,7 @@ const FormCreateTest: React.FC = () => {
     const handleAddOption = (questionId: number) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
-                question.id === questionId
+                question.id === questionId && question.inputType !== 'text'
                     ? {
                           ...question,
                           options: [
@@ -126,6 +139,7 @@ const FormCreateTest: React.FC = () => {
                                   id: question.options.length + 1,
                                   value: '',
                                   isCorrect: false,
+                                  answer: '', // New property for the answer value
                               },
                           ],
                       }
@@ -133,12 +147,19 @@ const FormCreateTest: React.FC = () => {
             ),
         );
     };
-    const handleRemoveQuestion = (questionId: number) => {
-        setQuestions((prevQuestions) =>
-            prevQuestions.filter((question) => question.id !== questionId),
-        );
-    };
 
+    const handleRemoveQuestion = (questionId: number) => {
+        setQuestions((prevQuestions) => prevQuestions.filter((question) => question.id !== questionId));
+    };
+    const handlePointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPoint(Number(e.target.value));
+    };
+    const handleQuestionPointChange = (questionId: number, point: number) => {
+        setQuestionPoints((prevQuestionPoints) => ({
+            ...prevQuestionPoints,
+            [questionId]: point,
+        }));
+    };
     return (
         <>
             <div className="container mx-auto flex justify-center overflow-y-auto">
@@ -148,15 +169,24 @@ const FormCreateTest: React.FC = () => {
                 >
                     {questions.map((question) => (
                         <div key={question.id} className="mb-5 bg-white p-4 rounded-lg shadow-lg">
+                            <div className="mb-2 flex gap-x-2 items-center">
+                                <span className="font-semibold">Điểm câu hỏi</span>
+                                <span className="w-16">
+                                    <Input
+                                        type="number"
+                                        placeholder="điểm"
+                                        value={questionPoints[question.id]?.toString() || ''}
+                                        onChange={(e) => handleQuestionPointChange(question.id, Number(e.target.value))}
+                                    />
+                                </span>
+                            </div>
                             <div className="flex">
                                 <input
                                     type="text"
                                     value={question.title}
-                                    onChange={(e) =>
-                                        handleQuestionChange(question.id, e.target.value)
-                                    }
+                                    onChange={(e) => handleQuestionChange(question.id, e.target.value)}
                                     placeholder="Enter question"
-                                    className="border border-gray-300 rounded px-4 py-2 w-full mb-2"
+                                    className="border border-gray-300 rounded px-4 py-2 w-full mb-2 "
                                     required
                                 />
                                 <div>
@@ -164,70 +194,54 @@ const FormCreateTest: React.FC = () => {
                                         id={`inputType_${question.id}`}
                                         value={question.inputType}
                                         onChange={(e) => handleInputChange(e, question.id)}
-                                        className="ml-2 px-2 py-2 w-32 rounded-md border-2"
+                                        className="ml-2 px-2 py-2 w-32 rounded-md border-2 focus:border-blue-300"
                                     >
                                         <option value="checkbox">Hộp kiểm</option>
                                         <option value="radio">Trắc Nghiệm</option>
+                                        <option value="text">Tự Luận</option> {/* Added 'text' option */}
                                     </select>
                                 </div>
                             </div>
                             {question.options.map((option) => (
-                                <div
-                                    key={option.id}
-                                    className="flex items-center mb-2 justify-between"
-                                >
+                                <div key={option.id} className="flex items-center mb-2 justify-between">
                                     <div>
-                                        {question.inputType === 'checkbox' ? (
+                                        {question.inputType === 'checkbox' || question.inputType === 'radio' ? (
                                             <input
-                                                type="checkbox"
+                                                type={question.inputType}
                                                 id={`option_${option.id}`}
                                                 name={`question_${question.id}`}
                                                 value={option.id}
                                                 checked={option.isCorrect}
                                                 onChange={(e) =>
-                                                    handleCheckboxChange(
-                                                        question.id,
-                                                        option.id,
-                                                        e.target.checked,
-                                                    )
+                                                    question.inputType === 'checkbox'
+                                                        ? handleCheckboxChange(question.id, option.id, e.target.checked)
+                                                        : handleRadioChange(question.id, option.id, e.target.checked)
                                                 }
-                                                className="mr-2 "
+                                                className="mr-2 focus:border-blue-300"
                                             />
                                         ) : (
                                             <input
-                                                type="radio"
-                                                id={`option_${option.id}`}
-                                                name={`question_${question.id}`}
-                                                value={option.id}
-                                                checked={option.isCorrect}
+                                                type="text"
+                                                value={option.answer}
                                                 onChange={(e) =>
-                                                    handleRadioChange(
-                                                        question.id,
-                                                        option.id,
-                                                        e.target.checked,
-                                                    )
+                                                    handleOptionChange(question.id, option.id, e.target.value)
                                                 }
-                                                className="mr-2"
+                                                placeholder="Enter answer"
+                                                className="border border-gray-300 rounded px-4 py-2 w-72 focus:border-blue-300"
+                                                required
                                             />
                                         )}
+
                                         <input
                                             type="text"
                                             value={option.value}
-                                            onChange={(e) =>
-                                                handleOptionChange(
-                                                    question.id,
-                                                    option.id,
-                                                    e.target.value,
-                                                )
-                                            }
+                                            onChange={(e) => handleOptionChange(question.id, option.id, e.target.value)}
                                             placeholder="Enter answer"
-                                            className="border border-gray-300 rounded px-4 py-2 w-72"
+                                            className="border border-gray-300 rounded px-4 py-2 w-72 focus:border-blue-300"
                                             required
                                         />
                                     </div>
-                                    {option.isCorrect ? (
-                                        <span className="ml-2 text-green-500">✔</span>
-                                    ) : null}
+                                    {option.isCorrect ? <span className="ml-2 text-green-500">✔</span> : null}
                                     <button
                                         type="button"
                                         className="ml-2 text-red-600 "
@@ -239,13 +253,15 @@ const FormCreateTest: React.FC = () => {
                             ))}
 
                             <div className="flex justify-between">
-                                <button
-                                    type="button"
-                                    onClick={() => handleAddOption(question.id)}
-                                    className="bg-blue-500 text-white py-2 px-2 rounded mb-2 mt-2"
-                                >
-                                    Thêm đáp án
-                                </button>
+                                {question.inputType !== 'text' && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleAddOption(question.id)}
+                                        className="bg-blue-500 text-white py-2 px-2 rounded mb-2 mt-2"
+                                    >
+                                        Thêm đáp án
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     onClick={() => handleRemoveQuestion(question.id)}
@@ -266,10 +282,7 @@ const FormCreateTest: React.FC = () => {
                             Thêm câu hỏi
                         </button>
 
-                        <button
-                            type="submit"
-                            className="bg-blue-500 text-white py-2 px-4 rounded h-10"
-                        >
+                        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded h-10">
                             Gửi
                         </button>
                     </div>

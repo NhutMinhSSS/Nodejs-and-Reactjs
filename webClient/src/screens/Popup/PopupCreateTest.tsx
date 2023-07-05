@@ -1,4 +1,4 @@
-import { Col, Row, Tabs } from 'antd';
+import { Button, Col, Row, Tabs } from 'antd';
 import TabPane from 'antd/es/tabs/TabPane';
 import '../../style/Tabs.scss';
 import ScreenPageTest from './PageTest/ScreenPageTest';
@@ -56,35 +56,30 @@ const PopupCreateTest = () => {
         //         </div>
         //     </div>
         // </div>
-        <div className=" shadow-xl h-28 p-5 fixed w-full">
-            <div className="  flex justify-between sm:grid-cols-2 max-w-full px-10 ">
-                <div className="flex items-center">
-                    <span className=" rounded-full  h-9 w-full flex items-center justify-center transition duration-150 ease-in-out cursor-pointer">
-                        Tạo bài kiểm tra
-                    </span>
-                </div>
-
-                <span>
-                    <button className="w-16 h-12 bg-blue-500 rounded-xl">Gửi</button>
-                </span>
-            </div>
-            <span className="  grid iphone 12:grid-flow-col">
-                <Tabs className=" items-center " defaultActiveKey="1">
-                    <TabPane className="" tab="Câu hỏi" key="1">
-                        {/* <ScreenPageTest /> */}
-                        <div className="mb-2">
-                            <FormCreateTest />
-                        </div>
-                        
-                    </TabPane>
-                    <TabPane className="" tab="Đáp Án" key="2">
+        <div className=" shadow-xl h-16 p-5 fixed w-full">
+            <div className="flex justify-around">
+                <div className="text-lg font-bold">Tạo bài kiểm tra</div>
+                <div className="  grid iphone 12:grid-flow-col">
+                    <Tabs className=" items-center " defaultActiveKey="1">
+                        <TabPane className="" tab="Câu hỏi" key="1">
+                            <div className="mb-2">
+                                <FormCreateTest />
+                            </div>
+                        </TabPane>
+                        {/* <TabPane className="" tab="Đáp Án" key="2">
                         <ClassroomExercisesTeacher />
                     </TabPane>
                     <TabPane className="" tab="Cài đặt" key="3">
                         <AllPeople />
-                    </TabPane>
-                </Tabs>
-            </span>
+                    </TabPane> */}
+                    </Tabs>
+                </div>
+                <div>
+                    <Button className="" type="primary">
+                        Gửi
+                    </Button>
+                </div>
+            </div>
         </div>
     );
 };

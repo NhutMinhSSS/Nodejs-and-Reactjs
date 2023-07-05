@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdAccountCircle } from 'react-icons/md';
 import PeopleList from '../components/PeopleList';
+import SystemConst from '../common/consts/system_const';
+import HeaderToken from '../common/utils/headerToken';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import { Divider } from 'antd';
 const dataPeople = [
     {
         id: 1,
@@ -40,18 +45,62 @@ const dataPeople = [
         role: 'student',
     },
 ];
+const BASE_URL = `${SystemConst.DOMAIN}`;
 const AllPeople = () => {
+    const [getStudent, setGetStudent] = useState([]);
+    const [getTeacher, setGetTeacher] = useState([]);
+    const { classroom_id } = useParams();
+    useEffect(() => {
+        handleFetchData();
+    }, []);
+    const handleFetchData = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios
+            .get(`${BASE_URL}/classrooms/get-classroom-detail/${classroom_id}`, config)
+            .then((response) => {
+                const data_Student = response.data.response_data.students;
+                const data_Teacher = response.data.response_data.teachers;
+                setGetStudent(data_Student);
+                setGetTeacher(data_Teacher);
+                console.log(data_Teacher);
+                console.log(data_Teacher);
+            })
+            .catch((error) => {});
+    };
     return (
         <div className="w-[40rem]">
             <div className="p-5">
-                <table className="text-3xl">Giáo Viên</table>
-                <div>
-                    <PeopleList people={dataPeople} role="teacher" />
-                </div>
+                <table className="text-3xl text-blue-400">
+                    Giáo Viên
+                    <Divider className="w-[40rem] border-cyan-400 border-[1px]" />
+                    <tbody className="text-xl  flex flex-col gap-y-3 text-black">
+                        {getTeacher.map((teacher) => (
+                            <tr key={teacher['id']}>
+                                <td>
+                                    {teacher['last_name']} {teacher['first_name']}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
             <div className="p-5 ">
-                <div className="text-3xl">Học Sinh</div>
-                <PeopleList people={dataPeople} role="student" />
+                <div className="text-3xl">
+                    <table className="text-3xl text-blue-400 ">
+                        Sinh viên
+                        <Divider className="w-[40rem]  border-cyan-400 border-[1px]" />
+                        <tbody className="text-xl flex flex-col gap-y-1 text-black">
+                            {getStudent.map((student) => (
+                                <tr key={student['id']}>
+                                    <td>
+                                        {student['last_name']} {student['first_name']}
+                                        <Divider className="w-[40rem]  border-slate-400" />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

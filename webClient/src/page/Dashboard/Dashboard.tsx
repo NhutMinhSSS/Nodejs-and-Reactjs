@@ -17,8 +17,9 @@ const Dashboard: React.FC = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
-        window.location.reload(); // Tải lại trang web
+        window.history.replaceState(null, '', '/');
         window.location.replace('/');
+        window.location.reload(); // Tải lại trang web
     };
     const items = [
         {
@@ -75,6 +76,9 @@ const Dashboard: React.FC = () => {
                             </Menu.Item>
                             <Menu.Item key="admin/app-class-section">
                                 <Link to="/admin/app-class-section">Lớp Học Phần</Link>
+                            </Menu.Item>
+                            <Menu.Item key="admin/app-storage">
+                                <Link to="/admin/app-storage">Lưu trữ</Link>
                             </Menu.Item>
                         </Menu>
                     </Sider>

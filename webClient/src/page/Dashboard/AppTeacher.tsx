@@ -49,7 +49,12 @@ const AppTeacher: React.FC = () => {
     const [dataTeacher, setDataTeacher] = useState<DataType[]>([]);
 
     useEffect(() => {
-        handleFecthData();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFecthData();
+        }
     }, []);
     const handleFecthData = () => {
         const config = HeaderToken.getTokenConfig();

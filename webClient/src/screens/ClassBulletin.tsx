@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import imgBook from '../img/imgBook.png';
 import { Col, Row } from 'antd';
 import background from '../img/bg.png';
 import AddCard from './AddCard';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 
 const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
@@ -13,6 +13,8 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
         const textToCopy = data.class_code;
         navigator.clipboard.writeText(textToCopy);
     };
+
+    const { classroom_id } = useParams();
 
     return (
         <div className="py-5">
@@ -37,7 +39,6 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                                 <div className="text-lg font-semibold">Mã lớp</div>
                                 <div className="mt-3 text-2xl font-semibold hover:text-blue-300">
                                     <p style={{ position: 'relative' }}>
-                                        {data.class_code}
                                         <button
                                             onClick={handleCopyClick}
                                             style={{
