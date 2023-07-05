@@ -28,9 +28,12 @@ class ClassroomStudentService {
     async isStudentJoined(classroomId, studentId) {
         try {
         const isJoined = await StudentList.findOne({
-            classroom_id: classroomId,
+            where: {
+                classroom_id: classroomId,
             student_id: studentId,
             status: EnumServerDefinitions.STATUS.ACTIVE
+            },
+            attributes: ['id']
         });
         return !!isJoined; 
         } catch(error) {

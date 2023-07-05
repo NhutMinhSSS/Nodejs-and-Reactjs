@@ -13,18 +13,21 @@ class ClassroomTeacherService {
             throw error;
         }
     }
-    // async isTeacherJoined(classroomId, teacherId) {
-    //     try {
-    //     const isJoined = await TeacherList.findOne({
-    //         classroom_id: classroomId,
-    //         teacher_id: teacherId,
-    //         status: EnumServerDefinitions.STATUS.ACTIVE
-    //     });
-    //     return !!isJoined; 
-    //     } catch(error) {
-    //         throw error;
-    //     }
-    // }
+    async isTeacherJoined(classroomId, teacherId) {
+        try {
+        const isJoined = await TeacherList.findOne({
+           where: {
+            classroom_id: classroomId,
+            teacher_id: teacherId,
+            status: EnumServerDefinitions.STATUS.ACTIVE
+           },
+           attributes: ['id']
+        });
+        return !!isJoined; 
+        } catch(error) {
+            throw error;
+        }
+    }
     async checkTeacherNoActive(classroomId, teacherId) {
         try {
             const teacher = await TeacherList.findOne({
