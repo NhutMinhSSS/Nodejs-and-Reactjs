@@ -163,6 +163,7 @@ class PostController {
         const postCategoryIdParseInt = parseInt(postCategoryId);
         const transaction = await sequelize.transaction();
         try {
+            //const isUpdatePost = await PostFileService
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && isPublic === false) {
                 const newListStudentExams = req.body.list_student_exams;
                 if (newListStudentExams.length > EnumServerDefinitions.EMPTY) {
@@ -170,6 +171,7 @@ class PostController {
                     const studentExamIds = studentExams.map(item => item.student_id);
                     const studentsToRemove = studentExamIds.filter(student => !newListStudentExams.includes(student));
                     const studentsToAdd = newListStudentExams.filter(student => !studentExamIds.includes(student));
+
                 }
             }
             if (listFileRemove.length > EnumServerDefinitions.EMPTY) {

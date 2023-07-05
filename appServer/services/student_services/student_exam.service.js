@@ -112,9 +112,38 @@ class StudentExamService {
             throw error;
         }
     }
-    async updateListStudentExamsByPostId(postId) {
+    async updateListStudentExamsByPostId(listStudentIds, postId, transaction) {
         try {
-           
+            const existingStudentExam = await StudentExam.findAll({
+                where: {
+                    exam_id: postId,
+                    student_id: {[Op.in]: listStudentIds}
+                }
+            });
+            const studentsExamToUpdate = existingStudentExam.map(({student_id}) => student_id);
+            const studentsExamToAdd = listStudentIds.filter(studentId => !studentsExamToUpdate.includes(studentId));
+            if (studentsExamToUpdate.length > EnumServerDefinitions.EMPTY) {
+                await StudentExam.update({
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, {
+                    where: {
+                        exam_id: postId,
+                        student_id: {[Op.in]: studentsExamToUpdate}
+                    }, transaction
+                });
+            }
+            if (studentsExamToAdd.length > EnumServerDefinitions.EMPTY) {
+                const listStudentExam = studentsExamToAdd.map(item => ({
+                    exam_id: postId,
+                    student_id: item
+               }));
+                await StudentExam.bulkCreate(listStudentExam, {transaction});
+            }
+            const result = {
+                exam_to_add: studentsExamToAdd,
+                exam_to_update: studentsExamToUpdate 
+            }
+            return result;
         } catch (error) {
             throw error;
         }
