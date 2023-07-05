@@ -22,9 +22,12 @@ class FileController {
                     EnumMessage.FILE_NOT_EXISTS);
             }
            // Đọc file từ đường dẫn và gửi về client với tên mới
-           const fileStream = fs.createReadStream(filePath);
-           res.set('Content-Disposition', `attachment; filename="${file.file_name}"`);
-           fileStream.pipe(res);
+          // Đọc file từ đường dẫn và gửi về client với tên mới
+          const fileStream = fs.createReadStream(filePath);
+          res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+          const encodedFilename = encodeURIComponent(file.file_name);
+          res.set('Content-Disposition', `attachment; filename="${encodedFilename}"`);
+          fileStream.pipe(res);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
