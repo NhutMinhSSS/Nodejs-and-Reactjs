@@ -37,7 +37,7 @@ class PostController {
             }
             let postDeadlines; // Di chuyển khai báo biến ra khỏi khối if
             if (listPost.length > 0) {
-                const posts = listPost.filter(item => item.category !== "Bảng tin" && FormatUtils.checkPostsDeadline(item.finish_date));
+                const posts = listPost.filter(item => item.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS && FormatUtils.checkPostsDeadline(item.finish_date));
                 postDeadlines = posts.map(post => ({
                     id: post.id,
                     title: post.title

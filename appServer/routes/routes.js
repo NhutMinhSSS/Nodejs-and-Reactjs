@@ -8,10 +8,8 @@ const postRouter = require('./users/post.route');
 const AdminRouter = require('./admin/admin.route');
 
 
-
 router.use(express.json());
 router.use(responseMiddleware);
-
 router.get('/', (req, res) => {
     res.send('Start');
 });

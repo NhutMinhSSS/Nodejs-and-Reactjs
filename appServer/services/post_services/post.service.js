@@ -96,7 +96,7 @@ class PostService {
                             where: {
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
-                            attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
+                            attributes: ['id', 'file_name']
                         }],
                     },
                     {
