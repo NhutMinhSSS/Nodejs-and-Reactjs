@@ -16,7 +16,7 @@ class FileController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
-            const filePath = path.join(__dirname, '../public', file.file_path, file.physical_name);
+            const filePath = path.join(__dirname, '..', file.file_path, file.physical_name);
             if (filePath) {
                 return res.download(filePath);
             }
