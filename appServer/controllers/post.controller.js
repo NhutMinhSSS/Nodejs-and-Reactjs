@@ -151,6 +151,53 @@ class PostController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async updatePost(req, res) {
+        const accountId = req.user.account_id;
+        const postId = req.body.post_id;
+        const title = req.body.title;
+        const content = req.body.content;
+        const isPublic = req.body.is_public;
+        const postCategoryId = req.body.post_category_id;
+        const listFileRemove = req.body.list_file_remove;
+        const files = req.files;
+        const postCategoryIdParseInt = parseInt(postCategoryId);
+        const transaction = await sequelize.transaction();
+        try {
+            //const isUpdatePost = await PostFileService
+            if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && isPublic === false) {
+                const newListStudentExams = req.body.list_student_exams;
+                if (newListStudentExams.length > EnumServerDefinitions.EMPTY) {
+                    const studentExams = await StudentExamService.findStudentExamsByPostId(postId);
+                    const studentExamIds = studentExams.map(item => item.student_id);
+                    const studentsToRemove = studentExamIds.filter(student => !newListStudentExams.includes(student));
+                    const studentsToAdd = newListStudentExams.filter(student => !studentExamIds.includes(student));
+
+                }
+            }
+            if (listFileRemove.length > EnumServerDefinitions.EMPTY) {
+                const isRemove = await FileService.removeFiles(listFileRemove, transaction);
+                if (!isRemove) {
+                    await transaction.rollback();
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.ERROR_DELETE);
+                }
+            }
+            if(files.length > EnumServerDefinitions.EMPTY) {
+                const listFiles = FormatUtils.formatFileRequest(files, accountId);
+                const newFiles = await FileService.createFiles(listFiles, transaction);
+                const fileIds = newFiles.map(item => item.id);
+                await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
+            }
+        } catch (error) {
+            await transaction.rollback();
+            logger.error(error);
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
 }
 
 module.exports = new PostController;

@@ -19,34 +19,48 @@ class StudentExamService {
             throw error;
         }
     }
-    async checkStudentExamNoActive(postId, studentId) {
+    async findStudentExamsByPostId(postId) {
         try {
-            const student = await StudentList.findOne({
+            const studentExams = await StudentExam.findAll({
                 where: {
                     exam_id: postId,
-                    student_id: studentId,
-                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
-                }
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['student_id']
             });
-            return student;
+            return studentExams;
         } catch (error) {
             throw error;
         }
     }
-    async addStudentExamJoinRoom(postId, studentId, transaction) {
-        try {
-            const studentExam = this.checkStudentExamNoActive(postId, studentId);
-            if (studentExam) {
-                await StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
-                    where: {
-                        id: studentExam.id
-                    }, transaction: transaction
-                })
-            }
-        } catch (error) {
-            throw error;
-        }
-    }
+    // async checkStudentExamNoActive(postId, studentId) {
+    //     try {
+    //         const student = await StudentList.findOne({
+    //             where: {
+    //                 exam_id: postId,
+    //                 student_id: studentId,
+    //                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
+    //             }
+    //         });
+    //         return student;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
+    // async addStudentExamJoinRoom(postId, studentId, transaction) {
+    //     try {
+    //         const studentExam = this.checkStudentExamNoActive(postId, studentId);
+    //         if (studentExam) {
+    //             await StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
+    //                 where: {
+    //                     id: studentExam.id
+    //                 }, transaction: transaction
+    //             })
+    //         }
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
     async addStudentExams(studentExams, transaction) {
         try {
             const existingStudentExams = await StudentExam.findAll({
@@ -94,6 +108,57 @@ class StudentExamService {
                 }, transaction
             });
             return studentExam > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateListStudentExamsByPostId(listStudentIds, postId, transaction) {
+        try {
+            const existingStudentExam = await StudentExam.findAll({
+                where: {
+                    exam_id: postId,
+                    student_id: {[Op.in]: listStudentIds}
+                }
+            });
+            const studentsExamToUpdate = existingStudentExam.map(({student_id}) => student_id);
+            const studentsExamToAdd = listStudentIds.filter(studentId => !studentsExamToUpdate.includes(studentId));
+            if (studentsExamToUpdate.length > EnumServerDefinitions.EMPTY) {
+                await StudentExam.update({
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, {
+                    where: {
+                        exam_id: postId,
+                        student_id: {[Op.in]: studentsExamToUpdate}
+                    }, transaction
+                });
+            }
+            if (studentsExamToAdd.length > EnumServerDefinitions.EMPTY) {
+                const listStudentExam = studentsExamToAdd.map(item => ({
+                    exam_id: postId,
+                    student_id: item
+               }));
+                await StudentExam.bulkCreate(listStudentExam, {transaction});
+            }
+            const result = {
+                exam_to_add: studentsExamToAdd,
+                exam_to_update: studentsExamToUpdate 
+            }
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async removeStudentExamsByPostId(listStudentExam, postId, transaction) {
+        try {
+            const isDelete = await StudentExam.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    exam_id: postId,
+                    student_id: {[Op.in]: listStudentExam}
+                }, transaction
+            });
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

@@ -75,14 +75,14 @@ class PostService {
                         },
                         as: 'classrooms',
                         attributes: [],
-                    }, {
+                    }, /* {
                         model: PostCategory,
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
                         as: 'post_categories',
                         attributes: ['category_name']
-                    }, {
+                    }, */ {
                         model: PostFile, required: false, where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE,
                             '$Post.post_category_id$': {
@@ -188,7 +188,7 @@ class PostService {
                         ]
                     }
                 ],
-                attributes: ['id', 'title', 'content', 'post_category_id'],
+                attributes: ['id', 'title', 'content', 'post_category_id', 'create_date'],
                 order: [['create_date', 'DESC']]
             });
             return FormatUtils.formatPost(listPost);
@@ -221,7 +221,7 @@ class PostService {
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
+                        attributes: ['id', 'file_name', 'create_date']
                     }],
                 }, {
                     model: PostDetail,
@@ -279,12 +279,12 @@ class PostService {
                             where: {
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
-                            attributes: ['id', 'file_name', 'physical_name', 'create_date', 'file_path']
+                            attributes: ['id', 'file_name', 'create_date']
                         }]
                     }],
                     as: 'student_exams',
                 }],
-                attributes: ['id']
+                attributes: ['id', 'create_date']
             });
             return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {

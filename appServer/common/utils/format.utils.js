@@ -62,10 +62,10 @@ class FormatUtils {
     //format file
     formatFile(listFile) {
         return listFile.map(postFile => ({
-            post_file_id: postFile.id,
+            file_id: postFile.File.id,
             file_name: postFile.File.file_name,
-            physical_name: postFile.File.physical_name,
-            file_path: postFile.File.file_path
+            // physical_name: postFile.File.physical_name,
+            // file_path: postFile.File.file_path
         }));
     }
     //format account
@@ -125,7 +125,7 @@ class FormatUtils {
                 title: post.title,
                 content: post.content,
                 create_date: post.create_date,
-                category: post.post_categories.category_name,
+                post_category_id: post.post_category_id,
                 classroom_id: post.classroom_id,
                 last_name: account.last_name,
                 first_name: account.first_name,
