@@ -71,9 +71,9 @@ const HeaderHome: React.FC = () => {
         <>
             <div className="bg-blue-300 shadow-md h-16 p-5 flex items-center justify-between">
                 <div className="flex items-center">
-                    <span className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out cursor-pointer">
-                        <MenuOutlined>{/* <BtnDrawer /> */}</MenuOutlined>
-                    </span>
+                    <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out cursor-pointer">
+                        <MenuOutlined></MenuOutlined>
+                    </button>
                     <div>
                         <img className="h-12 cursor-pointer" src={logoTruong} alt="" />
                     </div>

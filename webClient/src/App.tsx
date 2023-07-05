@@ -19,6 +19,9 @@ import AppTeacher from './page/Dashboard/AppTeacher';
 import HomeScreenStudent from './page/Main/HomeScreenStudent';
 import Detail from './page/Dashboard/Screen/Detail/Detail';
 import { MdArrowBack } from 'react-icons/md';
+import AppStorge from './page/Dashboard/AppStorage';
+import JoinTest from './screens/TestStudent/JoinTest';
+import JoinMark from './screens/TestStudent/JoinMark';
 
 function App() {
     return (
@@ -53,6 +56,14 @@ function App() {
                         element={
                             <div className="">
                                 <Detail />
+                            </div>
+                        }
+                    ></Route>
+                    <Route
+                        path="/admin/app-storage"
+                        element={
+                            <div className="">
+                                <AppStorge />
                             </div>
                         }
                     ></Route>
@@ -138,6 +149,8 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/test" element={<JoinTest />} />
+                <Route path="/test-mark" element={<JoinMark />} />
             </Routes>
         </>
     );

@@ -62,6 +62,7 @@ const AppGenre = () => {
             .then((response) => {
                 const Api_Data_Faculty = response.data.response_data;
                 console.log('data: ', Api_Data_Faculty);
+                setIsOptions(Api_Data_Faculty);
                 setIsOptionEdit(Api_Data_Faculty);
                 const newData: DataType[] = Api_Data_Faculty.map(
                     (item: {
@@ -114,7 +115,9 @@ const AppGenre = () => {
             .get(`${BASE_URL}/faculties/get-faculties`, config)
             .then((response) => {
                 const Api_all_faculty = response.data.response_data;
+                console.log(Api_all_faculty);
                 setIsOptions(Api_all_faculty);
+                console.log(Api_all_faculty);
             })
             .catch((error) => {
                 const isError = UnauthorizedError.checkError(error);
@@ -126,7 +129,12 @@ const AppGenre = () => {
             });
     };
     useEffect(() => {
-        handleFecthData();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFecthData();
+        }
     }, []);
     const handleCreateSubject = () => {
         const config = HeaderToken.getTokenConfig();
@@ -245,6 +253,7 @@ const AppGenre = () => {
     };
     const handleShowModal = () => {
         setOpenModal(true);
+        fetchDataSelectOption();
     };
     const handleCancel = () => {
         setOpenModal(false);
@@ -263,7 +272,7 @@ const AppGenre = () => {
             setErrorGenre(true);
         } else {
             handleCreateSubject();
-            fetchDataSelectOption();
+            handleFecthData();
         }
     };
     const handleSubmitEditGenre = () => {

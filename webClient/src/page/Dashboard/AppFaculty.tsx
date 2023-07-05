@@ -39,6 +39,12 @@ const AppFaculty = () => {
         setTimeout(() => {
             setIsLoading(false);
         }, 1000);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFecthData();
+        }
         handleFecthData();
     }, []);
     const handleFecthData = () => {

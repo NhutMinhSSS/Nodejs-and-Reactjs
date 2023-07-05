@@ -43,7 +43,12 @@ const AppStudent = () => {
         },
     ];
     useEffect(() => {
-        fetchDataStudent();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            fetchDataStudent();
+        }
     }, []);
     const [dataStudent, setDataStudent] = useState<DataType[]>([]);
     const fetchDataStudent = () => {
