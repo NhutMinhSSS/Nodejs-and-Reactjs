@@ -9,6 +9,7 @@ class FileService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
+                attributes: ['id', 'file_name', 'physical_name', 'file_path', 'file_type']
             });
             return file;
         } catch (error) {

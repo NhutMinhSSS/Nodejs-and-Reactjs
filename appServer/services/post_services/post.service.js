@@ -9,7 +9,6 @@ const Student = require("../../models/student.model");
 const Teacher = require("../../models/teacher.model");
 const StudentExam = require("../../models/student_exam.model");
 const PostDetail = require("../../models/post_detail.model");
-const PostCategory = require("../../models/post_category.model");
 const Classroom = require("../../models/classroom.model");
 const StudentFileSubmission = require("../../models/student_file_submission.model");
 const EnumMessage = require("../../common/enums/enum_message");
@@ -96,7 +95,7 @@ class PostService {
                             where: {
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
-                            attributes: ['id', 'file_name']
+                            attributes: ['id', 'file_name', 'file_type']
                         }],
                     },
                     {
@@ -221,7 +220,7 @@ class PostService {
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: ['id', 'file_name', 'create_date']
+                        attributes: ['id', 'file_name', 'create_date', 'file_type']
                     }],
                 }, {
                     model: PostDetail,
