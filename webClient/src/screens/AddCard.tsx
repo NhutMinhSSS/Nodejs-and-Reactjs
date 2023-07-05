@@ -20,6 +20,8 @@ import UnauthorizedError from '../common/exception/unauthorized_error';
 import ErrorAlert from '../common/Screens/ErrorAlert';
 import './scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
+import { saveAs } from 'file-saver';
+
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
     { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={28} /> },
@@ -118,7 +120,7 @@ const AddCard = () => {
         }
         return 'untitled';
     };
-    const handleDownPost = (id: number, fileId: number) => {
+    const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.replace('/');
@@ -132,8 +134,42 @@ const AddCard = () => {
                     responseType: 'blob',
                 },
             };
-            axios
-                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, config)
+            // try {
+            //     const response = await axios.get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, {
+            //         responseType: 'blob', // Important! This tells Axios to expect a binary response.
+            //     });
+
+            //     // Get the filename from the response headers or generate a default one.
+            //     const contentDisposition = response.headers['content-disposition'];
+
+            //     // Create a URL pointing to the Blob data, and create a temporary anchor element to initiate download.
+            //     const url = window.URL.createObjectURL(new Blob([response.data]));
+            //     const link = document.createElement('a');
+            //     const disposition = response.headers['content-disposition'];
+            //     const decord = disposition.split('filename=')[1].replace(/"/g, '');
+            //     const filename = decodeURIComponent(decord);
+            //     link.href = url;
+            //     link.setAttribute('download', filename);
+            //     document.body.appendChild(link);
+            //     link.click();
+
+            //     // Clean up the temporary URL and anchor element after the download is initiated.
+            //     window.URL.revokeObjectURL(url);
+            //     link.remove();
+            // } catch (error) {
+            //     console.error('Error downloading file:', error);
+            // } finally {
+            //     setLoading(false);
+            // }
+            const axiosInstance = axios.create({});
+            axiosInstance.interceptors.request.use((config) => {
+                // Thay YOUR_AUTH_TOKEN bằng giá trị token thực tế của bạn
+                config.headers.authorization = `Bearer ${token}`;
+
+                return config;
+            });
+            axiosInstance
+                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, { responseType: 'blob' })
                 .then((response) => {
                     const disposition = response.headers['content-disposition'];
                     const decord = disposition.split('filename=')[1].replace(/"/g, '');
@@ -141,8 +177,8 @@ const AddCard = () => {
                     const filename = decodeURIComponent(decord);
 
                     console.log(response.headers);
-                    console.log(filename);
-                    const file = new Blob([response.data], { type: 'application/octet-stream' });
+
+                    const file = new Blob([response.data]);
                     const url = URL.createObjectURL(file);
                     const link = document.createElement('a');
                     link.href = url;
@@ -158,21 +194,21 @@ const AddCard = () => {
 
                         if (!isError) {
                             let content = '';
-                            // const {
-                            //     status,
-                            //     data: { error_message: errorMessage },
-                            // } = error.response;
-                            // if (status === 404 && errorMessage === 'Classroom no exist') {
-                            //     content = 'Lớp không tồn tại';
-                            // } else if (status === 403 && errorMessage === 'No permission') {
-                            //     content = 'Bạn không có quyền truy cập vào lớp này';
-                            // } else {
-                            //     content = 'Lỗi máy chủ';
-                            // }
-                            // const title = 'Lỗi';
-                            // const path = '/giang-vien';
+                            const {
+                                status,
+                                data: { error_message: errorMessage },
+                            } = error.response;
+                            if (status === 404 && errorMessage === 'Classroom no exist') {
+                                content = 'Lớp không tồn tại';
+                            } else if (status === 403 && errorMessage === 'No permission') {
+                                content = 'Bạn không có quyền truy cập vào lớp này';
+                            } else {
+                                content = 'Lỗi máy chủ';
+                            }
+                            const title = 'Lỗi';
+                            const path = '/giang-vien';
 
-                            // ErrorAlert(title, content, path);
+                            ErrorAlert(title, content, path);
                         }
                     } else {
                         const title = 'Lỗi';
@@ -215,7 +251,6 @@ const AddCard = () => {
                 .post(`${BASE_URL}/posts/create-post`, formData, config)
                 .then((response) => {
                     console.log(response);
-
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
                     handleGetPost();
                 })
@@ -350,11 +385,11 @@ const AddCard = () => {
                                     <p className="break-words w-[35rem]">{item.content}</p>
                                 </div>
                                 {item.files.length > 0 ? (
-                                    <div className="grid grid-cols-2">
+                                    <div className="grid grid-cols-2 ">
                                         {item.files.map((file) => (
                                             <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
                                                 <div className="p-1   ">
-                                                    <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center gap-x-5">
+                                                    <div className="border-[1px]   rounded-sm border-gray-400 p-2 flex items-center gap-x-5">
                                                         {['image/jpg', 'image/jpeg', 'image/png'].includes(
                                                             file.file_type,
                                                         ) ? (
