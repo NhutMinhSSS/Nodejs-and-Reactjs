@@ -97,11 +97,15 @@ class StudentExamService {
     }
     async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
         try {
-            const studentExam = await StudentExam.update({
+            const updateData = {
                 finish_date: finishDate,
-                total_score: totalScore,
-                submission: submission ?? undefined
-            }, {
+                total_score: totalScore
+              };
+          
+              if (!submission) {
+                updateData.submission = submission;
+              }
+            const studentExam = await StudentExam.update(updateData, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
@@ -128,7 +132,8 @@ class StudentExamService {
                 }, {
                     where: {
                         exam_id: postId,
-                        student_id: {[Op.in]: studentsExamToUpdate}
+                        student_id: {[Op.in]: studentsExamToUpdate},
+                        status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, transaction
                 });
             }

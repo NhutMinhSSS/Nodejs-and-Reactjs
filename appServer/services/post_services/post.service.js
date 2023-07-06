@@ -353,6 +353,23 @@ class PostService {
     }
     async deletePost(id, transaction) {
         try {
+            await PostFile.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    post_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            await File.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: { [Op.in]: Post.sequelize.literal('(SELECT file_id FROM post_files WHERE post_id = :postId)') },
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction,
+                bind: { postId: id }
+            });
             const isDelete = await Post.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
@@ -361,7 +378,7 @@ class PostService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return isDelete > EnumServerDefinitions.ERROR;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
