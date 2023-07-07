@@ -78,7 +78,8 @@ class EnumMessage{
     static ERROR_POST = {
         //Post Not exists
         POST_NOT_EXISTS: 'Post not exists',
-        POST_NOT_CLASSROOM: 'Post not classroom'
+        POST_NOT_CLASSROOM: 'Post not classroom',
+        POST_NOT_CATEGORY: 'Post not category exercise'
     }
     //Error submission by student
     static ERROR_SUBMISSION = {

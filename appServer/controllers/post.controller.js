@@ -53,12 +53,12 @@ class PostController {
     //get post detail
     async getPostDetail(req, res) {
         try {
-            const postId = req.post.post_id;
+            const postId = req.params.post_id;
             const role = req.user.role;
             const studentId = req.student_id || null;
             const postDetail = await PostService.getDetailPost(postId, studentId);
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
-                const { delivered, submitted } = student_exams.reduce((counts, exam) => {
+                const { delivered, submitted } = postDetail.student_exams.reduce((counts, exam) => {
                     if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
                         counts.delivered++;
                     } else {

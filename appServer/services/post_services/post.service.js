@@ -257,6 +257,7 @@ class PostService {
                         }],
                         attributes: ['id', 'role']
                     }],
+                    as: 'comments',
                     attributes: ['id', 'content', 'comment_date'],
                     order: [['comment_date', 'ASC']]
                 }, {

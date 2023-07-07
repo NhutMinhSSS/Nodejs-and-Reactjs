@@ -24,6 +24,7 @@ const StudentFileSubmission = require('../models/student_file_submission.model')
 const StudentRandomizedQuestionList = require('../models/student_randomized_question_list.model');
 const Comment = require('../models/comment.model');
 const PostDetail = require('../models/post_detail.model');
+const StudentRandomizedAnswerList = require('../models/student_randomized_answer_list.model');
 //Nếu muốn thay đổi bảng thì sử dung after hoặc force.
 (async() => {
     try {
@@ -50,6 +51,7 @@ const PostDetail = require('../models/post_detail.model');
         await StudentAnswerOption.sync();
         await StudentFileSubmission.sync();
         await StudentRandomizedQuestionList.sync();
+        await StudentRandomizedAnswerList.sync();
         await Comment.sync();
         await PostDetail.sync();
         console.log("Bảng đã được tạo thành công!");

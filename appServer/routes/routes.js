@@ -7,6 +7,8 @@ const classroomRouter = require('./users/classroom.route');
 const postRouter = require('./users/post.route');
 const AdminRouter = require('./admin/admin.route');
 const FileRouter = require('./users/file.route');
+const QuestionRouter = require('./users/question.router');
+const StudentRouter = require('./users/student.route');
 
 
 router.use(express.json());
@@ -20,6 +22,8 @@ router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', authenticateToken, postRouter);
 router.use('/files', authenticateToken, FileRouter);
+router.use('/questions-and-answers', authenticateToken, QuestionRouter);
+router.use('/students', authenticateToken, StudentRouter)
 
 router.get('/test', (req, res) => {
     const questions = [
@@ -116,32 +120,7 @@ router.get('/test', (req, res) => {
           
         // Các câu hỏi khác...
       ];
-    //   let totalScore = 0; // Biến tích lũy tổng điểm
-      
-    //   questions.forEach(itemQ => {
-    //     const questionScore = itemQ.score; // Điểm của câu hỏi
-    //     totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
-    //   });
-      
-    //   let finalScore = 0; // Điểm cuối cùng
-      
-    //   questions.forEach(itemQ => {
-    //     const cau_dung = itemQ.answers.filter(item => item.isCorrect).length;
-    //     const dung = itemQ.answers.reduce((total, itemA) => {
-    //       const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
-    //       return total + (itemA.isCorrect && isChosen ? 1 : 0);
-    //     }, 0);
-      
-    //     const questionScore = itemQ.score; // Điểm của câu hỏi
-    //     finalScore += (dung / cau_dung) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
-    //   });
-      
-    //   finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
-      
-    //   console.log('Điểm cuối cùng:', finalScore);
-      
-    // //totalscore điểm * 100 / tổng điểm
-    // console.log(score);
+    
     const randomQuestions = questions.sort(() => Math.random() - 0.5).map(question => {
       const answersRandom = question.answers.sort(() => Math.random() - 0.5);
 
