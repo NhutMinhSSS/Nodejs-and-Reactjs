@@ -10,7 +10,7 @@ import {
     MdOutlineFileUpload,
     MdOutlineImage,
 } from 'react-icons/md';
-import { Button, Modal, Spin, Upload } from 'antd';
+import { Button, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
 import axios from 'axios';
 import HeaderToken from '../common/utils/headerToken';
 import SystemConst from '../common/consts/system_const';
@@ -20,8 +20,6 @@ import UnauthorizedError from '../common/exception/unauthorized_error';
 import ErrorAlert from '../common/Screens/ErrorAlert';
 import './scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
-import { saveAs } from 'file-saver';
-
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
     { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={28} /> },
@@ -56,6 +54,7 @@ const AddCard = () => {
     const { classroom_id } = useParams();
     const [isData, setIsData] = useState<ListPost[]>([]);
     const [loading, setLoading] = useState(false);
+    const [downloadComplete, setDownloadComplete] = useState(false);
     useEffect(() => {
         handleGetPost();
     }, []);
@@ -109,23 +108,33 @@ const AddCard = () => {
                 });
         }
     };
-
-    // Hàm để lấy tên tệp tin từ tiêu đề "Content-Disposition"
-    const getFilenameFromContentDisposition = (contentDisposition: any) => {
-        if (contentDisposition) {
-            const match = contentDisposition.match(/filename=(.+)/);
-            if (match && match[1]) {
-                return match[1];
+    const [percent, setPercent] = useState(0);
+    const [progressbar, setProgressbar] = useState('none');
+    const handlePopupDownloadFile = (file_id: number, id: number) => {
+        setProgressbar('block');
+        setDownloadComplete(false);
+        let progress = 0;
+        const interval = setInterval(async () => {
+            progress += 25;
+            if (progress > 100) {
+                clearInterval(interval);
+                handleDownPost(id, file_id);
+            } else {
+                setPercent(progress);
             }
-        }
-        return 'untitled';
+        }, 1500);
+
+        console.log(file_id, id);
+    };
+    const handleDownload = () => {
+        setModalDownloadFile(true);
     };
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.replace('/');
         } else {
-            setLoading(true);
+            // setLoading(true);
             const post_id = id;
             const file_id = fileId;
             const config = {
@@ -165,22 +174,20 @@ const AddCard = () => {
             axiosInstance.interceptors.request.use((config) => {
                 // Thay YOUR_AUTH_TOKEN bằng giá trị token thực tế của bạn
                 config.headers.authorization = `Bearer ${token}`;
-
                 return config;
             });
             axiosInstance
-                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, { responseType: 'blob' })
+                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, { responseType: 'arraybuffer' })
                 .then((response) => {
                     const disposition = response.headers['content-disposition'];
                     const decord = disposition.split('filename=')[1].replace(/"/g, '');
-
                     const filename = decodeURIComponent(decord);
-
-                    console.log(response.headers);
-
                     const file = new Blob([response.data]);
                     const url = URL.createObjectURL(file);
                     const link = document.createElement('a');
+                    const { data } = response;
+                    const newPercent = data.percent; // Giá trị tiến trình tải xuống từ API
+                    setPercent(newPercent);
                     link.href = url;
                     link.setAttribute('download', filename); // Đặt tên và đuôi file tại đây
                     document.body.appendChild(link);
@@ -221,7 +228,8 @@ const AddCard = () => {
                     console.error(error);
                 })
                 .finally(() => {
-                    setLoading(false);
+                    // setLoading(false);
+                    setDownloadComplete(false);
                 });
         }
     };
@@ -257,6 +265,8 @@ const AddCard = () => {
                 .finally(() => {
                     setLoading(false);
                 });
+            setPercent(0);
+            setProgressbar('none');
         }
     };
     const handleCancel = () => {
@@ -285,11 +295,7 @@ const AddCard = () => {
         setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f !== file));
     };
     const [modalDownloadFile, setModalDownloadFile] = useState(false);
-    const handlePopupDownloadFile = (file_id: number, id: number) => {
-        setModalDownloadFile(true);
-        console.log(file_id, id);
-        handleDownPost(id, file_id);
-    };
+
     const handleVisibleDownloadFile = () => {
         setModalDownloadFile(false);
     };
@@ -298,6 +304,15 @@ const AddCard = () => {
     };
     return (
         <>
+            {progressbar === 'block' && !downloadComplete && (
+                <Progress
+                    percent={percent}
+                    style={{ display: progressbar }}
+                    strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
+                    type="line"
+                />
+            )}
+
             <Spin spinning={loading}>
                 <div className="grid gap-y-4">
                     <div>
@@ -385,21 +400,30 @@ const AddCard = () => {
                                     <p className="break-words w-[35rem]">{item.content}</p>
                                 </div>
                                 {item.files.length > 0 ? (
-                                    <div className="grid grid-cols-2 ">
+                                    <div className="grid grid-cols-2 "> 
                                         {item.files.map((file) => (
                                             <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
-                                                <div className="p-1   ">
-                                                    <div className="border-[1px]   rounded-sm border-gray-400 p-2 flex items-center gap-x-5">
-                                                        {['image/jpg', 'image/jpeg', 'image/png'].includes(
-                                                            file.file_type,
-                                                        ) ? (
-                                                            <MdOutlineImage size={32} />
-                                                        ) : (
-                                                            <MdOutlineFilePresent size={32} />
-                                                        )}
-                                                        <div>{file.file_name}</div>
+                                                <Tooltip title={file.file_name}>
+                                                    <div className="p-1   ">
+                                                        <div className="border-[1px]   rounded-sm border-gray-400 p-2 flex items-center ">
+                                                            {['image/jpg', 'image/jpeg', 'image/png'].includes(
+                                                                file.file_type,
+                                                            ) ? (
+                                                                <div className="w-10 h-10">
+                                                                    <MdOutlineImage size={32} />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="w-10 h-10">
+                                                                    <MdOutlineFilePresent size={32} />
+                                                                </div>
+                                                            )}
+
+                                                            <div className="text-ellipsis overflow-hidden ...  max-w-xs w-[15rem]">
+                                                                {file.file_name}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                </Tooltip>
                                             </button>
                                         ))}
                                     </div>
