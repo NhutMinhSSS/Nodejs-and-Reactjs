@@ -19,7 +19,7 @@ class ClassroomStudentService {
                     classroom_id: classroomId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id', 'first_name', 'last_name']
+                attributes: ['student_id']
             });
             return listStudents;
         } catch (error) {

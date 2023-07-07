@@ -29,8 +29,7 @@ class PostDetailService {
             if (startDate) {
                 createData.start_date =  startDate;
             }
-            const newPostDetails = PostDetail.create({
-            }, { transaction: transaction });
+            const newPostDetails = PostDetail.create(createData, { transaction: transaction });
             return newPostDetails;
         } catch (error) {
             throw error;
