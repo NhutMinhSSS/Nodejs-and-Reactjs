@@ -105,5 +105,4 @@ const AllPeople = () => {
         </div>
     );
 };
-
 export default AllPeople;
