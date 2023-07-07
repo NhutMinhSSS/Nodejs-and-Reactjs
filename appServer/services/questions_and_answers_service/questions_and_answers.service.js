@@ -4,6 +4,7 @@ const Question = require("../../models/question.model");
 const StudentRandomizedAnswerList = require("../../models/student_randomized_answer_list.model");
 const StudentRandomizedQuestionList = require("../../models/student_randomized_question_list.model");
 const StudentAnswerOption = require("../../models/student_answer_option.model");
+const { Op } = require("sequelize");
 
 class QuestionsAndAnswersService {
     async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null) {
@@ -163,6 +164,23 @@ class QuestionsAndAnswersService {
                 attributes: ['id']
             });
             return listQuestionAndAnswer.map(item => item.Question);
+        } catch (error) {
+            throw error;
+        }
+    }
+    async checkAnswersBeLongToQuestion(questionId, listAnswersId) {
+        try {
+           const isCheck = await Answer.count({
+            where: {
+                id: {[Op.in]: listAnswersId},
+                question_id: questionId,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+            }
+           });
+           if (isCheck !== listAnswersId.length) {
+            return false;
+           }
+           return true;
         } catch (error) {
             throw error;
         }

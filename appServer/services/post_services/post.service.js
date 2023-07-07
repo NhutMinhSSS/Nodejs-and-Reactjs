@@ -281,10 +281,16 @@ class PostService {
                             },
                             attributes: ['id', 'file_name', 'create_date']
                         }]
+                    }, {
+                        model: Student,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['first_name', 'last_name']
                     }],
                     as: 'student_exams',
                 }],
-                attributes: ['id', 'create_date']
+                attributes: ['id', 'title', 'content', 'create_date']
             });
             return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {

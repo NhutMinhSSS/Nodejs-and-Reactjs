@@ -31,80 +31,80 @@ class StudentAnswerOptionService {
             throw error;
         }
     }
-    async createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer) {
+    async createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction) {
         try {
-          const existingStudentAnswerOption = await StudentAnswerOption.findAll({
-            where: {
-              status: EnumServerDefinitions.STATUS.ACTIVE,
-              student_exam_id: studentExamId,
-              question_id: questionId,
-            },
-            attributes: ['id', 'answer_id', 'essay_answer']
-          });
-          if (answerIds) {
-            if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
-                let index =0;
-                for (const item of existingStudentAnswerOption) {
-                   if (item.answer_id !== answerIds[index]) {
-                    await StudentAnswerOption.update({
-                        answer_id: answerIds[index]
-                    }, {where: {id: item.id}});
-                   }
-                    index ++;
-                }
-              } else if (answerIds.length > existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
-                let index =0;
-                for (const item of existingStudentAnswerOption) {
-                    await StudentAnswerOption.update({
-                        answer_id: answerIds[index]
-                    }, {where: {id: item.id, answer_id: {[Op.ne]: answerIds}}});
-                    index ++;
-                }
-                let list = [];
-                for (let i = existingStudentAnswerOption.length ; i <= answerIds.length -1  ; i++) {
-                    list.push({
-                        question_id: questionId,
-                        student_exam_id: studentExamId,
-                        answer_id: answerIds[i]
-                    });
-                }
-                await StudentAnswerOption.bulkCreate(list);
-              } else if (answerIds.length < existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+            const existingStudentAnswerOption = await StudentAnswerOption.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE,
+                    student_exam_id: studentExamId,
+                    question_id: questionId,
+                },
+                attributes: ['id', 'answer_id', 'essay_answer']
+            });
+            if (answerIds) {
+                if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                    let index = 0;
+                    for (const item of existingStudentAnswerOption) {
+                        if (item.answer_id !== answerIds[index]) {
+                            await StudentAnswerOption.update({
+                                answer_id: answerIds[index]
+                            }, { where: { id: item.id }, transaction });
+                        }
+                        index++;
+                    }
+                } else if (answerIds.length > existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                    let index = 0;
+                    for (const item of existingStudentAnswerOption) {
+                        await StudentAnswerOption.update({
+                            answer_id: answerIds[index]
+                        }, { where: { id: item.id, answer_id: { [Op.notIn]: answerIds } }, transaction });
+                        index++;
+                    }
+                    let listAnswers = [];
+                    for (let i = existingStudentAnswerOption.length; i <= answerIds.length - 1; i++) {
+                        listAnswers.push({
+                            question_id: questionId,
+                            student_exam_id: studentExamId,
+                            answer_id: answerIds[i]
+                        });
+                    }
+                    await StudentAnswerOption.bulkCreate(listAnswers, { transaction });
+                } else if (answerIds.length < existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
                     const studentOptionIds = existingStudentAnswerOption.filter(f => !answerIds.includes(f.answer_id)).map(item => item.id);
-                    console.log(studentOptionIds);
                     await StudentAnswerOption.destroy({
                         where: {
-                          id: { [Op.in]: studentOptionIds }
-                        }
-                      });
-              } 
-          } else if (existingStudentAnswerOption.length !== EnumServerDefinitions.EMPTY) {
-            await existingStudentAnswerOption.forEach(item => {
-                if (item.essay_answer != essayAnswer) {
-                    StudentAnswerOption.update({
-                        essay_answer: essayAnswer
-                    }, {
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE,
-                            student_exam_id: studentExamId,
-                            question_id: questionId,
+                            id: { [Op.in]: studentOptionIds }
                         }
                     });
                 }
-            });
-      } else {
-         await StudentAnswerOption.create({
-            student_exam_id: studentExamId,
+            } else if (existingStudentAnswerOption.length !== EnumServerDefinitions.EMPTY) {
+                await existingStudentAnswerOption.forEach(item => {
+                    if (item.essay_answer != essayAnswer) {
+                        StudentAnswerOption.update({
+                            essay_answer: essayAnswer
+                        }, {
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE,
+                                student_exam_id: studentExamId,
+                                question_id: questionId,
+                            }, transaction
+                        });
+                    }
+                });
+            } else {
+                await StudentAnswerOption.create({
+                    student_exam_id: studentExamId,
                     question_id: questionId,
                     essay_answer: essayAnswer
-         });
-      }
+                }, { transaction });
+            }
+            return true
         } catch (error) {
-          throw error;
+            throw error;
         }
-      }
-      
-    
+    }
+
+
     async createStudentsAnswersOptions(listQuestionAndAnswerIds, studentExamId, transaction) {
         try {
             const listStudentAnswerOption = listQuestionAndAnswerIds.map(item => ({

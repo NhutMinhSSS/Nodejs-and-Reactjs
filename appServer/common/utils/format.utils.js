@@ -160,6 +160,8 @@ class FormatUtils {
             finish_date: item.finish_date,
             total_score: item.total_score,
             submission: item.submission,
+            first_name: item.Student.first_name,
+            last_name: item.Student.last_name,
             file: this.formatFile(item.student_file_submissions)
         }));
         const formattedPost = {

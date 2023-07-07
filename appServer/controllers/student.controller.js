@@ -50,7 +50,7 @@ class StudentController {
             const listStudentClassroom = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
             const result = {
                 list_student_exams: listStudentExams,
-                list_student_classroom: listStudentClassroom 
+                list_student_classroom: listStudentClassroom
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
@@ -313,32 +313,32 @@ class StudentController {
     }
     async submissionExam(postId, studentExamId) {
         try {
-              let totalScore = 0; // Biến tích lũy tổng điểm
+            let totalScore = 0; // Biến tích lũy tổng điểm
             const questions = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(postId, false, studentExamId);
             questions.forEach(itemQ => {
                 const questionScore = itemQ.score; // Điểm của câu hỏi
                 totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
-              }); 
-              let finalScore = 0; // Điểm cuối cùng
-              let flag = true;
-              questions.forEach(itemQ => {
+            });
+            let finalScore = 0; // Điểm cuối cùng
+            let flag = true;
+            questions.forEach(itemQ => {
                 if (itemQ.question_category_id !== 3) {
                     const isCorrectQuestion = itemQ.answers.filter(item => item.correct_answer).length;
                     const isCorrect = itemQ.answers.reduce((total, itemA) => {
-                      const isChosen = itemQ.StudentAnswerOptions.some(item => item.answer_id === itemA.id);
-                      return total + (itemA.correct_answer && isChosen ? 1 : 0);
+                        const isChosen = itemQ.StudentAnswerOptions.some(item => item.answer_id === itemA.id);
+                        return total + (itemA.correct_answer && isChosen ? 1 : 0);
                     }, 0);
                     const questionScore = itemQ.score; // Điểm của câu hỏi
                     finalScore += (isCorrect / isCorrectQuestion) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
                 } else {
                     flag = false;
                 }
-              });
-              finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
-              //chấm tự luận
-              //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
-              //save points sv
-              console.log('Điểm cuối cùng:', finalScore.toFixed(0));
+            });
+            finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+            //chấm tự luận
+            //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
+            //save points sv
+            console.log('Điểm cuối cùng:', finalScore.toFixed(0));
 
             //totalscore điểm * 100 / tổng điểm
             //console.log(score);
@@ -350,11 +350,22 @@ class StudentController {
     async studentChooseAnswer(req, res) {
         const studentExamId = req.body.student_exam_id;
         const questionId = req.body.question_id;
-        const answerId = req.body.answer_id;
+        const answerIds = req.body.answer_ids;
         const essayAnswer = req.body.essay_answer;
         const transaction = await sequelize.transaction();
         try {
-            const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerId, essayAnswer);
+            const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
+            if (!checkAnswersBelongToQuestion) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
+            if (!update) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
