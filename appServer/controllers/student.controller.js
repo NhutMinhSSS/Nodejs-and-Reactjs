@@ -209,9 +209,9 @@ class StudentController {
             const listPosts = await PostService.findAllPostsByClassroomId(classroomId);
             if (listPosts) {
                 const publicPosts = listPosts.filter(post => post.post_details.is_public === true);
-                if (publicPosts.length > EnumServerDefinitions.STATUS.ACTIVE) {
+                if (publicPosts.length > EnumServerDefinitions.EMPTY) {
                     const studentExams = publicPosts.flatMap(post => studentIds.map(studentId => ({
-                        post_id: post.id,
+                        exam_id: post.id,
                         student_id: studentId
                     })));
                     await StudentExamService.addStudentExams(studentExams, transaction);

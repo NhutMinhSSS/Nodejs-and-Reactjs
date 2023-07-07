@@ -43,7 +43,7 @@ class PostService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     as: 'post_details',
-                    attributes: []
+                    attributes: ['id', 'is_public']
                 }]
             });
             return listPosts;
