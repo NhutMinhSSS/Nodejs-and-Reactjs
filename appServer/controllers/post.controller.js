@@ -195,7 +195,7 @@ class PostController {
                     await StudentExamService.removeStudentExamsByPostId(studentsToRemove, post.id, transaction);
                 }
             }
-            if (listFileRemove.length > EnumServerDefinitions.EMPTY) {
+            if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
                 const isRemove = await FileService.removeFiles(listFileRemove, transaction);
                 if (!isRemove) {
                     await transaction.rollback();
@@ -203,7 +203,7 @@ class PostController {
                         EnumMessage.ERROR_DELETE);
                 }
             }
-            if (files.length > EnumServerDefinitions.EMPTY) {
+            if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);

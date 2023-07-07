@@ -18,7 +18,8 @@ class ClassroomStudentService {
                 where: {
                     classroom_id: classroomId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id', 'first_name', 'last_name']
             });
             return listStudents;
         } catch (error) {

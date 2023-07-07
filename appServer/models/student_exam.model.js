@@ -2,6 +2,7 @@ const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database.config');
 const StudentFileSubmission = require('./student_file_submission.model');
+const Student = require('./student.model');
 const sequelize = db.getPool();
 
 class StudentExam extends Model{}
@@ -58,5 +59,6 @@ StudentExam.init({
 });
 
 StudentExam.hasMany(StudentFileSubmission, { foreignKey: 'student_exam_id', as: 'student_file_submissions'});
+StudentExam.belongsTo(Student, { foreignKey: 'student_id'});
 
 module.exports = StudentExam;
