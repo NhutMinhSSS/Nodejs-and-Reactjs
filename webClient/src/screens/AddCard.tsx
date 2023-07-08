@@ -14,7 +14,7 @@ import { Button, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
 import axios from 'axios';
 import HeaderToken from '../common/utils/headerToken';
 import SystemConst from '../common/consts/system_const';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Notification from '../components/Notification';
 import UnauthorizedError from '../common/exception/unauthorized_error';
 import ErrorAlert from '../common/Screens/ErrorAlert';
@@ -32,11 +32,14 @@ const ListStudent = [
     { label: 'Nguyễn Văn L', icon: <MdAccountCircle size={28} /> },
 ];
 interface ListPost {
+    post_category_id: number;
+    title: string;
     last_name: string;
     first_name: string;
     content: string;
     files: File[];
     id: number;
+    classroom_id: number;
 }
 interface File {
     file_name: string;
@@ -69,6 +72,7 @@ const AddCard = () => {
                 .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
                 .then((response) => {
                     const data = response.data.response_data.list_post;
+                    console.log(data);
                     setIsData(data);
                 })
                 .catch((error) => {
@@ -302,6 +306,13 @@ const AddCard = () => {
     const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(e.target.value);
     };
+    const navigate = useNavigate();
+
+    const handleClick = (item: any) => {
+        if (item.post_category_id !== 1) {
+            navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+        }
+    };
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -386,26 +397,34 @@ const AddCard = () => {
                     </div>
 
                     {isData.map((item) => (
-                        <div className="flex justify-between bg-slate-200 hover:shadow-lg px-10 py-5 box-decoration-slice rounded-lg max-w-3xl cursor-pointer whitespace-pre-line">
+                        <button
+                            onClick={() => handleClick(item)}
+                            className={`flex justify-between bg-slate-200 ${
+                                item.post_category_id === 1 ? ' ' : 'hover:shadow-lg'
+                            } px-10 py-5 box-decoration-slice rounded-lg max-w-3xl cursor-pointer whitespace-pre-line`}
+                        >
                             <div className="flex gap-y-4 flex-col justify-start">
                                 <div className="flex flex-row items-center gap-x-2">
                                     <div className="bg-blue-400 text-white text-xl p-2 rounded-full">
                                         <MdOutlineAssignment />
                                     </div>
-                                    <div className="text-base font-medium">
-                                        {item.last_name} {item.first_name}
+                                    <div className="flex text-base font-medium">
+                                        <div className="">
+                                            {item.last_name} {item.first_name}{' '}
+                                            {item.post_category_id === 4 ? `đã đăng ${item.title}` : ''}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="">
-                                    <p className="break-words w-[35rem]">{item.content}</p>
+                                    <p className="break-words w-[35rem] text-start">{item.content}</p>
                                 </div>
                                 {item.files.length > 0 ? (
-                                    <div className="grid grid-cols-2 "> 
+                                    <div className="grid grid-cols-2 ">
                                         {item.files.map((file) => (
                                             <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">
-                                                        <div className="border-[1px]   rounded-sm border-gray-400 p-2 flex items-center ">
+                                                        <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
                                                             {['image/jpg', 'image/jpeg', 'image/png'].includes(
                                                                 file.file_type,
                                                             ) ? (
@@ -436,7 +455,7 @@ const AddCard = () => {
                                     <MdMoreVert size={20} />
                                 </button>
                             </div>
-                        </div>
+                        </button>
                     ))}
                 </div>
             </Spin>

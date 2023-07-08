@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Menu, Modal } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './style.scss';
 import { MdAccountCircle, MdOutlineAdd, MdOutlineAssignment } from 'react-icons/md';
 import PopupCreateExercise from '../Popup/PopupCreateExercise';
@@ -47,6 +47,7 @@ const ClassroomExercisesTeacher: React.FC = () => {
     const onCheckboxChange = (selection: string[]) => {
         console.log(selection);
     };
+    const { classroom_id } = useParams();
     const items = [
         {
             key: '1',
@@ -123,7 +124,7 @@ const ClassroomExercisesTeacher: React.FC = () => {
                         width="100%"
                         footer={null}
                     >
-                        <PopupCreateTest />
+                        <PopupCreateTest data={classroom_id} />
                     </Modal>
                 </div>
             </div>
