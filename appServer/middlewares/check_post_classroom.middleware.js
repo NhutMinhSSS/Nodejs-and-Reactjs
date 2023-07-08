@@ -20,6 +20,10 @@ const checkPostBelongToClassroom = async(req, res, next) => {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                 EnumMessage.POST_NOT_EXISTS);
         }
+        if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
+        }
         let user;
        if (role === EnumServerDefinitions.ROLE.TEACHER) {
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
@@ -28,11 +32,8 @@ const checkPostBelongToClassroom = async(req, res, next) => {
             const student = await StudentService.findStudentByAccountId(accountId);
             user = await ClassroomStudentService.isStudentJoined(post.classroom_id, student.id);
             req.student_id = student.id;
-            req.post = {
-                post_id:  post.id,
-                post_category_id: post.post_category_id
-            };
        }
+       req.post = post;
        if (!user) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION);

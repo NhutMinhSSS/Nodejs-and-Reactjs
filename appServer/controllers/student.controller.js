@@ -16,6 +16,8 @@ const FormatUtils = require("../common/utils/format.utils");
 const PostService = require("../services/post_services/post.service");
 const PostDetailService = require("../services/post_services/post_detail.service");
 const ClassroomService = require("../services/classroom_services/classroom.service");
+const QuestionsAndAnswersService = require("../services/questions_and_answers_service/questions_and_answers.service");
+const StudentAnswerOptionService = require("../services/student_services/student_answer_option.service");
 const sequelize = db.getPool();
 
 
@@ -40,6 +42,21 @@ class StudentController {
             );
         }
     }
+    async getStudentsByPostId(req, res) {
+        const postId = req.params.post_id;
+        const classroomId = req.params.classroom_id;
+        try {
+            const listStudentExams = await StudentExamService.findStudentsExamsByPostId(postId);
+            const listStudentClassroom = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
+            const result = {
+                list_student_exams: listStudentExams,
+                list_student_classroom: listStudentClassroom
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+        } catch (error) {
+            throw error;
+        }
+    }
     async getStudentsListNotInClassroom(req, res) {
         const classroomId = req.params.classroom_id;
         const regularClassId = req.params.regular_class_id;
@@ -59,8 +76,8 @@ class StudentController {
                 first_name,
                 last_name,
                 class_name: RegularClass.class_name,
-              }));
-              return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+            }));
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(
@@ -187,18 +204,18 @@ class StudentController {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
-            } 
+            }
             await ClassroomStudentService.addStudentsAlterToClassroom(classroomId, studentIds, transaction);
             const listPosts = await PostService.findAllPostsByClassroomId(classroomId);
             if (listPosts) {
                 const publicPosts = listPosts.filter(post => post.post_details.is_public === true);
-                if (publicPosts.length > EnumServerDefinitions.STATUS.ACTIVE) {
+                if (publicPosts.length > EnumServerDefinitions.EMPTY) {
                     const studentExams = publicPosts.flatMap(post => studentIds.map(studentId => ({
-                      post_id: post.id,
-                      student_id: studentId
+                        exam_id: post.id,
+                        student_id: studentId
                     })));
                     await StudentExamService.addStudentExams(studentExams, transaction);
-                  }
+                }
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
@@ -237,37 +254,40 @@ class StudentController {
         try {
             const studentId = req.student_id;
             const accountId = req.user.account_id;
+            const post = req.post;
             const studentExamId = req.body.student_exam_id;
-            const postId = req.post_id;
-            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId, studentId);
+            //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
+            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
             if (!isStudentExam) {
-                return ServerResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
-            const postDetail = await PostDetailService.findDetailByPostId(postId);
-            const isBeforeStartTime = await FormatUtils.checkBeforeStartTime(postDetail.start_time);
-            if (isBeforeStartTime) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
-            }
-            const isDeadLineExceeded = await FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
+            const postDetail = await PostDetailService.findDetailByPostId(post.id);
+            // const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
+            // if (isBeforeStartTime) {
+            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+            //         EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
+            // }
+            const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
             }
-            if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+            if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
                 const files = req.files;
                 if (files.length === EnumServerDefinitions.EMPTY) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         'Nộp cc à không có file');
                 }
-                await this.submissionExercise(studentExamId, submissionDate, files, accountId);
-            } else if (postCategoryId === EnumServerDefinitions.POST_CATEGORY.EXAM) {
+                await StudentController.prototype.submissionExercise(studentExamId, submissionDate, files, accountId);
+            } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
+                await StudentController.prototype.submissionExam(post.id, studentExamId);
             } else {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
                     EnumMessage.UNAUTHORIZED_ERROR);
             }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
@@ -291,8 +311,68 @@ class StudentController {
             throw error;
         }
     }
-    async submissionExam() {
-
+    async submissionExam(postId, studentExamId) {
+        const transaction = await sequelize.transaction();
+        try {
+            const submissionDate = FormatUtils.dateTimeNow();
+            let totalScore = 0; // Biến tích lũy tổng điểm
+            const questions = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(postId, false, studentExamId);
+            questions.forEach(itemQ => {
+                const questionScore = itemQ.score; // Điểm của câu hỏi
+                totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
+            });
+            let finalScore = 0; // Điểm cuối cùng
+            let flag = true;
+            questions.forEach(itemQ => {
+                if (itemQ.question_category_id !== 3) {
+                    const isCorrectQuestion = itemQ.answers.filter(item => item.correct_answer).length;
+                    const isCorrect = itemQ.answers.reduce((total, itemA) => {
+                        const isChosen = itemQ.StudentAnswerOptions.some(item => item.answer_id === itemA.id);
+                        return total + (itemA.correct_answer && isChosen ? 1 : 0);
+                    }, 0);
+                    const questionScore = itemQ.score; // Điểm của câu hỏi
+                    finalScore += (isCorrect / isCorrectQuestion) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
+                } else {
+                    flag = false;
+                }
+            });
+            finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+            //chấm tự luận
+            //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
+            await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
+    async studentChooseAnswer(req, res) {
+        const studentExamId = req.body.student_exam_id;
+        const questionId = req.body.question_id;
+        const answerIds = req.body.answer_ids;
+        const essayAnswer = req.body.essay_answer;
+        const transaction = await sequelize.transaction();
+        try {
+            const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
+            if (!checkAnswersBelongToQuestion) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
+            if (!update) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            await transaction.rollback();
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
     }
 }
 

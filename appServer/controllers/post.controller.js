@@ -53,12 +53,12 @@ class PostController {
     //get post detail
     async getPostDetail(req, res) {
         try {
-            const postId = req.post.post_id;
+            const postId = req.params.post_id;
             const role = req.user.role;
             const studentId = req.student_id || null;
             const postDetail = await PostService.getDetailPost(postId, studentId);
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
-                const { delivered, submitted } = student_exams.reduce((counts, exam) => {
+                const { delivered, submitted } = postDetail.student_exams.reduce((counts, exam) => {
                     if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
                         counts.delivered++;
                     } else {
@@ -68,6 +68,15 @@ class PostController {
                 }, { delivered: 0, submitted: 0 });
                 postDetail.delivered = delivered;
                 postDetail.submitted = submitted;
+            } else {
+                postDetail.student_exams = postDetail.student_exams.map(item => {
+                    if (item.submission !== EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+                      const { total_score, ...rest } = item; // Bỏ cột "total_score" khỏi đối tượng item
+                      return rest;
+                    } else {
+                        return item;
+                    }
+                  });
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {
@@ -195,7 +204,7 @@ class PostController {
                     await StudentExamService.removeStudentExamsByPostId(studentsToRemove, post.id, transaction);
                 }
             }
-            if (listFileRemove.length > EnumServerDefinitions.EMPTY) {
+            if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
                 const isRemove = await FileService.removeFiles(listFileRemove, transaction);
                 if (!isRemove) {
                     await transaction.rollback();
@@ -203,7 +212,7 @@ class PostController {
                         EnumMessage.ERROR_DELETE);
                 }
             }
-            if (files.length > EnumServerDefinitions.EMPTY) {
+            if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);

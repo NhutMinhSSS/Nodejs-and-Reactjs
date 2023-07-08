@@ -47,6 +47,6 @@ StudentRandomizedQuestionList.init({
     updatedAt: 'updated_at'
 });
 
-StudentRandomizedQuestionList.hasOne(Question, {foreignKey: 'question_id'})
+
 
 module.exports = StudentRandomizedQuestionList;

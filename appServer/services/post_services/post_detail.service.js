@@ -18,15 +18,18 @@ class PostDetailService {
     }
     async createPostDetail(postId, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction) {
         try {
-            const newPostDetails = PostDetail.create({
+            const createData = {
                 post_id: postId,
-                start_date: startDate,
                 finish_date: finishDate,
                 inverted_question: invertedQuestion,
                 inverted_answer: invertedAnswer,
                 is_public: isPublic,
                 is_hidden: isHidden
-            }, { transaction: transaction });
+            };
+            if (startDate) {
+                createData.start_date =  startDate;
+            }
+            const newPostDetails = PostDetail.create(createData, { transaction: transaction });
             return newPostDetails;
         } catch (error) {
             throw error;

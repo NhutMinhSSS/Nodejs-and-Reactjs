@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const Answer = require("../../models/answer.model");
 const Question = require("../../models/question.model");
@@ -30,7 +31,92 @@ class StudentAnswerOptionService {
             throw error;
         }
     }
-    async createStudentAnswerOption(listQuestionAndAnswerIds, studentExamId, transaction) {
+    async createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction) {
+        try {
+            const existingStudentAnswerOption = await StudentAnswerOption.findAll({
+                where: {
+                    status: EnumServerDefinitions.STATUS.ACTIVE,
+                    student_exam_id: studentExamId,
+                    question_id: questionId,
+                },
+                attributes: ['id', 'answer_id', 'essay_answer']
+            });
+            if (answerIds) {
+                /* if (typeof answerIds === 'number' && !existingStudentAnswerOption.length) {
+                    await StudentAnswerOption.create({
+                        student_exam_id: studentExamId,
+                        question_id: questionId,
+                        answer_id: answerIds
+                    })
+                }
+                else if (typeof answerIds === 'number' && existingStudentAnswerOption.length !== 0) {
+                    await StudentAnswerOption.update({
+                        answer_id: answerIds
+                    }, { where: { question_id: questionId }, transaction });
+                }else  */if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                    let index = 0;
+                    for (const item of existingStudentAnswerOption) {
+                        if (item.answer_id !== answerIds[index]) {
+                            await StudentAnswerOption.update({
+                                answer_id: answerIds[index]
+                            }, { where: { id: item.id }, transaction });
+                        }
+                        index++;
+                    }
+                } else if (answerIds.length > existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                    let index = 0;
+                    for (const item of existingStudentAnswerOption) {
+                        await StudentAnswerOption.update({
+                            answer_id: answerIds[index]
+                        }, { where: { id: item.id, answer_id: { [Op.notIn]: answerIds } }, transaction });
+                        index++;
+                    }
+                    let listAnswers = [];
+                    for (let i = existingStudentAnswerOption.length; i <= answerIds.length - 1; i++) {
+                        listAnswers.push({
+                            question_id: questionId,
+                            student_exam_id: studentExamId,
+                            answer_id: answerIds[i]
+                        });
+                    }
+                    await StudentAnswerOption.bulkCreate(listAnswers, { transaction });
+                } else if (answerIds.length < existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                    const studentOptionIds = existingStudentAnswerOption.filter(f => !answerIds.includes(f.answer_id)).map(item => item.id);
+                    await StudentAnswerOption.destroy({
+                        where: {
+                            id: { [Op.in]: studentOptionIds }
+                        }
+                    });
+                }
+            } else if (existingStudentAnswerOption.length !== EnumServerDefinitions.EMPTY) {
+                await existingStudentAnswerOption.forEach(item => {
+                    if (item.essay_answer != essayAnswer) {
+                        StudentAnswerOption.update({
+                            essay_answer: essayAnswer
+                        }, {
+                            where: {
+                                status: EnumServerDefinitions.STATUS.ACTIVE,
+                                student_exam_id: studentExamId,
+                                question_id: questionId,
+                            }, transaction
+                        });
+                    }
+                });
+            } else {
+                await StudentAnswerOption.create({
+                    student_exam_id: studentExamId,
+                    question_id: questionId,
+                    essay_answer: essayAnswer
+                }, { transaction });
+            }
+            return true
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+    async createStudentsAnswersOptions(listQuestionAndAnswerIds, studentExamId, transaction) {
         try {
             const listStudentAnswerOption = listQuestionAndAnswerIds.map(item => ({
                 ...item,

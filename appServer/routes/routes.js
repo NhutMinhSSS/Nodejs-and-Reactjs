@@ -7,6 +7,8 @@ const classroomRouter = require('./users/classroom.route');
 const postRouter = require('./users/post.route');
 const AdminRouter = require('./admin/admin.route');
 const FileRouter = require('./users/file.route');
+const QuestionRouter = require('./users/question.router');
+const StudentRouter = require('./users/student.route');
 
 
 router.use(express.json());
@@ -20,128 +22,105 @@ router.use('/admin', authenticateToken, AdminRouter);
 router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', authenticateToken, postRouter);
 router.use('/files', authenticateToken, FileRouter);
+router.use('/questions-and-answers', authenticateToken, QuestionRouter);
+router.use('/students', authenticateToken, StudentRouter)
 
 router.get('/test', (req, res) => {
     const questions = [
         {
+          id: 1,
           content: 'Đâu là thủ đô của Việt Nam?',
-          exam_id: 1,
           score: 10,
           question_category_id: 1,
           answers: [
-            { id: 3, content: 'Hà Nội', isCorrect: true },
-            { id: 4, content: 'Hồ Chí Minh', isCorrect: false },
-            { id: 5, content: 'Đà Nẵng', isCorrect: false }
+            { id: 3,question_id: 1, answer: 'Hà Nội', correct_answer: true},
+            { id: 4,question_id: 1, answer: 'Hồ Chí Minh', correct_answer: false },
+            { id: 5,question_id: 1, answer: 'Đà Nẵng', correct_answer: false }
           ],
-          student_exam: [
-            { id: 1, answer_id: 3 },
+          student_answer_options: [
+            { question_id: 1, answer_id: 1, essay_answer: null, student_exam_id: 1 },
           ]
         },
         {
+          id: 2,
           content: 'Ai là người đầu tiên đặt chân lên mặt trăng?',
-          exam_id: 1,
           score: 10,
           question_category_id: 1,
           answers: [
-            { id: 6, content: 'Neil Armstrong', isCorrect: true },
-            { id: 7, content: 'Buzz Aldrin', isCorrect: false },
-            { id: 8, content: 'Michael Collins', isCorrect: false }
+            { id: 6, answer: 'Neil Armstrong', correct_answer: true },
+            { id: 7, answer: 'Buzz Aldrin', correct_answer: false },
+            { id: 8, answer: 'Michael Collins', correct_answer: false }
           ],
-          student_exam: [
-            { id: 3, answer_id: 6 }
+          student_answer_options: [
+            { question_id: 2, answer_id: 6, essay_answer: null, student_exam_id: 1 }
           ]
         },
         {
+          id: 3,
           content: 'Ai là vị tướng lừng danh trong lịch sử Việt Nam?',
-          exam_id: 1,
           score: 10,
           question_category_id: 1,
           answers: [
-            { id: 9, content: 'Võ Nguyên Giáp', isCorrect: true },
-            { id: 10, content: 'Trần Hưng Đạo', isCorrect: false },
-            { id: 11, content: 'Lê Lợi', isCorrect: false }
+            { id: 9, answer: 'Võ Nguyên Giáp', correct_answer: true },
+            { id: 10, answer: 'Trần Hưng Đạo', correct_answer: false },
+            { id: 11, answer: 'Lê Lợi', correct_answer: false }
           ],
-          student_exam: [
-            { id: 4, answer_id: 9 }
+          student_answer_options: [
+            { question_id: 3, answer_id: 9, essay_answer: null, student_exam_id: 1 }
           ]
         },
         {
+          id: 4,
             content: "Tình yêu là gì?",
-            exam_id: 1,
             score: 10,
             question_category_id: 2,
             answers: [
-              { id: 12, "content": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "isCorrect": true },
-              { id: 13, "content": "Một loại bệnh", "isCorrect": false },
-              { id: 14, "content": "Một trạng thái của tâm hồn", "isCorrect": true },
-              { id: 15, "content": "Sự hợp tác và chia sẻ giữa hai người", "isCorrect": false }
+              { id: 12, answer: "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", correct_answer: true },
+              { id: 13, answer: "Một loại bệnh", correct_answer: false },
+              { id: 14, answer: "Một trạng thái của tâm hồn", correct_answer: true },
+              { id: 15, answer: "Sự hợp tác và chia sẻ giữa hai người", correct_answer: false }
             ],
-            student_exam: [
-              { id: 3, "answer_id": 14 },
-              { id: 4, "answer_id": 15 }
+            student_answer_options: [
+              { question_id: 4, answer_id: 14, essay_answer: null, student_exam_id: 1 },
+              { question_id: 4, answer_id: 15, essay_answer: null, student_exam_id: 1 }
             ]
           },
           {
+            id: 5,
             content: "Tình yêu có thể đến bất ngờ ở đâu?",
-            exam_id: 1,
             score: 10,
             question_category_id: 2,
             answers: [
-              { id: 16, "content": "Trong một buổi hẹn đầu tiên", "isCorrect": false },
-              { id: 17, "content": "Ở nơi làm việc", "isCorrect": true },
-              { id: 18, "content": "Trên mạng xã hội", "isCorrect": true },
-              { id: 19, "content": "Chỉ trong tiểu thuyết và phim ảnh", "isCorrect": false }
+              { id: 16, answer: "Trong một buổi hẹn đầu tiên", correct_answer: false },
+              { id: 17, answer: "Ở nơi làm việc", correct_answer: true },
+              { id: 18, answer: "Trên mạng xã hội", correct_answer: true },
+              { id: 19, answer: "Chỉ trong tiểu thuyết và phim ảnh", correct_answer: false }
             ],
-            student_exam: [
-              { id: 5, "answer_id": 17 },
-              { id: 6, "answer_id": 19 }
+            student_answer_options: [
+              { question_id: 5, answer_id: 17, essay_answer: null, student_exam_id: 1 },
+              { question_id: 5, answer_id: 19, essay_answer: null, student_exam_id: 1 }
             ]
           },
           {
+            id: 6,
             content: "Tình yêu có thể tồn tại trong thời gian dài không?",
-            exam_id: 1,
             score: 10,
             question_category_id: 3,
             answers: [],
-            student_exam: [
-              { id: 7, "answer_id": 'Tình yêu có thể tồn tại trong thời gian dài nếu được xây dựng trên cơ sở của sự hiểu biết, tôn trọng, lòng tin và cống hiến. Một mối quan hệ tình yêu bền vững yêu cầu cả hai bên cùng đồng ý và làm việc với nhau để duy trì và phát triển tình yêu qua thời gian.'+
+            student_answer_options: [
+              { question_id: 6, answer_id: null, essay_answer: 'Tình yêu có thể tồn tại trong thời gian dài nếu được xây dựng trên cơ sở của sự hiểu biết, tôn trọng, lòng tin và cống hiến. Một mối quan hệ tình yêu bền vững yêu cầu cả hai bên cùng đồng ý và làm việc với nhau để duy trì và phát triển tình yêu qua thời gian.'+
 
               'Để tình yêu tồn tại lâu dài, cần có sự chăm sóc và quan tâm đến nhau. Hai người cần dành thời gian để hiểu và chia sẻ với nhau, xây dựng sự gắn kết và tạo nên một môi trường ủng hộ và an lành cho mối quan hệ. Đồng thời, việc tôn trọng và tin tưởng lẫn nhau cũng rất quan trọng. Tình yêu cần được xây dựng trên nền tảng của sự chung thuỷ, trung thực và tôn trọng giữa hai người.'+
               
               'Tuy nhiên, để tình yêu tồn tại lâu dài, cũng cần phải thích nghi và điều chỉnh trong quá trình hình thành và phát triển. Cuộc sống và môi trường xung quanh có thể thay đổi, và cả hai người trong mối quan hệ cần hỗ trợ và thích nghi với những thay đổi đó. Quan trọng nhất là sẵn lòng làm việc với nhau để vượt qua khó khăn và tạo nên sự cân bằng và hạnh phúc trong mối quan hệ.'+
               
-              'Tình yêu có thể tồn tại trong thời gian dài nếu cả hai người trong mối quan hệ cam kết và làm việc với nhau để nuôi dưỡng và phát triển tình yêu đó. Nó có thể trở nên sâu sắc và mãnh liệt hơn qua thời gian và đem lại hạnh phúc và sự an lành cho cả hai người.'},
+              'Tình yêu có thể tồn tại trong thời gian dài nếu cả hai người trong mối quan hệ cam kết và làm việc với nhau để nuôi dưỡng và phát triển tình yêu đó. Nó có thể trở nên sâu sắc và mãnh liệt hơn qua thời gian và đem lại hạnh phúc và sự an lành cho cả hai người.', student_exam_id: 1},
             ]
           }
           
         // Các câu hỏi khác...
       ];
-    //   let totalScore = 0; // Biến tích lũy tổng điểm
-      
-    //   questions.forEach(itemQ => {
-    //     const questionScore = itemQ.score; // Điểm của câu hỏi
-    //     totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
-    //   });
-      
-    //   let finalScore = 0; // Điểm cuối cùng
-      
-    //   questions.forEach(itemQ => {
-    //     const cau_dung = itemQ.answers.filter(item => item.isCorrect).length;
-    //     const dung = itemQ.answers.reduce((total, itemA) => {
-    //       const isChosen = itemQ.student_exam.some(item => item.answer_id === itemA.id);
-    //       return total + (itemA.isCorrect && isChosen ? 1 : 0);
-    //     }, 0);
-      
-    //     const questionScore = itemQ.score; // Điểm của câu hỏi
-    //     finalScore += (dung / cau_dung) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
-    //   });
-      
-    //   finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
-      
-    //   console.log('Điểm cuối cùng:', finalScore);
-      
-    // //totalscore điểm * 100 / tổng điểm
-    // console.log(score);
+    
     const randomQuestions = questions.sort(() => Math.random() - 0.5).map(question => {
       const answersRandom = question.answers.sort(() => Math.random() - 0.5);
 

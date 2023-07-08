@@ -19,9 +19,9 @@ class FormatUtils {
         return moment.tz(SystemConst.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
     }
     // check before start time
-    checkBeforeStartTime(startTime) {
+    checkBeforeStartTime(startDate) {
         const submissionDate = moment().tz(SystemConst.TIME_ZONE);
-        if (submissionDate < postDetail.start_date) {
+        if (submissionDate < startDate) {
             return true;
         }
         return false;
@@ -29,7 +29,7 @@ class FormatUtils {
     // check dead line exceeded
     checkDeadlineExceeded(finishDate) {
         const submissionDate = moment().tz(SystemConst.TIME_ZONE);
-        if (submissionDate > finishDate) {
+        if (submissionDate > finishDate && finishDate) {
             return true;
         }
         return false;
@@ -160,23 +160,44 @@ class FormatUtils {
             finish_date: item.finish_date,
             total_score: item.total_score,
             submission: item.submission,
+            first_name: item.Student.first_name,
+            last_name: item.Student.last_name,
             file: this.formatFile(item.student_file_submissions)
         }));
         const formattedPost = {
-            id: post.id,
-            title: post.title,
-            content: post.content,
-            create_date: post.create_date,
+            id: postDetail.id,
+            title: postDetail.title,
+            content: postDetail.content,
+            create_date: postDetail.create_date,
             //category: post.post_categories.category_name,
             //classroom_id: post.classroom_id,
             //last_name: account.last_name,
             //first_name: account.first_name,
             // topic_id: post.topic_id,
-            files: this.formatFile(post.post_files),
+            files: this.formatFile(postDetail.post_files),
             comments: formatComments,
             student_exams: studentExams
         };
         return formattedPost;
+    }
+    randomQuestions(listQuestions , studentExam) {
+        const randomQuestions = listQuestions.map((item, index) => ({
+            student_exam_id: studentExam.id,
+            question_id: item.id,
+            order: index + 1
+          }));
+        return randomQuestions;
+    }
+    randomAnswers(listAnswers, studentExam) {
+        const randomAnswers = listAnswers.flatMap(q => 
+            q.answers.sort(() => Math.random() - 0.5).flatMap((a, index) => ({
+              student_exam_id: studentExam.id,
+              question_id: q.id,
+              answer_id: a.id,
+              order: index + 1
+            }))
+          );
+          return randomAnswers;
     }
 }
 

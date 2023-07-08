@@ -43,7 +43,7 @@ class PostService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     as: 'post_details',
-                    attributes: []
+                    attributes: ['id', 'is_public']
                 }]
             });
             return listPosts;
@@ -257,6 +257,7 @@ class PostService {
                         }],
                         attributes: ['id', 'role']
                     }],
+                    as: 'comments',
                     attributes: ['id', 'content', 'comment_date'],
                     order: [['comment_date', 'ASC']]
                 }, {
@@ -280,10 +281,16 @@ class PostService {
                             },
                             attributes: ['id', 'file_name', 'create_date']
                         }]
+                    }, {
+                        model: Student,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['first_name', 'last_name']
                     }],
                     as: 'student_exams',
                 }],
-                attributes: ['id', 'create_date']
+                attributes: ['id', 'title', 'content', 'create_date']
             });
             return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {
