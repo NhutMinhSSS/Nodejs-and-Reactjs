@@ -77,7 +77,6 @@ class PostController {
                         return item;
                     }
                   });
-                  console.log(postDetail.student_exams);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {

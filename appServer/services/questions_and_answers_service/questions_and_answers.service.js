@@ -38,7 +38,6 @@ class QuestionsAndAnswersService {
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
                 order: questionsOrder,
-                limit: 2
             });
             return questionsAndAnswers;
         } catch (error) {
