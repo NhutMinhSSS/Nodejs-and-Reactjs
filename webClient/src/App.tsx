@@ -144,7 +144,7 @@ function App() {
                         </div>
                     }
                 />
-                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailTest />} />
+                <Route path="/giang-vien/class/:classroom_id/:post_id/" element={<DetailTest />}></Route>
                 <Route path="/test-mark" element={<JoinMark />} />
                 <Route
                     path="/sinh-vien/class/:id"
