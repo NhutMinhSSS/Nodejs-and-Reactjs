@@ -34,7 +34,8 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id'],
+                    as: 'student_answer_options'
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
                 order: questionsOrder,
@@ -73,7 +74,8 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id'],
+                    as: 'student_answer_options'
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
             });
@@ -111,7 +113,8 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id'],
+                    as: 'student_answer_options'
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'], //cần thêm
             });
@@ -155,7 +158,8 @@ class QuestionsAndAnswersService {
                             student_exam_id: studentExamId,
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
+                        attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id'],
+                        as: 'student_answer_options'
                     }],
                     attributes: ['id', 'content', 'score', 'question_category_id'], //cần thêm
                     order: [['order', 'ASC']]

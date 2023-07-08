@@ -84,7 +84,7 @@ const JoinMark = () => {
             const questionItem = question.find(item => item.id === questionId && item.student_exam.length > 0);
             if (questionItem) {
                 selectAnswers[questionId] = questionItem.student_exam
-                    .filter(student_exam => student_exam.student_exam_id === 1)
+                    .filter(student_exam => student_exam.student_exam_id === studentExamId)
                     .map(student_exam => student_exam.answer_id);
             }
         }

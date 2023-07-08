@@ -60,6 +60,6 @@ StudentAnswerOption.init({
     updatedAt: 'updated_at'
 });
 
-Question.hasMany(StudentAnswerOption, {foreignKey: 'question_id'});
+Question.hasMany(StudentAnswerOption, {foreignKey: 'question_id', as: 'student_answer_options'});
 
 module.exports = StudentAnswerOption;
