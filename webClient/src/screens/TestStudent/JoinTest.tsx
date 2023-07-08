@@ -7,14 +7,11 @@ import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { useParams } from 'react-router-dom';
 
 interface Question {
-    examId: number;
-    questionIndex: number;
     answerIds: number[];
     id: number;
     content: string;
     answers: Answer[];
     question_category_id: number;
-    exam_id: number;
 }
 
 interface Answer {
@@ -30,6 +27,7 @@ const JoinTest = () => {
     const [question, setQuestion] = useState<Question[]>([]);
     //const [selectedAnswers, setSelectedAnswers] = useState<Question[]>([]);
     const [studentExamId, setStudentExamId] = useState(Number);
+    const [submission, setSubmission] = useState(Number);
 
     useEffect(() => {
         handleFetchData();
@@ -42,49 +40,50 @@ const JoinTest = () => {
             setQuestion(dataFetch.list_questions_answers);
             if (dataFetch.student_exam_id) {
                 setStudentExamId(dataFetch.student_exam_id);
+                setSubmission(dataFetch.submission);
             }
             console.log('data: ', response.data.response_data);
         });
     };
     let questionRadio: Number[];
-    const handleAnswerChange = (examId: number, answerId: any) => {
+    const handleAnswerChange = (questionId: number, answerIds: any) => {
         questionRadio = []
         if (questionRadio) {   
             // Cập nhật danh sách đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
-            questionRadio = [answerId]
+            questionRadio = [answerIds]
         } else {
-            const newQuestion = [answerId]
+            const newQuestion = [answerIds]
             questionRadio = newQuestion;
         }
         return {
             answerIds: questionRadio,
-            question_id: examId
+            question_id: questionId
         };
     };
     const selectAnswers: Record<number, number[]> = {};
 
-    const handleAnswerCheckBox = (examId: number, answerId: any, checked: boolean) => {
-        if (!selectAnswers[examId]) {
+    const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {
+        if (!selectAnswers[questionId]) {
             // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
-            selectAnswers[examId] = [answerId];
+            selectAnswers[questionId] = [answerIds];
             return {
-                question_id: examId, 
-                answer_ids:selectAnswers[examId]
+                question_id: questionId, 
+                answer_ids:selectAnswers[questionId]
             };
           } else {
             if (checked) {
               // Nếu được chọn, thêm câu trả lời vào danh sách
-              selectAnswers[examId].push(answerId);
+              selectAnswers[questionId].push(answerIds);
               return {
-                question_id: examId, 
-                answer_ids:selectAnswers[examId]
+                question_id: questionId, 
+                answer_ids:selectAnswers[questionId]
             };
             } else {
               // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
-              selectAnswers[examId] = selectAnswers[examId].filter((id) => id !== answerId);
+              selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
               return {
-                question_id: examId, 
-                answer_ids:selectAnswers[examId]
+                question_id: questionId, 
+                answer_ids:selectAnswers[questionId]
             };
             }
           }
@@ -96,8 +95,9 @@ const JoinTest = () => {
         // // axios.post(`${BASE_URL}/submit`, { answers: selectedAnswers }).then((response) => {
         // //     // Xử lý phản hồi từ server (nếu cần)
         // // });
-        if (studentExamId) {
+        if (studentExamId && submission === 1) {
             setTimeout(()=> {
+                //Gọi API
                 console.log("Đã gửi");
                 
             }, 1500);
@@ -109,12 +109,12 @@ const JoinTest = () => {
     const [questionId, setQuestionId] = useState(Number);
   useEffect(() => {
     let timer: any;
-    if (shouldCallAPI && studentExamId) {
+    if (shouldCallAPI) {
       timer = setTimeout(() => {
         //Gọi API
-        console.log('nhutminh');
+        console.log(textValue, questionId);
         
-      }, 1000);
+      }, 800);
     }
 
     return () => clearTimeout(timer);
@@ -146,7 +146,7 @@ const JoinTest = () => {
                                                                 name={`asw${index}`}
                                                                 value={answer.id}
                                                                 onChange={() =>{
-                                                                    if (studentExamId) {
+                                                                    if (studentExamId && submission === 0) {
                                                                         handleAnswerChange(asw.id, answer.id);
                                                                     }
                                                                     //Gọi API
@@ -158,14 +158,14 @@ const JoinTest = () => {
                                                                 value={answer.id}
                                                                 onChange={(e) =>
                                                                     {
-                                                                       if (studentExamId) {
+                                                                       if (studentExamId && submission === 0) {
                                                                         const data = handleAnswerCheckBox(
                                                                             asw.id,
                                                                             answer.id,
                                                                             e.target.checked,
                                                                         );
+                                                                            //Gọi API
                                                                        }
-                                                                   //gọi API
                                                                 }
                                                                 }
                                                             />
@@ -178,7 +178,9 @@ const JoinTest = () => {
                                                         style={{ resize: 'none', height: 120 }}
                                                         placeholder="Nhập câu trả lời"
                                                         onChange={(e) =>{
+                                                           if (studentExamId && submission === 0) {
                                                             handleTextAreaChange(e, asw.id);
+                                                           }
                                                         }
                                                         }
                                                     ></Input.TextArea>
