@@ -1,7 +1,6 @@
 import { Button, Col, DatePicker, Input, Row, Select, Switch, Tabs } from 'antd';
 import TabPane from 'antd/es/tabs/TabPane';
 import '../../style/Tabs.scss';
-import ScreenPageTest from './PageTest/ScreenPageTest';
 import AllPeople from '../AllPeople';
 import ClassBulletin from '../ClassBulletin';
 import ClassroomExercisesTeacher from '../ClassExercises/ClassroomExercisesTeacher';
@@ -10,13 +9,17 @@ import { Content, Header } from 'antd/es/layout/layout';
 import React, { useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en';
+import axios from 'axios';
+import SystemConst from '../../common/consts/system_const';
+import HeaderToken from '../../common/utils/headerToken';
+import { useParams } from 'react-router-dom';
 const { TextArea } = Input;
 dayjs.locale('en');
 interface Option {
     id: number;
-    content: string;
-    isCorrect: boolean;
     answer: string;
+    correct_answer: boolean;
+    essay_answer: string;
 }
 
 interface Question {
@@ -25,15 +28,15 @@ interface Question {
     options: Option[];
     inputType: 'checkbox' | 'radio' | 'text'; // Added 'text' as an option
 }
-const PopupCreateTest = () => {
+const BASE_URL = `${SystemConst.DOMAIN}`;
+const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
     const [title, setTitle] = useState<string>('');
     const [instruction, setInstruction] = useState<string>('');
     const [point, setPoint] = useState<number | string>(100);
     const [startDate, setStartDate] = useState<Dayjs | null>(null);
     const [endDate, setEndDate] = useState<Dayjs | null>(null);
-    const [isReverseQuestion, setIsReverseQuestion] = useState<boolean>(true);
-    const [isReverseAnswer, setIsReverseAnswer] = useState<boolean>(true);
-
+    const [isReverseQuestion, setIsReverseQuestion] = useState<boolean>(false);
+    const [isReverseAnswer, setIsReverseAnswer] = useState<boolean>(false);
     const [questions, setQuestions] = useState<Question[]>([{ id: 1, title: '', options: [], inputType: 'checkbox' }]);
     const [questionPoints, setQuestionPoints] = useState<{ [key: number]: number }>({});
     const [isPoint, setIsPoint] = useState<number>(0);
@@ -55,14 +58,14 @@ const PopupCreateTest = () => {
         );
     };
 
-    const handleOptionChange = (questionId: number, optionId: number, content: string) => {
+    const handleOptionChange = (questionId: number, optionId: number, answer: string) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
                 question.id === questionId
                     ? {
                           ...question,
                           options: question.options.map((option) =>
-                              option.id === optionId ? { ...option, content } : option,
+                              option.id === optionId ? { ...option, answer } : option,
                           ),
                       }
                     : question,
@@ -77,7 +80,7 @@ const PopupCreateTest = () => {
                     ? {
                           ...question,
                           options: question.options.map((option) =>
-                              option.id === optionId ? { ...option, isCorrect: checked } : option,
+                              option.id === optionId ? { ...option, correct_answer: checked } : option,
                           ),
                       }
                     : question,
@@ -92,8 +95,8 @@ const PopupCreateTest = () => {
                           ...question,
                           options: question.options.map((option) =>
                               option.id === optionId
-                                  ? { ...option, isCorrect: checked }
-                                  : { ...option, isCorrect: false },
+                                  ? { ...option, correct_answer: checked }
+                                  : { ...option, correct_answer: false },
                           ),
                       }
                     : question,
@@ -140,12 +143,12 @@ const PopupCreateTest = () => {
 
                     if (value === 'radio' && question.inputType === 'checkbox') {
                         updatedQuestion.options = question.options.map((option) => {
-                            return option.isCorrect ? { ...option, isCorrect: false } : option;
+                            return option.correct_answer ? { ...option, correct_answer: false } : option;
                         });
                     }
                     if (value === 'checkbox' && question.inputType === 'radio') {
                         updatedQuestion.options = question.options.map((option) => {
-                            return option.isCorrect ? { ...option, isCorrect: false } : option;
+                            return option.correct_answer ? { ...option, correct_answer: false } : option;
                         });
                     }
                     return updatedQuestion;
@@ -165,9 +168,9 @@ const PopupCreateTest = () => {
                               ...question.options,
                               {
                                   id: question.options.length + 1,
-                                  content: '',
-                                  isCorrect: false,
-                                  answer: '', // New property for the answer value
+                                  answer: '',
+                                  correct_answer: false,
+                                  essay_answer: '', // New property for the answer value
                               },
                           ],
                       }
@@ -221,7 +224,6 @@ const PopupCreateTest = () => {
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         // Ngăn chặn hành vi mặc định của form
-
         e.preventDefault();
         const questionsWithoutId = questions.map((question) => {
             let inputTypeNumber: number;
@@ -243,30 +245,35 @@ const PopupCreateTest = () => {
             }
 
             return {
-                title: question.title,
-                options: question.options,
-                inputType: inputTypeNumber,
+                content: question.title,
+                answers: question.options,
+                question_category_id: inputTypeNumber,
                 score: questionPoints[question.id],
             };
         });
-
         console.log(questionsWithoutId);
-        if (endDate && startDate) {
-            const formattedEndDate = endDate.format('DD-MM-YYYY HH:mm');
-            const formattedStartDate = startDate.format('DD-MM-YYYY HH:mm');
-            const formData = {
-                content: title,
-                instruction,
-                point,
-                formattedStartDate,
-                formattedEndDate,
-                isReverseQuestion,
-                isReverseAnswer,
-                questionsWithoutId,
-            };
-            console.log('Submit: ', formData);
-            // Tiếp tục xử lý dữ liệu đã format ở đây, ví dụ: gửi lên server
-        }
+        const formattedEndDate = endDate ? endDate.format('YYYY-MM-DD HH:mm') : null;
+        const formattedStartDate = startDate ? startDate.format('YYYY-MM-DD HH:mm') : null;
+        const config = HeaderToken.getTokenConfig();
+        // Tiếp tục xử lý dữ liệu đã format ở đây, ví dụ: gửi lên server
+        const formData = {
+            title: title,
+            content: instruction,
+            point,
+            start_date: formattedStartDate,
+            finish_date: formattedEndDate,
+            inverted_questions: isReverseQuestion,
+            inverted_answers: isReverseAnswer,
+            list_questions_and_answers: questionsWithoutId,
+            classroom_id: parseInt(data),
+            post_category_id: 4,
+        };
+        console.log('Submit: ', formData);
+        axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {
+            window.close();
+
+            console.log();
+        });
     };
     return (
         <div className=" shadow-xl h-16 fixed w-full ">
@@ -338,7 +345,7 @@ const PopupCreateTest = () => {
                                                                 id={`option_${option.id}`}
                                                                 name={`question_${question.id}`}
                                                                 value={option.id}
-                                                                checked={option.isCorrect}
+                                                                checked={option.correct_answer}
                                                                 onChange={(e) =>
                                                                     question.inputType === 'checkbox'
                                                                         ? handleCheckboxChange(
@@ -357,7 +364,7 @@ const PopupCreateTest = () => {
                                                         ) : (
                                                             <input
                                                                 type="text"
-                                                                value={option.answer}
+                                                                value={option.essay_answer}
                                                                 onChange={(e) =>
                                                                     handleOptionChange(
                                                                         question.id,
@@ -373,7 +380,7 @@ const PopupCreateTest = () => {
 
                                                         <input
                                                             type="text"
-                                                            value={option.content}
+                                                            value={option.answer}
                                                             onChange={(e) =>
                                                                 handleOptionChange(
                                                                     question.id,
@@ -386,7 +393,7 @@ const PopupCreateTest = () => {
                                                             required
                                                         />
                                                     </div>
-                                                    {option.isCorrect ? (
+                                                    {option.correct_answer ? (
                                                         <span className="ml-2 text-green-500">✔</span>
                                                     ) : null}
                                                     <button

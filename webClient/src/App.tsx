@@ -6,7 +6,7 @@ import JoinClassedTeacher from './page/JoinClassed/JoinClassedTeacher';
 import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import DetailExcercise from './screens/DetailExercise/DetailExcercise';
+import DetailExcercise from './screens/Detail/DetailExcercise';
 import Dashboard from './page/Dashboard/Dashboard';
 import AppClass from './page/Dashboard/AppClass';
 import AppClassSection from './page/Dashboard/AppClassSection';
@@ -22,6 +22,9 @@ import { MdArrowBack } from 'react-icons/md';
 import AppStorge from './page/Dashboard/AppStorage';
 import JoinTest from './screens/TestStudent/JoinTest';
 import JoinMark from './screens/TestStudent/JoinMark';
+import DetailTest from './screens/Detail/DetailTest';
+import DetailTestStudent from './screens/Detail/DetailTestStudent';
+import DetailHome from './screens/Detail/DetailHome';
 
 function App() {
     return (
@@ -141,6 +144,8 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailTest />} />
+                <Route path="/test-mark" element={<JoinMark />} />
                 <Route
                     path="/sinh-vien/class/:id"
                     element={
@@ -149,8 +154,6 @@ function App() {
                         </div>
                     }
                 />
-                <Route path="/test" element={<JoinTest />} />
-                <Route path="/test-mark" element={<JoinMark />} />
             </Routes>
         </>
     );

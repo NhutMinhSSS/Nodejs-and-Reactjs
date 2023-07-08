@@ -7,15 +7,11 @@ import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 
 const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
-    const [visible, setVisble] = useState(false);
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
         navigator.clipboard.writeText(textToCopy);
     };
-
-    const { classroom_id } = useParams();
-
     return (
         <div className="py-5">
             <div className="">
@@ -64,8 +60,6 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                                 <p>Bài tập 2</p>
                                 <p>Bài tập 3</p>
                                 <p>Bài tập 4</p>
-                                <p>Bài tập 5</p>
-                                <p>Bài tập 6</p>
                             </div>
                             <Link className="flex justify-end" to="/AllExercises">
                                 Xem bài tập
