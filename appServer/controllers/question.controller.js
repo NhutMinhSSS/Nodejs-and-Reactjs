@@ -85,10 +85,8 @@ class QuestionController {
         list_questions_answers: listQuestionsAndAnswers
       }
       if (studentExamId) {
-        result = {
-          student_exam_id: studentExamId,
-          submission: submission
-        };
+        result.student_exam_id = studentExamId,
+        result.submission = submission
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);

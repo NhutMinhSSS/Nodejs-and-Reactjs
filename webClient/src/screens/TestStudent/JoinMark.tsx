@@ -20,7 +20,7 @@ interface Question {
 }
 interface StudentExam {
     id: Number;
-    answer_id: [];
+    answer_id: number;
     student_exam_id: Number
 }
 interface Answer {
@@ -79,40 +79,45 @@ const JoinMark = () => {
     let flag = false
     const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {
         if (!flag) {
+            let answer_ids:number [] = [];
             question.forEach(item => {
-                item.student_exam.filter(student_exam => {
-                    if (student_exam.student_exam_id === 1 && item.id === questionId) {
-                        selectAnswers[questionId] = student_exam.answer_id;
-                    }
-                   });
+                if (item.id === questionId) {
+                    item.student_exam.filter(student_exam => {
+                        if (student_exam.student_exam_id === 1) {
+                            answer_ids.push(student_exam.answer_id)
+                        }
+                       });
+                       selectAnswers[questionId] = answer_ids;
+                }
             });
+            
             flag = true;
         }
-    
-        if (!selectAnswers[questionId]) {
-            // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
-            selectAnswers[questionId] = [answerIds];
-            return {
-                question_id: questionId, 
-                answer_ids:selectAnswers[questionId]
-            };
-          } else {
-            if (checked) {
-              // Nếu được chọn, thêm câu trả lời vào danh sách
-              selectAnswers[questionId].push(answerIds);
-              return {
-                question_id: questionId, 
-                answer_ids:selectAnswers[questionId]
-            };
-            } else {
-              // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
-              selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
-              return {
-                question_id: questionId, 
-                answer_ids:selectAnswers[questionId]
-            };
-            }
-          }
+        console.log(selectAnswers);
+        // if (!selectAnswers[questionId]) {
+        //     // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
+        //     selectAnswers[questionId] = [answerIds];
+        //     return {
+        //         question_id: questionId, 
+        //         answer_ids:selectAnswers[questionId]
+        //     };
+        //   } else {
+        //     if (checked) {
+        //       // Nếu được chọn, thêm câu trả lời vào danh sách
+        //       selectAnswers[questionId].push(answerIds);
+        //       return {
+        //         question_id: questionId, 
+        //         answer_ids:selectAnswers[questionId]
+        //     };
+        //     } else {
+        //       // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
+        //       selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
+        //       return {
+        //         question_id: questionId, 
+        //         answer_ids:selectAnswers[questionId]
+        //     };
+        //     }
+        //   }
     };
 
     const handleSubmit = () => {
