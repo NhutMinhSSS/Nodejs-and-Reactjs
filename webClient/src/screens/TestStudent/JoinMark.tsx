@@ -21,6 +21,7 @@ interface Question {
 interface StudentExam {
     id: Number;
     answer_id: [];
+    student_exam_id: Number
 }
 interface Answer {
     id: number;
@@ -75,9 +76,20 @@ const JoinMark = () => {
         };
     };
     const selectAnswers: Record<number, number[]> = {};
-
+    let flag = false
     const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {
-        if (!selectAnswers[questionId] && checked) {
+        if (!flag) {
+            question.forEach(item => {
+                item.student_exam.filter(student_exam => {
+                    if (student_exam.student_exam_id === 1 && item.id === questionId) {
+                        selectAnswers[questionId] = student_exam.answer_id;
+                    }
+                   });
+            });
+            flag = true;
+        }
+    
+        if (!selectAnswers[questionId]) {
             // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
             selectAnswers[questionId] = [answerIds];
             return {
