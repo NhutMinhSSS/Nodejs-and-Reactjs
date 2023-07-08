@@ -146,6 +146,7 @@ function App() {
                 />
                 <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailTest />} />
                 <Route path="/test-mark" element={<JoinMark />} />
+                <Route path="/test-ngu" element={<JoinTest />} />
                 <Route
                     path="/sinh-vien/class/:id"
                     element={

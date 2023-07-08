@@ -19,7 +19,7 @@ interface Question {
 
 interface Answer {
     id: number;
-    content: string;
+    answer: string;
     isCorrect: boolean;
 }
 
@@ -28,7 +28,8 @@ const BASE_URL = `${SystemConst.DOMAIN}`;
 
 const JoinTest = () => {
     const [question, setQuestion] = useState<Question[]>([]);
-    const [selectedAnswers, setSelectedAnswers] = useState<Question[]>([]);
+    //const [selectedAnswers, setSelectedAnswers] = useState<Question[]>([]);
+    const [studentExamId, setStudentExamId] = useState(Number);
 
     useEffect(() => {
         handleFetchData();
@@ -36,68 +37,57 @@ const JoinTest = () => {
     const { post_id } = useParams();
     const handleFetchData = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/posts/${post_id}/post-detail`, config).then((response) => {
-            console.log('data: ', response);
+        axios.get(`${BASE_URL}/questions-and-answers/${49}/get-questions-and-answers`, config).then((response) => {
+            const dataFetch = response.data.response_data;
+            setQuestion(dataFetch.list_questions_answers);
+            if (dataFetch.student_exam_id) {
+                setStudentExamId(dataFetch.student_exam_id);
+            }
+            console.log('data: ', response.data.response_data);
         });
     };
-
-    const handleAnswerChange = (examId: number, questionIndex: number, answerId: any) => {
-        setSelectedAnswers((prevSelectedAnswers) => {
-            const updatedAnswers = [...prevSelectedAnswers];
-            const question = updatedAnswers.find((q) => q.examId === examId && q.questionIndex === questionIndex);
-
-            if (question) {
-                // Cập nhật đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
-                question.answerIds = [answerId];
-            } else {
-                // Thêm mới câu hỏi vào danh sách selectedAnswers
-                const newQuestion: Question = {
-                    examId,
-                    questionIndex,
-                    answerIds: [answerId],
-                    id: 0,
-                    content: '',
-                    answers: [],
-                    question_category_id: 0,
-                    exam_id: 0,
-                };
-                updatedAnswers.push(newQuestion);
-            }
-            console.log(updatedAnswers);
-            return updatedAnswers;
-        });
+    let questionRadio: Number[];
+    const handleAnswerChange = (examId: number, answerId: any) => {
+        questionRadio = []
+        if (questionRadio) {   
+            // Cập nhật danh sách đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
+            questionRadio = [answerId]
+        } else {
+            const newQuestion = [answerId]
+            questionRadio = newQuestion;
+        }
+        return {
+            answerIds: questionRadio,
+            question_id: examId
+        };
     };
+    const selectAnswers: Record<number, number[]> = {};
 
-    const handleAnswerCheckBox = (examId: number, questionIndex: number, answerId: any, checked: boolean) => {
-        setSelectedAnswers((prevSelectedAnswers) => {
-            const updatedAnswers = [...prevSelectedAnswers];
-            const question = updatedAnswers.find((q) => q.examId === examId && q.questionIndex === questionIndex);
-
-            if (question) {
-                // Cập nhật danh sách đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
-                if (checked) {
-                    question.answerIds.push(answerId);
-                } else {
-                    question.answerIds = question.answerIds.filter((id) => id !== answerId);
-                }
+    const handleAnswerCheckBox = (examId: number, answerId: any, checked: boolean) => {
+        if (!selectAnswers[examId]) {
+            // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
+            selectAnswers[examId] = [answerId];
+            return {
+                question_id: examId, 
+                answer_ids:selectAnswers[examId]
+            };
+          } else {
+            if (checked) {
+              // Nếu được chọn, thêm câu trả lời vào danh sách
+              selectAnswers[examId].push(answerId);
+              return {
+                question_id: examId, 
+                answer_ids:selectAnswers[examId]
+            };
             } else {
-                // Thêm mới câu hỏi vào danh sách selectedAnswers
-                const newQuestion: Question = {
-                    examId,
-                    questionIndex,
-                    answerIds: [answerId],
-                    id: 0,
-                    content: '',
-                    answers: [],
-                    question_category_id: 0,
-                    exam_id: 0,
-                };
-                updatedAnswers.push(newQuestion);
+              // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
+              selectAnswers[examId] = selectAnswers[examId].filter((id) => id !== answerId);
+              return {
+                question_id: examId, 
+                answer_ids:selectAnswers[examId]
+            };
             }
-
-            console.log(updatedAnswers);
-            return updatedAnswers;
-        });
+          }
     };
 
     const handleSubmit = () => {
@@ -108,6 +98,25 @@ const JoinTest = () => {
         // // });
         handleFetchData();
     };
+    const [textValue, setTextValue] = useState('');
+    const [shouldCallAPI, setShouldCallAPI] = useState(false);
+    const [questionId, setQuestionId] = useState(Number);
+  useEffect(() => {
+    let timer: any;
+    if (shouldCallAPI && studentExamId) {
+      timer = setTimeout(() => {
+        //Gọi API
+      }, 1000);
+    }
+
+    return () => clearTimeout(timer);
+  }, [textValue, shouldCallAPI]);
+
+  const handleTextAreaChange = (e: any, questionId: number) => {
+    setTextValue(e.target.value);
+    setQuestionId(questionId);
+    setShouldCallAPI(true);
+  };
     return (
         <>
             <div>
@@ -128,33 +137,45 @@ const JoinTest = () => {
                                                                 type="radio"
                                                                 name={`asw${index}`}
                                                                 value={answer.id}
-                                                                onChange={() =>
-                                                                    handleAnswerChange(asw.exam_id, index, answer.id)
-                                                                }
+                                                                onChange={() =>{
+                                                                    if (studentExamId) {
+                                                                        handleAnswerChange(asw.id, answer.id);
+                                                                    }
+                                                                    //Gọi API
+                                                                }}
                                                             />
                                                         )}
                                                         {asw.question_category_id === 2 && (
                                                             <Checkbox
                                                                 value={answer.id}
                                                                 onChange={(e) =>
-                                                                    handleAnswerCheckBox(
-                                                                        asw.exam_id,
-                                                                        index,
-                                                                        answer.id,
-                                                                        e.target.checked,
-                                                                    )
+                                                                    {
+                                                                       if (studentExamId) {
+                                                                        const data = handleAnswerCheckBox(
+                                                                            asw.id,
+                                                                            answer.id,
+                                                                            e.target.checked,
+                                                                        );
+                                                                       }
+                                                                   //gọi API
+                                                                }
                                                                 }
                                                             />
                                                         )}
-                                                        <span className="text-lg font-medium">{answer.content}</span>
+                                                        <span className="text-lg font-medium">{answer.answer}</span>
                                                     </label>
                                                 ))}
                                                 {asw.question_category_id === 3 && (
                                                     <Input.TextArea
                                                         style={{ resize: 'none', height: 120 }}
                                                         placeholder="Nhập câu trả lời"
-                                                        onChange={(e) =>
-                                                            handleAnswerChange(asw.exam_id, index, e.target.value)
+                                                        onChange={(e) =>{
+                                                            // const a = handleEssayAnswerChange(asw.id, e.target.value);
+                                                            // setTimeout(() => {
+                                                            //     console.log(a);
+                                                            //   }, 2000);
+                                                            handleTextAreaChange(e, asw.id);
+                                                        }
                                                         }
                                                     ></Input.TextArea>
                                                 )}
