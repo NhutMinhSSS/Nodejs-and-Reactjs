@@ -29,7 +29,7 @@ class QuestionController {
         //await transaction.rollback();
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
       }
-
+      let studentExamId;
       let listQuestionsAndAnswers = [];
       if (role === EnumServerDefinitions.ROLE.TEACHER) {
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id);
@@ -77,9 +77,16 @@ class QuestionController {
             }
           }
         }
+        studentExamId = studentExam.id;
+      }
+      const result = {
+        list_questions_answers: listQuestionsAndAnswers
+      }
+      if (studentExamId) {
+        result.student_exam_id = studentExamId;
       }
       //await transaction.commit();
-      return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, listQuestionsAndAnswers);
+      return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
     } catch (error) {
       //await transaction.rollback();
       logger.error(error);

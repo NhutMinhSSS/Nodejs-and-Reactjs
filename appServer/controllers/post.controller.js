@@ -68,6 +68,16 @@ class PostController {
                 }, { delivered: 0, submitted: 0 });
                 postDetail.delivered = delivered;
                 postDetail.submitted = submitted;
+            } else {
+                postDetail.student_exams = postDetail.student_exams.map(item => {
+                    if (item.submission !== EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+                      const { total_score, ...rest } = item; // Bỏ cột "total_score" khỏi đối tượng item
+                      return rest;
+                    } else {
+                        return item;
+                    }
+                  });
+                  console.log(postDetail.student_exams);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {

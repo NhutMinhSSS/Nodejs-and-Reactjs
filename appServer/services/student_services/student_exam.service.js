@@ -1,8 +1,6 @@
 const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const StudentExam = require("../../models/student_exam.model");
-const StudentList = require("../../models/student_list.model");
-const Student = require("../../models/student.model");
 
 class StudentExamService {
     async findStudentExam(postId, studentId) {

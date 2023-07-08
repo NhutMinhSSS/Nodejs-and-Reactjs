@@ -34,7 +34,7 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id', 'score']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
                 order: questionsOrder,
@@ -74,7 +74,7 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id', 'score']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
             });
@@ -112,7 +112,7 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id', 'score']
+                    attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'], //cần thêm
             });
@@ -156,7 +156,7 @@ class QuestionsAndAnswersService {
                             student_exam_id: studentExamId,
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: ['id', 'question_id', 'answer_id', 'essay_answer', 'student_exam_id', 'score']
+                        attributes: ['id', 'question_id', 'answer_id', 'essay_answer']
                     }],
                     attributes: ['id', 'content', 'score', 'question_category_id'], //cần thêm
                     order: [['order', 'ASC']]
@@ -172,12 +172,12 @@ class QuestionsAndAnswersService {
         try {
            const isCheck = await Answer.count({
             where: {
-                id: {[Op.in]: listAnswersId},
+                id: Array.isArray(listAnswersId) ? {[Op.in]: listAnswersId} : listAnswersId,
                 question_id: questionId,
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }
            });
-           if (isCheck !== listAnswersId.length) {
+           if (isCheck !== listAnswersId.length && Array.isArray(listAnswersId)) {
             return false;
            }
            return true;

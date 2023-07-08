@@ -42,7 +42,18 @@ class StudentAnswerOptionService {
                 attributes: ['id', 'answer_id', 'essay_answer']
             });
             if (answerIds) {
-                if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
+                /* if (typeof answerIds === 'number' && !existingStudentAnswerOption.length) {
+                    await StudentAnswerOption.create({
+                        student_exam_id: studentExamId,
+                        question_id: questionId,
+                        answer_id: answerIds
+                    })
+                }
+                else if (typeof answerIds === 'number' && existingStudentAnswerOption.length !== 0) {
+                    await StudentAnswerOption.update({
+                        answer_id: answerIds
+                    }, { where: { question_id: questionId }, transaction });
+                }else  */if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
                     let index = 0;
                     for (const item of existingStudentAnswerOption) {
                         if (item.answer_id !== answerIds[index]) {

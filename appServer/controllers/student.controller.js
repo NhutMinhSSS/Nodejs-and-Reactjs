@@ -279,7 +279,7 @@ class StudentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         'Nộp cc à không có file');
                 }
-                await StudentController.prototype.submissionExercise(studentExam.id, submissionDate, files, accountId);
+                await StudentController.prototype.submissionExercise(studentExamId, submissionDate, files, accountId);
             } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
                 await StudentController.prototype.submissionExam(post.id, studentExamId);
@@ -312,7 +312,9 @@ class StudentController {
         }
     }
     async submissionExam(postId, studentExamId) {
+        const transaction = await sequelize.transaction();
         try {
+            const submissionDate = FormatUtils.dateTimeNow();
             let totalScore = 0; // Biến tích lũy tổng điểm
             const questions = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(postId, false, studentExamId);
             questions.forEach(itemQ => {
@@ -337,13 +339,10 @@ class StudentController {
             finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
             //chấm tự luận
             //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
-            //save points sv
-            console.log('Điểm cuối cùng:', finalScore.toFixed(0));
-
-            //totalscore điểm * 100 / tổng điểm
-            //console.log(score);
+            await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
+            await transaction.commit();
         } catch (error) {
-            //await transaction.rollback();
+            await transaction.rollback();
             throw error;
         }
     }
