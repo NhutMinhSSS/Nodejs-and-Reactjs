@@ -30,6 +30,7 @@ class QuestionController {
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
       }
       let studentExamId;
+      let submission;
       let listQuestionsAndAnswers = [];
       if (role === EnumServerDefinitions.ROLE.TEACHER) {
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id);
@@ -78,12 +79,16 @@ class QuestionController {
           }
         }
         studentExamId = studentExam.id;
+        submission = postDetail.submission;
       }
       const result = {
         list_questions_answers: listQuestionsAndAnswers
       }
       if (studentExamId) {
-        result.student_exam_id = studentExamId;
+        result = {
+          student_exam_id: studentExamId,
+          submission: submission
+        };
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);

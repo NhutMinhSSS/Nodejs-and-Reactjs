@@ -96,7 +96,13 @@ const JoinTest = () => {
         // // axios.post(`${BASE_URL}/submit`, { answers: selectedAnswers }).then((response) => {
         // //     // Xử lý phản hồi từ server (nếu cần)
         // // });
-        handleFetchData();
+        if (studentExamId) {
+            setTimeout(()=> {
+                console.log("Đã gửi");
+                
+            }, 1500);
+        }
+        //handleFetchData();
     };
     const [textValue, setTextValue] = useState('');
     const [shouldCallAPI, setShouldCallAPI] = useState(false);
@@ -106,6 +112,8 @@ const JoinTest = () => {
     if (shouldCallAPI && studentExamId) {
       timer = setTimeout(() => {
         //Gọi API
+        console.log('nhutminh');
+        
       }, 1000);
     }
 
@@ -170,10 +178,6 @@ const JoinTest = () => {
                                                         style={{ resize: 'none', height: 120 }}
                                                         placeholder="Nhập câu trả lời"
                                                         onChange={(e) =>{
-                                                            // const a = handleEssayAnswerChange(asw.id, e.target.value);
-                                                            // setTimeout(() => {
-                                                            //     console.log(a);
-                                                            //   }, 2000);
                                                             handleTextAreaChange(e, asw.id);
                                                         }
                                                         }
