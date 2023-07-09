@@ -6,12 +6,13 @@ import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 import AddCardStudent from '../AddCardNoti/AddCardStudent';
 
-const ClassBulletinStudent: React.FC<{ data: any }> = ({ data }) => {
+const ClassBulletinStudent: React.FC<{ onFetchData: any, data: any }> = ({ onFetchData, data }) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
         navigator.clipboard.writeText(textToCopy);
     };
+    const dataPost = data.list_post;
     return (
         <div className="py-5">
             <div className="">
@@ -67,7 +68,7 @@ const ClassBulletinStudent: React.FC<{ data: any }> = ({ data }) => {
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCardStudent />
+                        <AddCardStudent onFetchData= {onFetchData} data={dataPost}/>
                     </div>
                 </div>
             </div>

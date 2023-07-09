@@ -37,7 +37,7 @@ interface File {
     file_id: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const AddCard = ({ data }: { data: any }) => {
+const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
@@ -65,57 +65,6 @@ const AddCard = ({ data }: { data: any }) => {
 
         // console.log(file_id, id);
     };
-    const [isDataGet, setIsDataGet] = useState([]);
-    const handleGetPost = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace('/');
-        } else {
-            const config = HeaderToken.getTokenConfig();
-            setLoading(true);
-            axios
-                .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
-                .then((response) => {
-                    data = response.data.response_data.list_post;
-                    setIsDataGet(data);
-                })
-                .catch((error) => {
-                    if (error) {
-                        const isError = UnauthorizedError.checkError(error);
-                        if (!isError) {
-                            let content = '';
-                            const {
-                                status,
-                                data: { error_message: errorMessage },
-                            } = error.response;
-                            if (status === 404 && errorMessage === 'Classroom no exist') {
-                                content = 'Lớp không tồn tại';
-                            } else if (status === 403 && errorMessage === 'No permission') {
-                                content = 'Bạn không có quyền truy cập vào lớp này';
-                            } else {
-                                content = 'Lỗi máy chủ';
-                            }
-                            const title = 'Lỗi';
-                            const path = '/giang-vien';
-
-                            ErrorAlert(title, content, path);
-                        }
-                    } else {
-                        const title = 'Lỗi';
-                        const content = 'Máy chủ không hoạt động';
-                        localStorage.clear();
-                        const path = '/';
-                        ErrorAlert(title, content, path);
-                    }
-                    // Xử lý lỗi nếu có
-                    console.error(error);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-    };
-
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -204,9 +153,6 @@ const AddCard = ({ data }: { data: any }) => {
                 });
         }
     };
-    const handleCreateSuccess = (data: any) => {
-        // Gọi lại API và truyền dữ liệu từ thành phần gọi tạo vào API
-    };
     const handleFetchUploadFile = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
@@ -233,7 +179,7 @@ const AddCard = ({ data }: { data: any }) => {
                 .post(`${BASE_URL}/posts/create-post`, formData, config)
                 .then((response) => {
                     console.log(response);
-                    handleGetPost();
+                    onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
                 })
                 .finally(() => {
@@ -372,7 +318,7 @@ const AddCard = ({ data }: { data: any }) => {
                         )}
                     </div>
 
-                    {(isDataGet.length != 0 ? isDataGet : data).map((item: any) => (
+                    {data.map((item: any) => (
                         <button
                             onClick={() => handleClick(item)}
                             className={`flex justify-between bg-slate-200 ${
