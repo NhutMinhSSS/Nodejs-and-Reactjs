@@ -259,7 +259,7 @@ class StudentController {
             const studentExamId = req.body.student_exam_id;
             //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
             const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
-            if (!isStudentExam) {
+            if (!isStudentExam || isStudentExam.submission !== EnumServerDefinitions.SUBMISSION.UNSENT) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
@@ -321,7 +321,7 @@ class StudentController {
         try {
             const submissionDate = FormatUtils.dateTimeNow();
             let totalScore = 0; // Biến tích lũy tổng điểm
-            const questions = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(postId, false, studentExamId);
+            const questions = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(postId, false, studentExamId, true);
             questions.forEach(itemQ => {
                 const questionScore = itemQ.score; // Điểm của câu hỏi
                 totalScore += questionScore; // Cộng điểm của câu hỏi vào tổng điểm
@@ -332,19 +332,24 @@ class StudentController {
                 if (itemQ.question_category_id !== 3) {
                     const isCorrectQuestion = itemQ.answers.filter(item => item.correct_answer).length;
                     const isCorrect = itemQ.answers.reduce((total, itemA) => {
-                        const isChosen = itemQ.StudentAnswerOptions.some(item => item.answer_id === itemA.id);
+                        const isChosen = itemQ.student_answer_options.some(item => item.answer_id === itemA.id);
                         return total + (itemA.correct_answer && isChosen ? 1 : 0);
                     }, 0);
                     const questionScore = itemQ.score; // Điểm của câu hỏi
-                    finalScore += (isCorrect / isCorrectQuestion) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
+                    if (isCorrectQuestion === 0) {
+                        finalScore += questionScore
+                    } else {
+                        finalScore += (isCorrect / isCorrectQuestion) * questionScore; // Cộng điểm của câu hỏi vào điểm cuối cùng
+                    }
                 } else {
                     flag = false;
                 }
             });
-            finalScore = (finalScore / totalScore) * 100; // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+            finalScore = ((finalScore / totalScore) * 100).toFixed(0); // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
             //chấm tự luận
             //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
-            await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
+            const submission = flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED;
+            await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, submission, transaction);
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();

@@ -26,7 +26,7 @@ class StudentExamService {
                     student_id: studentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id']
+                attributes: ['id', 'submission']
             });
             return studentExam;
         } catch (error) {
@@ -116,7 +116,7 @@ class StudentExamService {
                 total_score: totalScore
               };
           
-              if (!submission) {
+              if (submission) {
                 updateData.submission = submission;
               }
             const studentExam = await StudentExam.update(updateData, {
