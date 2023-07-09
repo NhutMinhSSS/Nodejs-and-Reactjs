@@ -74,7 +74,7 @@ class QuestionController {
           }
         }
         studentExamId = studentExam.id;
-        submission = postDetail.submission;
+        submission = studentExam.submission;
       }
       const result = {
         list_questions_answers: listQuestionsAndAnswers
