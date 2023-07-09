@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { MdAccountCircle, MdBook, MdMoreVert, MdOutlineGroup, MdSend } from 'react-icons/md';
-import TextFeild from '../../components/TextFeild';
+import { MdAccountCircle, MdBook, MdLink, MdMoreVert, MdOutlineGroup, MdPermIdentity, MdSend } from 'react-icons/md';
+import TextFeild from '../../../components/TextFeild';
 import { log } from 'console';
+import TextArea from 'antd/es/input/TextArea';
+import { useNavigate, useParams } from 'react-router-dom';
 interface Comment {
     id: number;
     content: string;
 }
-const DetailExcercise = () => {
+const DetailExcerciseTeacher = () => {
     const [textValue, setTextValue] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
+    const [showForm, setShowForm] = useState(false);
     const handleTextField = (value: string) => {
         setTextValue(value);
     };
@@ -23,9 +26,14 @@ const DetailExcercise = () => {
             setTextValue('');
         }
     };
+    const navigate = useNavigate();
+    const { classroom_id, post_id } = useParams();
+    const handleTest = () => {
+        navigate(`/giang-vien/class/${classroom_id}/${post_id}/detail-test/test`);
+    };
     return (
         <>
-            <div className="flex justify-center mt-20">
+            <div className="flex justify-center mt-5">
                 <div className="mr-5">
                     <MdBook className="bg-blue-400 rounded-full p-1.5 w-10 h-10" size={32} />
                 </div>
@@ -45,7 +53,13 @@ const DetailExcercise = () => {
                         <span className="opacity-50 text-sm">Hôm qua</span>
                     </div>
                     <hr className="my-2 border-blue-500" />
-                    <div>Đây là content</div>
+                    <div>Content</div>
+                    <div onClick={handleTest} className="border-2 flex gap-x-2 items-center p-4 rounded-md">
+                        <button>
+                            <MdLink size={30} />
+                        </button>
+                        <button>Đây là link làm bài</button>
+                    </div>
                     <hr />
                     <div className="w-[40rem]">
                         <div className="flex items-center gap-x-2 mb-2">
@@ -56,7 +70,7 @@ const DetailExcercise = () => {
                         </div>
                         <div className="flex items-center gap-x-2 w-[45rem]">
                             <span className="">
-                                <MdAccountCircle size={32} />
+                                <MdAccountCircle size={40} />
                             </span>
                             <span className="border-2 rounded-2xl justify-between flex items-center h-10 w-full">
                                 <TextFeild
@@ -76,10 +90,10 @@ const DetailExcercise = () => {
                             </span>
                         </div>
                     </div>
-                </div>
+                </div>{' '}
             </div>
         </>
     );
 };
 
-export default DetailExcercise;
+export default DetailExcerciseTeacher;

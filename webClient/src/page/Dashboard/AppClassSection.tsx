@@ -694,10 +694,7 @@ const AppClassSection: React.FC = () => {
     return (
         <>
             <div className="container mt-5">
-                <div className="flex justify-between mb-5">
-                    <div>
-                        <input className="outline-none focus:outline-blue-200 h-6 w-52" type="text" />
-                    </div>
+                <div className="flex justify-end mb-5">
                     <div>
                         <Button onClick={showModal} type="primary">
                             <MdBookmarkAdd />
@@ -1046,7 +1043,7 @@ const AppClassSection: React.FC = () => {
                 <div>
                     <Modal
                         className="custom-delete "
-                        title="Xác nhận đóng "
+                        title="Xác nhận  "
                         visible={statusModalVisible}
                         onCancel={() => setStatusModalVisible(false)}
                         footer={null}
@@ -1056,7 +1053,7 @@ const AppClassSection: React.FC = () => {
                         </div>
                         <div className="flex justify-end h-full mt-20">
                             <Button onClick={handleSubmitStatusClassSection} type="primary" className="mr-5">
-                                Đóng
+                                Xác nhận
                             </Button>
                             <Button onClick={() => setStatusModalVisible(false)} type="default" className="mr-5">
                                 Hủy
@@ -1092,7 +1089,7 @@ const AppClassSection: React.FC = () => {
                 <div>
                     <Modal
                         className="custom-delete"
-                        title="Xác nhận xóa"
+                        title="Xác nhận lưu trữ"
                         visible={storageModalVisible}
                         onCancel={() => setStorageModalVisible(false)}
                         footer={null}

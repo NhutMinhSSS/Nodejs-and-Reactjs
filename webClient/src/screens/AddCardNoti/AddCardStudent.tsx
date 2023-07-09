@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import iconUser from '../img/iconUser.svg';
+import iconUser from '../../img/iconUser.svg';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import {
@@ -12,13 +12,13 @@ import {
 } from 'react-icons/md';
 import { Button, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
 import axios from 'axios';
-import HeaderToken from '../common/utils/headerToken';
-import SystemConst from '../common/consts/system_const';
+import HeaderToken from '../../common/utils/headerToken';
+import SystemConst from '../../common/consts/system_const';
 import { useNavigate, useParams } from 'react-router-dom';
-import Notification from '../components/Notification';
-import UnauthorizedError from '../common/exception/unauthorized_error';
-import ErrorAlert from '../common/Screens/ErrorAlert';
-import './scss/style.scss';
+import Notification from '../../components/Notification';
+import UnauthorizedError from '../../common/exception/unauthorized_error';
+import ErrorAlert from '../../common/Screens/ErrorAlert';
+import '../scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
@@ -47,7 +47,7 @@ interface File {
     file_id: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const AddCard = () => {
+const AddCardStudent = () => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
@@ -117,22 +117,20 @@ const AddCard = () => {
     const handlePopupDownloadFile = (file_id: number, id: number) => {
         setProgressbar('block');
         setDownloadComplete(false);
-        let progress = 0;
-        const interval = setInterval(async () => {
-            progress += 25;
-            if (progress > 100) {
-                clearInterval(interval);
-                handleDownPost(id, file_id);
-            } else {
-                setPercent(progress);
-            }
-        }, 1500);
+        handleDownPost(id, file_id);
+        // let progress = 0;
+        // const interval = setInterval(async () => {
+        //     progress += 25;
+        //     if (progress > 100) {
+        //         clearInterval(interval);
+        //     } else {
+        //         setPercent(progress);
+        //     }
+        // }, 1500);
 
-        console.log(file_id, id);
+        // console.log(file_id, id);
     };
-    const handleDownload = () => {
-        setModalDownloadFile(true);
-    };
+
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -141,39 +139,7 @@ const AddCard = () => {
             // setLoading(true);
             const post_id = id;
             const file_id = fileId;
-            const config = {
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    responseType: 'blob',
-                },
-            };
-            // try {
-            //     const response = await axios.get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, {
-            //         responseType: 'blob', // Important! This tells Axios to expect a binary response.
-            //     });
 
-            //     // Get the filename from the response headers or generate a default one.
-            //     const contentDisposition = response.headers['content-disposition'];
-
-            //     // Create a URL pointing to the Blob data, and create a temporary anchor element to initiate download.
-            //     const url = window.URL.createObjectURL(new Blob([response.data]));
-            //     const link = document.createElement('a');
-            //     const disposition = response.headers['content-disposition'];
-            //     const decord = disposition.split('filename=')[1].replace(/"/g, '');
-            //     const filename = decodeURIComponent(decord);
-            //     link.href = url;
-            //     link.setAttribute('download', filename);
-            //     document.body.appendChild(link);
-            //     link.click();
-
-            //     // Clean up the temporary URL and anchor element after the download is initiated.
-            //     window.URL.revokeObjectURL(url);
-            //     link.remove();
-            // } catch (error) {
-            //     console.error('Error downloading file:', error);
-            // } finally {
-            //     setLoading(false);
-            // }
             const axiosInstance = axios.create({});
             axiosInstance.interceptors.request.use((config) => {
                 // Thay YOUR_AUTH_TOKEN bằng giá trị token thực tế của bạn
@@ -181,7 +147,22 @@ const AddCard = () => {
                 return config;
             });
             axiosInstance
-                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, { responseType: 'arraybuffer' })
+                .get(`${SystemConst.DOMAIN}/files/${post_id}/${file_id}/download`, {
+                    responseType: 'arraybuffer',
+                    onDownloadProgress: (progressEvent) => {
+                        const loaded = progressEvent.loaded;
+                        const total = progressEvent.total || 0;
+                        const percentComplete = Math.round((loaded * 100) / total);
+                        // Cập nhật giá trị phần trăm
+                        setPercent(percentComplete);
+                        // Xử lý logic khác dựa trên tiến trình tải xuống
+                        // Ví dụ: Hiển thị thông báo khi tải xuống hoàn tất
+                        if (percentComplete === 100) {
+                            console.log('Tải xuống hoàn tất!');
+                            setProgressbar('none');
+                        }
+                    },
+                })
                 .then((response) => {
                     const disposition = response.headers['content-disposition'];
                     const decord = disposition.split('filename=')[1].replace(/"/g, '');
@@ -310,7 +291,7 @@ const AddCard = () => {
 
     const handleClick = (item: any) => {
         if (item.post_category_id !== 1) {
-            navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+            navigate(`/sinh-vien/class/${classroom_id}/${item.id}/detail-student`);
         }
     };
     return (
@@ -377,9 +358,14 @@ const AddCard = () => {
                                     </div>
                                     <div className=" mr-4">
                                         <button
+                                            disabled={!value}
                                             onClick={handleSubmitNotification}
                                             type="submit"
-                                            className="bg-blue-600 hover:bg-blue-800 transition-all duration-200 text-white font-medium py-2 px-4 rounded-md"
+                                            className={
+                                                !value
+                                                    ? `bg-slate-400 transition-all duration-200 text-white font-medium py-2 px-4 rounded-md`
+                                                    : `bg-blue-600 hover:bg-blue-800 transition-all duration-200 text-white font-medium py-2 px-4 rounded-md`
+                                            }
                                         >
                                             Đăng
                                         </button>
@@ -483,7 +469,7 @@ const AddCard = () => {
     );
 };
 
-export default AddCard;
+export default AddCardStudent;
 var toolbarOption = [['bold', 'italic']];
 const modules = {
     toolbar: toolbarOption,

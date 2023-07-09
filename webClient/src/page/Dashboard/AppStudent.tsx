@@ -216,11 +216,8 @@ const AppStudent = () => {
     return (
         <>
             <div className="container mt-5">
-                <div className="flex justify-between mb-5">
-                    <div>
-                        <input className="outline-none focus:outline-blue-200 h-6 w-52" type="text" />
-                    </div>
-                    <div className="flex  gap-x-2">
+                <div className="text-end mb-5">
+                    <div className="flex justify-end gap-x-2">
                         <Button type="primary">
                             <MdOutlineDriveFileMove />
                         </Button>
@@ -229,7 +226,16 @@ const AppStudent = () => {
                         </Button>
                     </div>
                 </div>
-                <Table columns={columns} dataSource={dataStudent} size="large" />
+                <Table
+                    pagination={{
+                        defaultPageSize: 6,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['4', '6', '8', '12', '16'],
+                    }}
+                    columns={columns}
+                    dataSource={dataStudent}
+                    size="large"
+                />
             </div>
             <div className="">
                 <Modal className="custom-modal" open={openModal} onCancel={handleCancel} footer={null}>
