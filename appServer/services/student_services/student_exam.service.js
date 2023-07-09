@@ -11,7 +11,7 @@ class StudentExamService {
                     student_id: studentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id']
+                attributes: ['id', 'finish_date', 'submission']
             });
             return studentExam;
         } catch (error) {

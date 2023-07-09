@@ -11,9 +11,9 @@ class QuestionsAndAnswersService {
         try {
             const questionsOrder = randomQuestions ? Question.sequelize.random() : [];
             const attributes = ['id', 'question_id', 'answer'];
-            // if (!studentExamId) {
+            if (!studentExamId) {
                 attributes.push('correct_answer')
-            // }
+            }
             const questionsAndAnswers = await Question.findAll({
                 where: {
                     exam_id: examId,
