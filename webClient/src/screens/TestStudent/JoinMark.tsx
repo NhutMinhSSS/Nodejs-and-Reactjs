@@ -33,7 +33,7 @@ interface Answer {
 interface Data {
     list_questions_answers: Question[];
     student_exam_id: number;
-    submisson: number;
+    submission: number;
 }
 const { Header, Footer, Content } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
@@ -59,16 +59,30 @@ const JoinMark = () => {
             // setStudentExamId(dataFetch.student_exam_id);
             // setSubmission(dataFetch.submission);
         });
-        console.log(post_id);
     };
 
     const onChange = (checkedValues: CheckboxValueType[]) => {
         console.log('checked = ', checkedValues);
     };
-
+    const handleUpdateAnswers = (questionId: number, answerIds: number[], studentExamId: number, essayAnswer: string| null) => {
+        const config = HeaderToken.getTokenConfig();
+        const data = {
+            question_id: questionId,
+            answer_ids: answerIds,
+            essay_answer: essayAnswer,
+            student_exam_id: studentExamId
+        }
+        axios.patch(`${BASE_URL}/students/update-answer`, data, config).then((response)=> {
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+            //hiện form lỗi ở đây
+            
+        });
+    }
     //const handleAnswerChange = (examId: number, questionIndex: number, answerId: any) => {};
-    let questionRadio: Number[];
-    const handleAnswerChange = (questionId: number, answerIds: any) => {
+    let questionRadio: number[];
+    const handleAnswerChange = (questionId: number, answerIds: any, StudentExamId: number) => {
         questionRadio = [];
         if (questionRadio) {
             // Cập nhật danh sách đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
@@ -77,14 +91,12 @@ const JoinMark = () => {
             const newQuestion = [answerIds];
             questionRadio = newQuestion;
         }
-        return {
-            answer_ids: questionRadio,
-            question_id: questionId,
-        };
+        handleUpdateAnswers(questionId, questionRadio, StudentExamId, null);
+        
     };
     const selectAnswers: Record<number, number[]> = {};
     const checkStudentExam: Record<number, boolean> = {};
-    const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {
+    const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean, studentExamId: number) => {
         if (!checkStudentExam[questionId]) {
             checkStudentExam[questionId] = true;
             const questionItem = question.find(
@@ -99,40 +111,37 @@ const JoinMark = () => {
         if (!selectAnswers[questionId]) {
             // Nếu chưa có mục cho câu hỏi này, tạo một mục mới và thêm câu trả lời đã chọn
             selectAnswers[questionId] = [answerIds];
-            return {
-                question_id: questionId,
-                answer_ids: selectAnswers[questionId],
-            };
         } else {
             if (checked) {
                 // Nếu được chọn, thêm câu trả lời vào danh sách
                 selectAnswers[questionId].push(answerIds);
-
-                return {
-                    question_id: questionId,
-                    answer_ids: selectAnswers[questionId],
-                };
             } else {
                 // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
                 selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
-                return {
-                    question_id: questionId,
-                    answer_ids: selectAnswers[questionId],
-                };
             }
-        }
+        }        
+        handleUpdateAnswers(questionId, selectAnswers[questionId], studentExamId, null);
     };
-
+    const [send, setSend] = useState(false);
+    let timer: any;
     const handleSubmit = () => {
         // Gửi dữ liệu đã được lưu trong selectedAnswers về server
         // Sử dụng axios hoặc phương thức gửi dữ liệu tương tự
         // // axios.post(`${BASE_URL}/submit`, { answers: selectedAnswers }).then((response) => {
         // //     // Xử lý phản hồi từ server (nếu cần)
         // // });
-        if (studentExamId && submission === 1) {
-            setTimeout(() => {
-                //Gọi API
-                console.log('Đã gửi');
+        setSend(true);
+        clearTimeout(timer)
+        if (isData?.student_exam_id && isData.submission === 0) {
+            timer =  setTimeout(() => {
+                const config = HeaderToken.getTokenConfig();
+                axios.patch(`${BASE_URL}/students/submission`, config).then((response) => {
+                    console.log(response);
+                    
+                }).catch((error) => {
+                    console.log(error);
+                    
+                })
             }, 1500);
         }
         //handleFetchData();
@@ -148,10 +157,8 @@ const JoinMark = () => {
         let timer: any;
         if (shouldCallAPI) {
             timer = setTimeout(() => {
-                if (studentExamId) {
-                    //questionId
-                    //Gọi API
-                    console.log(textValue);
+                if (isData?.submission === 0 && isData.student_exam_id) {
+                    handleUpdateAnswers(questionId, [], isData.student_exam_id, textValue)
                 }
             }, 800);
         }
@@ -190,16 +197,16 @@ const JoinMark = () => {
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
-                                                                disabled
+                                                                disabled = {isData.student_exam_id ? false : true}
                                                                 defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id.toString()))
                                                                     .includes(answer.id)}
                                                                 type="radio"
                                                                 name={`asw${index}`}
                                                                 onChange={() => {
-                                                                    if (studentExamId && submission) {
-                                                                        const a = handleAnswerChange(asw.id, answer.id);
-                                                                        //gọi API
+                                                                    if (isData.student_exam_id && isData.submission === 0) {
+                                                                            handleAnswerChange(asw.id, answer.id, isData.student_exam_id);
+                                                                        
                                                                     }
                                                                 }}
                                                             />
@@ -213,13 +220,13 @@ const JoinMark = () => {
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
-                                                                    if (studentExamId && submission) {
-                                                                        const a = handleAnswerCheckBox(
+                                                                    if (isData.student_exam_id && isData.submission === 0) {
+                                                                        handleAnswerCheckBox(
                                                                             asw.id,
                                                                             answer.id,
                                                                             e.target.checked,
+                                                                            isData.student_exam_id
                                                                         );
-                                                                        console.log(a);
                                                                     }
                                                                 }}
                                                             />
@@ -255,7 +262,7 @@ const JoinMark = () => {
                                 </div>
                             </div>
                             <div className=" gap-x-3 flex flex-row justify-end">
-                                <Button onSubmit={handleSubmit} className="" type="primary">
+                                <Button onClick={handleSubmit} disabled= {send} className="" type="primary">
                                     Gửi
                                 </Button>
                                 <Button onClick={handleExitHome} type="primary" danger>
