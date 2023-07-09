@@ -16,46 +16,54 @@ interface Question {
     answers: Answer[];
     question_category_id: number;
     exam_id: number;
-    student_exam: StudentExam[];
+    student_answer_options: StudentExam[];
 }
 interface StudentExam {
-    id: Number;
+    id: number;
     answer_id: number;
-    student_exam_id: Number
+    essay_answer: string;
+    student_exam_id: number;
 }
 interface Answer {
     id: number;
-    content: string;
-    isCorrect: boolean;
+    answer: string;
+    correct_answer: boolean;
+}
+interface Data {
+    list_questions_answers: Question[];
+    student_exam_id: number;
+    submisson: number;
 }
 const { Header, Footer, Content } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const JoinMark = () => {
     const [question, setQuestion] = useState<Question[]>([]);
     const [selectedAnswers, setSelectedAnswers] = useState<Question[]>([]);
+    const [isData, setIsData] = useState<Data>();
     const [isValueText, setIsValueText] = useState('');
     const [isReadOnly, setIsReadOnly] = useState(false);
-    const [studentExamId, setStudentExamId] = useState(Number);
-    const [submission, setSubmission] = useState(Number);
+    const [studentExamId, setStudentExamId] = useState(0);
+    const [submission, setSubmission] = useState(0);
     useEffect(() => {
         handleFetchData();
+        console.log(isData);
     }, []);
     const handleFetchData = () => {
         const config = HeaderToken.getTokenConfig();
         axios.get(`${BASE_URL}/test`, config).then((response) => {
+            console.log(response);
             const data_test = response.data.ans;
             console.log('student_exam', data_test);
-            const data_answers = response.data;
-            setQuestion(data_answers);
+            const dataFetch = response.data.response_data;
+            setQuestion(dataFetch.list_questions_answers);
             //sửa lại json
-            // if (dataFetch.student_exam_id) {
-            //     setStudentExamId(dataFetch.student_exam_id);
-            //     setSubmission(dataFetch.submission);
-            // }
-            console.log('data: ', response.data.response_data);
-            console.log('data: ', data_answers);
+            setIsData(dataFetch);
+            // setStudentExamId(dataFetch.student_exam_id);
+            // setSubmission(dataFetch.submission);
+            console.log('data: ', dataFetch);
         });
     };
+    console.log(studentExamId, submission);
     const onChange = (checkedValues: CheckboxValueType[]) => {
         console.log('checked = ', checkedValues);
     };
@@ -63,29 +71,31 @@ const JoinMark = () => {
     //const handleAnswerChange = (examId: number, questionIndex: number, answerId: any) => {};
     let questionRadio: Number[];
     const handleAnswerChange = (questionId: number, answerIds: any) => {
-        questionRadio = []
+        questionRadio = [];
         if (questionRadio) {
             // Cập nhật danh sách đáp án cho câu hỏi đã tồn tại trong danh sách selectedAnswers
-            questionRadio = [answerIds]
+            questionRadio = [answerIds];
         } else {
-            const newQuestion = [answerIds]
+            const newQuestion = [answerIds];
             questionRadio = newQuestion;
         }
         return {
             answer_ids: questionRadio,
-            question_id: questionId
+            question_id: questionId,
         };
     };
     const selectAnswers: Record<number, number[]> = {};
     const checkStudentExam: Record<number, boolean> = {};
-    const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {        
+    const handleAnswerCheckBox = (questionId: number, answerIds: any, checked: boolean) => {
         if (!checkStudentExam[questionId]) {
             checkStudentExam[questionId] = true;
-            const questionItem = question.find(item => item.id === questionId && item.student_exam.length > 0);
+            const questionItem = question.find(
+                (item) => item.id === questionId && item.student_answer_options.length > 0,
+            );
             if (questionItem) {
-                selectAnswers[questionId] = questionItem.student_exam
-                    .filter(student_exam => student_exam.student_exam_id === studentExamId)
-                    .map(student_exam => student_exam.answer_id);
+                selectAnswers[questionId] = questionItem.student_answer_options
+                    .filter((student_exam) => student_exam.student_exam_id === studentExamId)
+                    .map((student_exam) => student_exam.answer_id);
             }
         }
         if (!selectAnswers[questionId]) {
@@ -93,7 +103,7 @@ const JoinMark = () => {
             selectAnswers[questionId] = [answerIds];
             return {
                 question_id: questionId,
-                answer_ids: selectAnswers[questionId]
+                answer_ids: selectAnswers[questionId],
             };
         } else {
             if (checked) {
@@ -102,14 +112,14 @@ const JoinMark = () => {
 
                 return {
                     question_id: questionId,
-                    answer_ids: selectAnswers[questionId]
+                    answer_ids: selectAnswers[questionId],
                 };
             } else {
                 // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
                 selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
                 return {
                     question_id: questionId,
-                    answer_ids: selectAnswers[questionId]
+                    answer_ids: selectAnswers[questionId],
                 };
             }
         }
@@ -124,8 +134,7 @@ const JoinMark = () => {
         if (studentExamId && submission === 1) {
             setTimeout(() => {
                 //Gọi API
-                console.log("Đã gửi");
-
+                console.log('Đã gửi');
             }, 1500);
         }
         //handleFetchData();
@@ -141,9 +150,8 @@ const JoinMark = () => {
                 if (studentExamId) {
                     //questionId
                     //Gọi API
-                console.log(textValue);
+                    console.log(textValue);
                 }
-
             }, 800);
         }
 
@@ -164,22 +172,23 @@ const JoinMark = () => {
                         <div className="p-5 grid justify-center ">
                             <div className="justify-center flex">
                                 <div className="w-[50rem]">
-                                    {question.map((asw, index) => (
+                                    {isData?.list_questions_answers.map((asw, index) => (
                                         <div key={asw.id} className="mb-4 bg-gray-300 rounded-md px-4 py-4 ">
                                             <div className="text-xl font-bold mb-2">{asw.content}</div>
                                             <div className="space-y-2">
                                                 {asw.answers.map((answer) => (
                                                     <label
-                                                        className={`flex items-center space-x-2 ${asw.question_category_id === 1
+                                                        className={`flex items-center space-x-2 ${
+                                                            asw.question_category_id === 1
                                                                 ? 'radio-answer'
                                                                 : 'checkbox-answer'
-                                                            } ${answer.isCorrect && 'bg-green-300 rounded-md'}`}
+                                                        } ${answer.correct_answer && 'bg-green-300 rounded-md'}`}
                                                         key={answer.id}
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
-                                                            disabled
-                                                                defaultChecked={asw.student_exam
+                                                                disabled
+                                                                defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id.toString()))
                                                                     .includes(answer.id)}
                                                                 type="radio"
@@ -189,28 +198,31 @@ const JoinMark = () => {
                                                                         const a = handleAnswerChange(asw.id, answer.id);
                                                                         //gọi API
                                                                     }
-                                                                }
-                                                                }
+                                                                }}
                                                             />
                                                         )}
                                                         {asw.question_category_id === 2 && (
                                                             <input
                                                                 type="checkbox"
                                                                 className="focus:border-blue-300"
-                                                                defaultChecked={asw.student_exam
+                                                                defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id.toString()))
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
                                                                     if (studentExamId && submission) {
-                                                                        const a = handleAnswerCheckBox(asw.id, answer.id, e.target.checked)
-                                                                    console.log(a);
+                                                                        const a = handleAnswerCheckBox(
+                                                                            asw.id,
+                                                                            answer.id,
+                                                                            e.target.checked,
+                                                                        );
+                                                                        console.log(a);
                                                                     }
                                                                 }}
                                                             />
                                                         )}
 
-                                                        <span className="text-lg font-medium">{answer.content}</span>
+                                                        <span className="text-lg font-medium">{answer.answer}</span>
                                                     </label>
                                                 ))}
 
@@ -220,14 +232,18 @@ const JoinMark = () => {
                                                         style={{ height: '20rem', overflow: 'hidden', resize: 'none' }}
                                                         maxLength={2000}
                                                         showCount
-                                                        value={!checkChangeTextArea ? asw.student_exam.map((e) => e.answer_id.toString()) : textValue}
-
+                                                        value={
+                                                            !checkChangeTextArea
+                                                                ? asw.student_answer_options.map((e) =>
+                                                                      e.essay_answer.toString(),
+                                                                  )
+                                                                : textValue
+                                                        }
                                                         placeholder="Nhập câu trả lời"
                                                         onChange={(e) => {
-                                                            setCheckChangeArea(true)
-                                                            handleTextAreaChange(e.target.value, asw.id)
-                                                        }
-                                                        }
+                                                            setCheckChangeArea(true);
+                                                            handleTextAreaChange(e.target.value, asw.id);
+                                                        }}
                                                     ></TextArea>
                                                 )}
                                             </div>

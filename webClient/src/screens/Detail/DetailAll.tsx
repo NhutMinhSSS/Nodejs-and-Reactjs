@@ -61,9 +61,7 @@ const DetailAll = () => {
                         <Menu mode="vertical" selectedKeys={[location.pathname]} style={{ background: '#F8F8FF' }}>
                             {isData?.student_exams.map((item) => (
                                 <Menu.Item key={`giang-vien/class/${classroom_id}/${post_id}/detail-test/${item.id}`}>
-                                    <Link
-                                        to={`/giang-vien/class/${classroom_id}/${post_id}/detail-test/${item.id}/`}
-                                    >
+                                    <Link to={`/giang-vien/class/${classroom_id}/${post_id}/detail-test/${item.id}/`}>
                                         {item.last_name} {item.first_name}
                                     </Link>
                                 </Menu.Item>
