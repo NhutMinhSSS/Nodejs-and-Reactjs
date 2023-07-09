@@ -135,10 +135,15 @@ const JoinMark = () => {
         if (isData?.student_exam_id && isData.submission === 0) {
             timer =  setTimeout(() => {
                 const config = HeaderToken.getTokenConfig();
-                axios.patch(`${BASE_URL}/students/submission`, config).then((response) => {
+                const data = {
+                    student_exam_id: isData.student_exam_id,
+                    post_id: post_id
+                }
+                axios.patch(`${BASE_URL}/students/submission`,data, config).then((response) => {
+                    setSend(false);
                     console.log(response);
-                    
                 }).catch((error) => {
+                    setSend(false);
                     console.log(error);
                     
                 })
@@ -197,7 +202,7 @@ const JoinMark = () => {
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
-                                                                disabled = {isData.student_exam_id ? false : true}
+                                                                disabled = {isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id.toString()))
                                                                     .includes(answer.id)}
@@ -215,6 +220,7 @@ const JoinMark = () => {
                                                             <input
                                                                 type="checkbox"
                                                                 className="focus:border-blue-300"
+                                                                disabled= {isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id.toString()))
                                                                     .includes(answer.id)}
@@ -261,14 +267,14 @@ const JoinMark = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div className=" gap-x-3 flex flex-row justify-end">
+                            {isData?.submission === 0 && <div className=" gap-x-3 flex flex-row justify-end">
                                 <Button onClick={handleSubmit} disabled= {send} className="" type="primary">
                                     Gửi
                                 </Button>
                                 <Button onClick={handleExitHome} type="primary" danger>
                                     Hủy
                                 </Button>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
