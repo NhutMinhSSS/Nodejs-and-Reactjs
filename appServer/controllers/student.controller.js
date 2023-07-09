@@ -263,6 +263,10 @@ class StudentController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
+            if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
+                }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             // const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
             // if (isBeforeStartTime) {

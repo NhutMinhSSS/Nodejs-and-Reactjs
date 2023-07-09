@@ -20,10 +20,10 @@ const checkPostBelongToClassroom = async(req, res, next) => {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                 EnumMessage.POST_NOT_EXISTS);
         }
-        if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
-        }
+        // if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+        //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+        //         EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
+        // }
         let user;
        if (role === EnumServerDefinitions.ROLE.TEACHER) {
             const teacher = await TeacherService.findTeacherByAccountId(accountId);
