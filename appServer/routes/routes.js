@@ -40,7 +40,7 @@ router.get('/test', (req, res) => {
             { id: 5,question_id: 1, answer: 'Đà Nẵng', correct_answer: false }
           ],
           student_answer_options: [
-            { question_id: 1, answer_id: 1, essay_answer: null, student_exam_id: 1 },
+            { question_id: 1, answer_id: 3, essay_answer: null, student_exam_id: 1 },
           ]
         },
         {

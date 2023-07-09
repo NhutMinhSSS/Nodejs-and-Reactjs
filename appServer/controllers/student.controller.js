@@ -42,14 +42,15 @@ class StudentController {
             );
         }
     }
-    async getStudentsByPostId(req, res) {
-        const postId = req.params.post_id;
+    async getStudentsByClassroomId(req, res) {
+        //const postId = req.params.post_id;
         const classroomId = req.params.classroom_id;
         try {
-            const listStudentExams = await StudentExamService.findStudentsExamsByPostId(postId);
+            const listStudentExams = await StudentExamService.findStudentsExamsByPostId(3);
             const listStudentClassroom = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
+            const listStudentExamId = listStudentExams.map(item => item.student_id);
             const result = {
-                list_student_exams: listStudentExams,
+                list_student_exams: listStudentExamId,
                 list_student_classroom: listStudentClassroom
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
@@ -374,6 +375,7 @@ class StudentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    
 }
 
 module.exports = new StudentController;
