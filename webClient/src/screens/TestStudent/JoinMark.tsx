@@ -5,6 +5,7 @@ import SystemConst from '../../common/consts/system_const';
 import { Button, Checkbox, Input, Layout, Radio } from 'antd';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './style.scss';
+import { useParams } from 'react-router-dom';
 const { TextArea } = Input;
 
 interface Question {
@@ -46,24 +47,21 @@ const JoinMark = () => {
     const [submission, setSubmission] = useState(0);
     useEffect(() => {
         handleFetchData();
-        console.log(isData);
     }, []);
+    const { post_id } = useParams();
     const handleFetchData = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/test`, config).then((response) => {
-            console.log(response);
-            const data_test = response.data.ans;
-            console.log('student_exam', data_test);
+        axios.get(`${BASE_URL}/questions-and-answers/${post_id}/get-questions-and-answers`, config).then((response) => {
             const dataFetch = response.data.response_data;
             setQuestion(dataFetch.list_questions_answers);
             //sửa lại json
             setIsData(dataFetch);
             // setStudentExamId(dataFetch.student_exam_id);
             // setSubmission(dataFetch.submission);
-            console.log('data: ', dataFetch);
         });
+        console.log(post_id);
     };
-    console.log(studentExamId, submission);
+
     const onChange = (checkedValues: CheckboxValueType[]) => {
         console.log('checked = ', checkedValues);
     };
@@ -139,6 +137,9 @@ const JoinMark = () => {
         }
         //handleFetchData();
     };
+    const handleExitHome = () => {
+        window.location.replace('/');
+    };
     const [textValue, setTextValue] = useState('');
     const [shouldCallAPI, setShouldCallAPI] = useState(false);
     const [questionId, setQuestionId] = useState(Number);
@@ -168,13 +169,15 @@ const JoinMark = () => {
             <div>
                 <div>
                     <div className="h-screen grid grid-cols-1 grid-rows-[auto,1fr,auto] ">
-                        <Header className="bg-blue-400 text-xl grid items-center">Xem Lại Kiểm Tra</Header>
+                        <Header className="bg-blue-400 text-xl grid items-center">Bài Kiểm Tra</Header>
                         <div className="p-5 grid justify-center ">
                             <div className="justify-center flex">
                                 <div className="w-[50rem]">
                                     {isData?.list_questions_answers.map((asw, index) => (
                                         <div key={asw.id} className="mb-4 bg-gray-300 rounded-md px-4 py-4 ">
-                                            <div className="text-xl font-bold mb-2">{asw.content}</div>
+                                            <div className="text-xl font-bold mb-2">
+                                                Câu {index + 1}. {asw.content}
+                                            </div>
                                             <div className="space-y-2">
                                                 {asw.answers.map((answer) => (
                                                     <label
@@ -255,7 +258,7 @@ const JoinMark = () => {
                                 <Button onSubmit={handleSubmit} className="" type="primary">
                                     Gửi
                                 </Button>
-                                <Button type="primary" danger>
+                                <Button onClick={handleExitHome} type="primary" danger>
                                     Hủy
                                 </Button>
                             </div>

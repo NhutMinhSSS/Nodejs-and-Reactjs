@@ -1,12 +1,6 @@
 import { Button, Col, Dropdown, Menu, Row } from 'antd';
 import { Header } from 'antd/es/layout/layout';
-import {
-    MdOutlineEventNote,
-    MdOutlineFileUpload,
-    MdLink,
-    MdKeyboardArrowDown,
-    MdAccountCircle,
-} from 'react-icons/md';
+import { MdOutlineEventNote, MdOutlineFileUpload, MdLink, MdKeyboardArrowDown, MdAccountCircle } from 'react-icons/md';
 import CheckBoxAll from '../../components/CheckBoxAll';
 import CheckBoxMenu from '../../components/CheckBoxMenu';
 import iconYT from '../../img/youtube.png';
@@ -87,11 +81,7 @@ const PopupCreateExercise = () => {
                                 </div>
                             </div>
                             <div className="text-lg bg-slate-200 rounded-full p-4 cursor-pointer">
-                                <img
-                                    style={{ width: '24px', height: '24px' }}
-                                    src={iconGGD}
-                                    alt=""
-                                />
+                                <img style={{ width: '24px', height: '24px' }} src={iconGGD} alt="" />
                             </div>
                             <div className="text-lg bg-slate-200 rounded-full p-4 cursor-pointer">
                                 <MdOutlineFileUpload size={24} />
@@ -108,40 +98,6 @@ const PopupCreateExercise = () => {
                 <Col span={6}>
                     <div className="">
                         <Row className="mt-10 flex justify-around">
-                            <div>
-                                <Col span={12}>
-                                    <Dropdown
-                                        overlay={
-                                            <Menu className="w-full">
-                                                <CheckBoxMenu
-                                                    options={options}
-                                                    onChange={handleMenuChange}
-                                                />
-                                            </Menu>
-                                        }
-                                        placement="bottom"
-                                        trigger={['click']}
-                                        overlayClassName="custom-dropdown-menu"
-                                        overlayStyle={{
-                                            width: '250px',
-                                            height: '250px',
-                                            padding: '10px',
-                                            gap: '10px',
-                                        }}
-                                    >
-                                        <Button
-                                            className="gap-x-1"
-                                            onClick={(e) => e.preventDefault()}
-                                        >
-                                            Chọn Phòng
-                                            <span>
-                                                {' '}
-                                                <MdKeyboardArrowDown />
-                                            </span>
-                                        </Button>
-                                    </Dropdown>
-                                </Col>
-                            </div>
                             <div>
                                 <Col span={12}>
                                     <Dropdown

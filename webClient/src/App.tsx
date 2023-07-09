@@ -6,7 +6,6 @@ import JoinClassedTeacher from './page/JoinClassed/JoinClassedTeacher';
 import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import DetailExcercise from './screens/Detail/DetailExcercise';
 import Dashboard from './page/Dashboard/Dashboard';
 import AppClass from './page/Dashboard/AppClass';
 import AppClassSection from './page/Dashboard/AppClassSection';
@@ -24,7 +23,8 @@ import JoinTest from './screens/TestStudent/JoinTest';
 import JoinMark from './screens/TestStudent/JoinMark';
 import DetailTest from './screens/Detail/DetailTest';
 import DetailTestStudent from './screens/Detail/DetailTestStudent';
-import DetailHome from './screens/Detail/DetailHome';
+import DetailExcercise from './screens/Detail/DetailExercise/DetailExcercise';
+import DetailAll from './screens/Detail/DetailAll';
 
 function App() {
     return (
@@ -135,7 +135,6 @@ function App() {
                         </div>
                     }
                 />
-                <Route path="/detail" element={<DetailExcercise />} />
                 <Route
                     path="/sinh-vien"
                     element={
@@ -144,17 +143,27 @@ function App() {
                         </div>
                     }
                 />
-                <Route path="/giang-vien/class/:classroom_id/:post_id/" element={<DetailTest />}></Route>
-                <Route path="/test-mark" element={<JoinMark />} />
-                <Route path="/test-ngu" element={<JoinTest />} />
                 <Route
-                    path="/sinh-vien/class/:id"
+                    path="/sinh-vien/class/:classroom_id"
                     element={
                         <div>
                             <JoinClassedStudent />
                         </div>
                     }
                 />
+                <Route
+                    path="/sinh-vien/class/:classroom_id/:post_id/detail-student"
+                    element={<DetailExcercise />}
+                ></Route>
+                <Route
+                    path="/sinh-vien/class/:classroom_id/:post_id/detail-student/test"
+                    element={<JoinMark />}
+                ></Route>
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
+
+                <Route path="/test-mark" element={<JoinMark />} />
+                <Route path="/test-ngu" element={<JoinTest />} />
             </Routes>
         </>
     );

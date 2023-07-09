@@ -9,7 +9,7 @@ import PointClass from '../../screens/PointClass';
 import { useLocation, useParams } from 'react-router-dom';
 import ErrorAlert from '../../common/Screens/ErrorAlert';
 import axios from 'axios';
-import ClassBulletin from '../../screens/ClassBulletin';
+import ClassBulletin from '../../screens/Classbulletin/ClassBulletin';
 import SystemConst from '../../common/consts/system_const';
 import headerToken from '../../common/utils/headerToken';
 import { error } from 'console';
@@ -85,6 +85,7 @@ const JoinClassedTeacher: React.FC = () => {
                 });
         }
     }, []);
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
@@ -101,6 +102,7 @@ const JoinClassedTeacher: React.FC = () => {
             key: 1,
         },
     ];
+
     return (
         <>
             {!isData ? (
@@ -127,7 +129,7 @@ const JoinClassedTeacher: React.FC = () => {
                                 <ClassBulletin data={isData} />
                             </TabPane>
                             <TabPane tab="Bài tập trên lớp" key="2">
-                                <ClassroomExercisesTeacher />
+                                <ClassroomExercisesTeacher data={isData} />
                             </TabPane>
                             <TabPane tab="Mọi người" key="3">
                                 <AllPeople />

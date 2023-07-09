@@ -1,4 +1,4 @@
-import { Divider, Layout, Menu } from 'antd';
+import { Divider, Layout, Menu, Space, Tabs } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -6,10 +6,11 @@ import HeaderToken from '../../common/utils/headerToken';
 import SystemConst from '../../common/consts/system_const';
 import logoTruong from '../../img/Logotruong.png';
 import DetailTestStudent from './DetailTestStudent';
+import DetailExcerciseTeacher from './DetailExercise/DetailExcerciseTeacher';
 import DetailHome from './DetailHome';
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const { Header, Sider, Content } = Layout;
-
+const { TabPane } = Tabs;
 interface Student {
     id: number;
     submission: number;
@@ -62,16 +63,12 @@ const DetailTest = () => {
     };
     return (
         <>
-            <Layout style={{ height: '100vh' }}>
-                <Header className="bg-blue-400 flex items-center">
-                    <div className=" w-48">
-                        <img src={logoTruong} alt="" />
-                    </div>
-                </Header>
-                <Layout style={{ height: 'calc(100% - 64px)' }}>
+            <Space direction="vertical" style={{ width: '100%' }} size={[0, 48]}>
+                <Layout style={{ height: 'auto', width: '100vw' }}>
                     <Sider
                         style={{
                             height: '100%',
+                            width: '100%',
                             background: '#F8F8FF',
                         }}
                         className="custom-sider"
@@ -95,15 +92,17 @@ const DetailTest = () => {
                             Refresh
                         </button>
                     </Sider>
-                    <Content style={{ height: '100%' }}>
-                        {isHome ? (
-                            <DetailHome pagrams={isData} />
-                        ) : (
-                            <DetailTestStudent pagrams={isData} id={isDataStudent} />
-                        )}
-                    </Content>
+                    <Layout>
+                        <Content style={{ height: '100%' }}>
+                            {isHome ? (
+                                <DetailHome pagrams={isData} />
+                            ) : (
+                                <DetailTestStudent pagrams={isData} id={isDataStudent} />
+                            )}
+                        </Content>
+                    </Layout>
                 </Layout>
-            </Layout>
+            </Space>
         </>
     );
 };
