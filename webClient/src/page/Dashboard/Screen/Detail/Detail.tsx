@@ -1,5 +1,12 @@
 import React, { Key, useEffect, useState } from 'react';
-import { MdAccountCircle, MdArrowBack, MdDelete, MdDeleteForever, MdOutlinePersonAdd } from 'react-icons/md';
+import {
+    MdAccountCircle,
+    MdArrowBack,
+    MdDelete,
+    MdDeleteForever,
+    MdOutlinePersonAdd,
+    MdPersonAdd,
+} from 'react-icons/md';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
 import { Button, Checkbox, Input, Layout, Modal, Select, Tooltip } from 'antd';
@@ -160,12 +167,13 @@ const Detail = () => {
             .get(`${BASE_URL}/classrooms/get-classroom-detail/${id}`, config)
             .then((response) => {
                 const data = response.data.response_data.students;
+                console.log(data);
                 const newData: DataType[] = data.map(
-                    (item: { id: any; first_name: any; last_name: any; class_name: any }) => ({
+                    (item: { id: any; first_name: any; last_name: any; regular_class_name: any }) => ({
                         id: item.id,
                         first_name: item.first_name,
                         last_name: item.last_name,
-                        class_name: item.class_name,
+                        class_name: item.regular_class_name,
                     }),
                 );
                 setDataDetailStudent(newData);
@@ -452,16 +460,19 @@ const Detail = () => {
                     <div>
                         <div className="flex justify-between py-1">
                             <Button
+                                type="primary"
+                                danger
                                 onClick={handleDeleteModalTeacher}
                                 className="hover:text-blue-500 duration-150 transition-all"
                             >
                                 <MdDeleteForever size={20} />
                             </Button>
                             <Button
+                                type="primary"
                                 onClick={handleOpenModalAddTeacher}
                                 className="hover:text-blue-500 duration-150 transition-all"
                             >
-                                <MdOutlinePersonAdd size={20} />
+                                <MdPersonAdd size={16} />
                             </Button>
                         </div>
                         <div>
@@ -484,16 +495,19 @@ const Detail = () => {
                 <div className="mt-2">
                     <div className="flex justify-between py-1">
                         <Button
+                            type="primary"
+                            danger
                             onClick={handleDeleteModalVisibleStudent}
                             className="hover:text-blue-500 duration-150 transition-all"
                         >
                             <MdDeleteForever size={20} />
                         </Button>
                         <Button
+                            type="primary"
                             onClick={handleOpenModalAddStudent}
                             className="hover:text-blue-500 duration-150 transition-all"
                         >
-                            <MdOutlinePersonAdd size={20} />
+                            <MdPersonAdd size={16} />
                         </Button>
                     </div>
                     <div>

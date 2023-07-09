@@ -61,10 +61,10 @@ const AppStorage = () => {
             const data_Storage = response.data.response_data;
             console.log(data_Storage);
             const newData: DataType[] = data_Storage.map(
-                (item: { id: number; class_name: any; subject_id: any; semester: any; school_year: any }) => ({
+                (item: { id: number; class_name: any; regular_class_name: any; semester: any; school_year: any }) => ({
                     id: item.id,
                     nameclasssection: item.class_name,
-                    class: item.subject_id,
+                    class: item.regular_class_name,
                     semester: item.semester,
                     schoolyear: item.school_year,
                     action: (

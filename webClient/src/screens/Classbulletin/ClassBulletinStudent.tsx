@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import imgBook from '../img/imgBook.png';
 import { Col, Row } from 'antd';
-import background from '../img/bg.png';
-import AddCard from './AddCard';
+import background from '../../img/bg.png';
+import AddCard from '../AddCardNoti/AddCard';
 import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
+import AddCardStudent from '../AddCardNoti/AddCardStudent';
 
-const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
+const ClassBulletinStudent: React.FC<{ data: any }> = ({ data }) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
@@ -67,7 +67,7 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCard />
+                        <AddCardStudent />
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
     );
 };
 
-export default ClassBulletin;
+export default ClassBulletinStudent;
 {
     /* <Row className='h-auto '>
                         <Col span={12}>

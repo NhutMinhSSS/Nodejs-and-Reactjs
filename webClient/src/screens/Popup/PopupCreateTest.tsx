@@ -2,7 +2,7 @@ import { Button, Col, DatePicker, Input, Row, Select, Switch, Tabs } from 'antd'
 import TabPane from 'antd/es/tabs/TabPane';
 import '../../style/Tabs.scss';
 import AllPeople from '../AllPeople';
-import ClassBulletin from '../ClassBulletin';
+import ClassBulletin from '../Classbulletin/ClassBulletin';
 import ClassroomExercisesTeacher from '../ClassExercises/ClassroomExercisesTeacher';
 import FormCreateTest from '../../page/FormCreateTest/FormCreateTest';
 import { Content, Header } from 'antd/es/layout/layout';
@@ -19,7 +19,6 @@ interface Option {
     id: number;
     answer: string;
     correct_answer: boolean;
-    essay_answer: string;
 }
 
 interface Question {
@@ -170,7 +169,6 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
                                   id: question.options.length + 1,
                                   answer: '',
                                   correct_answer: false,
-                                  essay_answer: '', // New property for the answer value
                               },
                           ],
                       }
@@ -269,11 +267,7 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
             post_category_id: 4,
         };
         console.log('Submit: ', formData);
-        axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {
-            window.close();
-
-            console.log();
-        });
+        axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {});
     };
     return (
         <div className=" shadow-xl h-16 fixed w-full ">
@@ -364,7 +358,7 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
                                                         ) : (
                                                             <input
                                                                 type="text"
-                                                                value={option.essay_answer}
+                                                                value={option.answer}
                                                                 onChange={(e) =>
                                                                     handleOptionChange(
                                                                         question.id,
@@ -377,7 +371,6 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
                                                                 required
                                                             />
                                                         )}
-
                                                         <input
                                                             type="text"
                                                             value={option.answer}
