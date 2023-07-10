@@ -203,7 +203,7 @@ const JoinMark = () => {
                                                             <input
                                                                 disabled = {isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id.toString()))
+                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 type="radio"
                                                                 name={`asw${index}`}
@@ -221,7 +221,7 @@ const JoinMark = () => {
                                                                 className="focus:border-blue-300"
                                                                 disabled= {isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id.toString()))
+                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
