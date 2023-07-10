@@ -127,9 +127,6 @@ const JoinMark = () => {
     const handleSubmit = () => {
         // Gửi dữ liệu đã được lưu trong selectedAnswers về server
         // Sử dụng axios hoặc phương thức gửi dữ liệu tương tự
-        // // axios.post(`${BASE_URL}/submit`, { answers: selectedAnswers }).then((response) => {
-        // //     // Xử lý phản hồi từ server (nếu cần)
-        // // });
         setSend(true);
         clearTimeout(timer)
         if (isData?.student_exam_id && isData.submission === 0) {
@@ -139,7 +136,7 @@ const JoinMark = () => {
                     student_exam_id: isData.student_exam_id,
                     post_id: post_id
                 }
-                axios.patch(`${BASE_URL}/students/submission`,data, config).then((response) => {
+                axios.post(`${BASE_URL}/students/submission`,data, config).then((response) => {
                     setSend(false);
                     console.log(response);
                 }).catch((error) => {
