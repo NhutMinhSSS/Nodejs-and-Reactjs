@@ -194,7 +194,7 @@ const JoinMark = () => {
                                                             asw.question_category_id === 1
                                                                 ? 'radio-answer'
                                                                 : 'checkbox-answer'
-                                                        } ${answer.correct_answer && 'bg-green-300 rounded-md'}`}
+                                                        } ${answer.correct_answer && isData.submission !==0 && 'bg-green-300 rounded-md'}`}
                                                         key={answer.id}
                                                     >
                                                         {asw.question_category_id === 1 && (
