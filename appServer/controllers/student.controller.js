@@ -311,11 +311,11 @@ class StudentController {
             const listFiles = FormatUtils.formatFileRequest(files, accountId);
             const newFile = await FileService.createFiles(listFiles, transaction);
             const listFileIds = newFile.map(item => item.id);
+            await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
                 throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
             }
-            await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
