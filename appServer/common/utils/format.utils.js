@@ -20,8 +20,8 @@ class FormatUtils {
     }
     // check before start time
     checkBeforeStartTime(startDate) {
-        const startDate = moment().tz(SystemConst.TIME_ZONE);
-        if (startDate < startDate) {
+        const dateNow = moment().tz(SystemConst.TIME_ZONE);
+        if (dateNow < startDate) {
             return true;
         }
         return false;
