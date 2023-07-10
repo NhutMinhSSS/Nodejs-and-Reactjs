@@ -41,7 +41,7 @@ class StudentAnswerOptionService {
                 },
                 attributes: ['id', 'answer_id', 'essay_answer']
             });
-            if (answerIds) {
+            if (answerIds && essayAnswer == null) {
                 /* if (typeof answerIds === 'number' && !existingStudentAnswerOption.length) {
                     await StudentAnswerOption.create({
                         student_exam_id: studentExamId,
@@ -89,19 +89,21 @@ class StudentAnswerOptionService {
                     });
                 }
             } else if (existingStudentAnswerOption.length !== EnumServerDefinitions.EMPTY) {
-                await existingStudentAnswerOption.forEach(item => {
-                    if (item.essay_answer != essayAnswer) {
-                        StudentAnswerOption.update({
-                            essay_answer: essayAnswer
-                        }, {
-                            where: {
-                                status: EnumServerDefinitions.STATUS.ACTIVE,
-                                student_exam_id: studentExamId,
-                                question_id: questionId,
-                            }, transaction
-                        });
+                for (const item of existingStudentAnswerOption) {
+                    if (item.essay_answer !== essayAnswer) {
+                      await StudentAnswerOption.update(
+                        { essay_answer: essayAnswer },
+                        {
+                          where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE,
+                            student_exam_id: studentExamId,
+                            question_id: questionId,
+                          },
+                          transaction
+                        }
+                      );
                     }
-                });
+                  }
             } else {
                 await StudentAnswerOption.create({
                     student_exam_id: studentExamId,

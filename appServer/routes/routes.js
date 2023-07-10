@@ -9,6 +9,8 @@ const AdminRouter = require('./admin/admin.route');
 const FileRouter = require('./users/file.route');
 const QuestionRouter = require('./users/question.router');
 const StudentRouter = require('./users/student.route');
+const server_response = require('../common/utils/server_response');
+const SystemConst = require('../common/consts/system_const');
 
 
 router.use(express.json());
@@ -38,7 +40,7 @@ router.get('/test', (req, res) => {
             { id: 5,question_id: 1, answer: 'Đà Nẵng', correct_answer: false }
           ],
           student_answer_options: [
-            { question_id: 1, answer_id: 1, essay_answer: null, student_exam_id: 1 },
+            { question_id: 1, answer_id: 3, essay_answer: null, student_exam_id: 1 },
           ]
         },
         {
@@ -126,7 +128,12 @@ router.get('/test', (req, res) => {
 
       return {...question, answers: answersRandom}
     });
-    return res.json(randomQuestions);
+    const result = {
+      student_exam_id: 1,
+      list_questions_answers: randomQuestions,
+      submisson: 0
+    }
+    return server_response.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
 });
 //post check detail, edit, delete, send exam
 module.exports = router;

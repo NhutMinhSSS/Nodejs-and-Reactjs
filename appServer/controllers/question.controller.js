@@ -12,20 +12,15 @@ const FormatUtils = require("../common/utils/format.utils");
 const StudentRandomizedAnswerListService = require("../services/student_services/student_randomized_answers_list.service");
 class QuestionController {
   async getQuestionAndAnswer(req, res) {
-    const postId = req.post.id;
+    const post = req.post;
     const role = req.user.role;
 
-    if (!postId) {
+    if (!post.id) {
       return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.REQUIRED_INFORMATION);
     }
-
     //const transaction = await sequelize.transaction();
     try {
-      const post = await PostService.findPostById(postId);
-      if (!post) {
-        //await transaction.rollback();
-        return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_EXISTS);
-      } else if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
+     if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
         //await transaction.rollback();
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
       }
@@ -37,7 +32,7 @@ class QuestionController {
       } else {
         const postDetail = await PostDetailService.findDetailByPostId(post.id);
         const studentId = req.student_id;
-        const studentExam = await StudentExamService.findStudentExam(postId, studentId);
+        const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
         if (!studentExam) {
           //await transaction.rollback();
           return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.ACCESS_DENIED_ERROR);
@@ -79,7 +74,7 @@ class QuestionController {
           }
         }
         studentExamId = studentExam.id;
-        submission = postDetail.submission;
+        submission = studentExam.submission;
       }
       const result = {
         list_questions_answers: listQuestionsAndAnswers

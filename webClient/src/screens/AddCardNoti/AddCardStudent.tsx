@@ -47,7 +47,7 @@ interface File {
     file_id: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const AddCardStudent = () => {
+const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
@@ -58,60 +58,60 @@ const AddCardStudent = () => {
     const [isData, setIsData] = useState<ListPost[]>([]);
     const [loading, setLoading] = useState(false);
     const [downloadComplete, setDownloadComplete] = useState(false);
-    useEffect(() => {
-        handleGetPost();
-    }, []);
-    const handleGetPost = () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.replace('/');
-        } else {
-            const config = HeaderToken.getTokenConfig();
-            setLoading(true);
-            axios
-                .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
-                .then((response) => {
-                    const data = response.data.response_data.list_post;
-                    console.log(data);
-                    setIsData(data);
-                })
-                .catch((error) => {
-                    if (error) {
-                        const isError = UnauthorizedError.checkError(error);
+    // useEffect(() => {
+    //     handleGetPost();
+    // }, []);
+    // const handleGetPost = () => {
+    //     const token = localStorage.getItem('token');
+    //     if (!token) {
+    //         window.location.replace('/');
+    //     } else {
+    //         const config = HeaderToken.getTokenConfig();
+    //         setLoading(true);
+    //         axios
+    //             .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
+    //             .then((response) => {
+    //                 const data = response.data.response_data.list_post;
+    //                 console.log(data);
+    //                 setIsData(data);
+    //             })
+    //             .catch((error) => {
+    //                 if (error) {
+    //                     const isError = UnauthorizedError.checkError(error);
 
-                        if (!isError) {
-                            let content = '';
-                            const {
-                                status,
-                                data: { error_message: errorMessage },
-                            } = error.response;
-                            if (status === 404 && errorMessage === 'Classroom no exist') {
-                                content = 'Lớp không tồn tại';
-                            } else if (status === 403 && errorMessage === 'No permission') {
-                                content = 'Bạn không có quyền truy cập vào lớp này';
-                            } else {
-                                content = 'Lỗi máy chủ';
-                            }
-                            const title = 'Lỗi';
-                            const path = '/giang-vien';
+    //                     if (!isError) {
+    //                         let content = '';
+    //                         const {
+    //                             status,
+    //                             data: { error_message: errorMessage },
+    //                         } = error.response;
+    //                         if (status === 404 && errorMessage === 'Classroom no exist') {
+    //                             content = 'Lớp không tồn tại';
+    //                         } else if (status === 403 && errorMessage === 'No permission') {
+    //                             content = 'Bạn không có quyền truy cập vào lớp này';
+    //                         } else {
+    //                             content = 'Lỗi máy chủ';
+    //                         }
+    //                         const title = 'Lỗi';
+    //                         const path = '/giang-vien';
 
-                            ErrorAlert(title, content, path);
-                        }
-                    } else {
-                        const title = 'Lỗi';
-                        const content = 'Máy chủ không hoạt động';
-                        localStorage.clear();
-                        const path = '/';
-                        ErrorAlert(title, content, path);
-                    }
-                    // Xử lý lỗi nếu có
-                    console.error(error);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
-    };
+    //                         ErrorAlert(title, content, path);
+    //                     }
+    //                 } else {
+    //                     const title = 'Lỗi';
+    //                     const content = 'Máy chủ không hoạt động';
+    //                     localStorage.clear();
+    //                     const path = '/';
+    //                     ErrorAlert(title, content, path);
+    //                 }
+    //                 // Xử lý lỗi nếu có
+    //                 console.error(error);
+    //             })
+    //             .finally(() => {
+    //                 setLoading(false);
+    //             });
+    //     }
+    // };
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
     const handlePopupDownloadFile = (file_id: number, id: number) => {
@@ -244,8 +244,8 @@ const AddCardStudent = () => {
                 .post(`${BASE_URL}/posts/create-post`, formData, config)
                 .then((response) => {
                     console.log(response);
+                    onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
-                    handleGetPost();
                 })
                 .finally(() => {
                     setLoading(false);
@@ -382,7 +382,7 @@ const AddCardStudent = () => {
                         )}
                     </div>
 
-                    {isData.map((item) => (
+                    {data.map((item: any) => (
                         <button
                             onClick={() => handleClick(item)}
                             className={`flex justify-between bg-slate-200 ${
@@ -406,7 +406,7 @@ const AddCardStudent = () => {
                                 </div>
                                 {item.files.length > 0 ? (
                                     <div className="grid grid-cols-2 ">
-                                        {item.files.map((file) => (
+                                        {item.files.map((file: any) => (
                                             <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">

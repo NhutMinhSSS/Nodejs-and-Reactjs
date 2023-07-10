@@ -26,7 +26,13 @@ const HomeScreenStudent: React.FC = () => {
     const [screenClass, setScreenClass] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
-        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log(123);
+            
+            window.location.replace('/');
+        } else {
+            setIsLoading(true);
         axios
             .get('https://20.39.197.125:3443/api/classrooms', config)
             .then((response) => {
@@ -49,6 +55,7 @@ const HomeScreenStudent: React.FC = () => {
             .finally(() => {
                 setIsLoading(false);
             });
+        }
     }, []);
     return (
         <>

@@ -263,6 +263,7 @@ class PostService {
                 }, {
                     model: StudentExam,
                     where: {
+                        '$Post.post_category_id$': {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.DOCUMENT},
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['id', 'finish_date', 'total_score', 'submission'],

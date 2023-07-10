@@ -38,54 +38,56 @@ const JoinClassedTeacher: React.FC = () => {
         if (!token) {
             window.location.replace('/');
         } else {
-            const config = headerToken.getTokenConfig();
-
-            setIsLoading(true);
-            axios
-                .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
-                .then((response) => {
-                    const data = response.data.response_data;
-                    console.log(data);
-                    setIsData(data);
-                })
-                .catch((error) => {
-                    if (error) {
-                        const isError = UnauthorizedError.checkError(error);
-
-                        if (!isError) {
-                            let content = '';
-                            const {
-                                status,
-                                data: { error_message: errorMessage },
-                            } = error.response;
-                            if (status === 404 && errorMessage === 'Classroom no exist') {
-                                content = 'Lớp không tồn tại';
-                            } else if (status === 403 && errorMessage === 'No permission') {
-                                content = 'Bạn không có quyền truy cập vào lớp này';
-                            } else {
-                                content = 'Lỗi máy chủ';
-                            }
-                            const title = 'Lỗi';
-                            const path = '/giang-vien';
-
-                            ErrorAlert(title, content, path);
-                        }
-                    } else {
-                        const title = 'Lỗi';
-                        const content = 'Máy chủ không hoạt động';
-                        localStorage.clear();
-                        const path = '/';
-                        ErrorAlert(title, content, path);
-                    }
-                    // Xử lý lỗi nếu có
-                    console.error(error);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
+            handleFetchData();
         }
     }, []);
+    const handleFetchData = () => {
+        const config = headerToken.getTokenConfig();
 
+        setIsLoading(true);
+        axios
+            .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
+            .then((response) => {
+                const data = response.data.response_data;
+                console.log(data);
+                setIsData(data);
+            })
+            .catch((error) => {
+                if (error) {
+                    const isError = UnauthorizedError.checkError(error);
+
+                    if (!isError) {
+                        let content = '';
+                        const {
+                            status,
+                            data: { error_message: errorMessage },
+                        } = error.response;
+                        if (status === 404 && errorMessage === 'Classroom no exist') {
+                            content = 'Lớp không tồn tại';
+                        } else if (status === 403 && errorMessage === 'No permission') {
+                            content = 'Bạn không có quyền truy cập vào lớp này';
+                        } else {
+                            content = 'Lỗi máy chủ';
+                        }
+                        const title = 'Lỗi';
+                        const path = '/giang-vien';
+
+                        ErrorAlert(title, content, path);
+                    }
+                } else {
+                    const title = 'Lỗi';
+                    const content = 'Máy chủ không hoạt động';
+                    localStorage.clear();
+                    const path = '/';
+                    ErrorAlert(title, content, path);
+                }
+                // Xử lý lỗi nếu có
+                console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
@@ -126,7 +128,7 @@ const JoinClassedTeacher: React.FC = () => {
                     <div className="grid iphone 12:grid-flow-col basis-2/3 justify-center">
                         <Tabs className=" items-center " defaultActiveKey="1" onChange={handleTabChange}>
                             <TabPane tab="Bảng Tin" key="1">
-                                <ClassBulletin data={isData} />
+                                <ClassBulletin onFetchData = {handleFetchData} data={isData} />
                             </TabPane>
                             <TabPane tab="Bài tập trên lớp" key="2">
                                 <ClassroomExercisesTeacher data={isData} />

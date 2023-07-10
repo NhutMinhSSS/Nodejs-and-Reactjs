@@ -5,7 +5,7 @@ import AddCard from '../AddCardNoti/AddCard';
 import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 
-const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
+const ClassBulletin: React.FC<{ onFetchData: any ,data: any }> = ({ onFetchData ,data }) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
@@ -69,7 +69,7 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCard data={dataPost} />
+                        <AddCard onFetchData = {onFetchData} data={dataPost} />
                     </div>
                 </div>
             </div>

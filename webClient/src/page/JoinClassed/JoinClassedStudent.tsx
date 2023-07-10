@@ -25,57 +25,59 @@ const JoinClassedStudent = () => {
         if (!token) {
             window.location.replace('/');
         } else {
-            const config = headerToken.getTokenConfig();
-
-            setIsLoading(true);
-            axios
-                .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
-                .then((response) => {
-                    const data = response.data.response_data;
-                    console.log(data);
-                    setIsData(data);
-                })
-                .catch((error) => {
-                    if (error) {
-                        const isError = UnauthorizedError.checkError(error);
-
-                        if (!isError) {
-                            let content = '';
-                            const {
-                                status,
-                                data: { error_message: errorMessage },
-                            } = error.response;
-                            if (status === 404 && errorMessage === 'Classroom no exist') {
-                                content = 'Lớp không tồn tại';
-                            } else if (status === 403 && errorMessage === 'No permission') {
-                                content = 'Bạn không có quyền truy cập vào lớp này';
-                            } else {
-                                content = 'Lỗi máy chủ';
-                            }
-                            const title = 'Lỗi';
-                            const path = '/sinh-vien';
-
-                            ErrorAlert(title, content, path);
-                        }
-                    } else {
-                        const title = 'Lỗi';
-                        const content = 'Máy chủ không hoạt động';
-                        localStorage.clear();
-                        const path = '/';
-                        ErrorAlert(title, content, path);
-                    }
-                    // Xử lý lỗi nếu có
-                    console.error(error);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
+           handleFetchData();
         }
     }, []);
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
         navigate('/');
     };
+    const handleFetchData = () => {
+        const config = headerToken.getTokenConfig();
+        setIsLoading(true);
+        axios
+            .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
+            .then((response) => {
+                const data = response.data.response_data;
+                setIsData(data);
+            })
+            .catch((error) => {
+                if (error) {
+                    const isError = UnauthorizedError.checkError(error);
+
+                    if (!isError) {
+                        let content = '';
+                        const {
+                            status,
+                            data: { error_message: errorMessage },
+                        } = error.response;
+                        if (status === 404 && errorMessage === 'Classroom no exist') {
+                            content = 'Lớp không tồn tại';
+                        } else if (status === 403 && errorMessage === 'No permission') {
+                            content = 'Bạn không có quyền truy cập vào lớp này';
+                        } else {
+                            content = 'Lỗi máy chủ';
+                        }
+                        const title = 'Lỗi';
+                        const path = '/sinh-vien';
+
+                        ErrorAlert(title, content, path);
+                    }
+                } else {
+                    const title = 'Lỗi';
+                    const content = 'Máy chủ không hoạt động';
+                    localStorage.clear();
+                    const path = '/';
+                    ErrorAlert(title, content, path);
+                }
+                // Xử lý lỗi nếu có
+                console.error(error);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }
     const items = [
         {
             label: <button onClick={handleLogout}>Logout</button>,
@@ -93,12 +95,12 @@ const JoinClassedStudent = () => {
                         <span className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out cursor-pointer">
                             <MenuOutlined></MenuOutlined>
                         </span>
-                        <div className="block w-max max-w-full">CĐ TH 20A</div>
+                        <div className="block w-max max-w-full">{isData['title']}</div>
                     </div>
                     <span className=" h-screen grid iphone 12:grid-flow-col">
                         <Tabs className=" items-center " defaultActiveKey="1">
                             <TabPane className="" tab="Bảng Tin" key="1">
-                                <ClassBulletinStudent data={isData} />
+                                <ClassBulletinStudent onFetchData= {handleFetchData} data={isData} />
                             </TabPane>
                             <TabPane className="" tab="Bài Tập Trên Lớp" key="2">
                                 <ClassroomExercisesStudent />
