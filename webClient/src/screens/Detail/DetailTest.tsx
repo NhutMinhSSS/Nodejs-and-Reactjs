@@ -95,9 +95,9 @@ const DetailTest = () => {
                     <Layout>
                         <Content style={{ height: '100%' }}>
                             {isHome ? (
-                                <DetailHome pagrams={isData} />
+                                <DetailHome params={isData} />
                             ) : (
-                                <DetailTestStudent pagrams={isData} id={isDataStudent} />
+                                <DetailTestStudent params={isData} id={isDataStudent} />
                             )}
                         </Content>
                     </Layout>

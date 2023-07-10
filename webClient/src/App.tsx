@@ -161,9 +161,9 @@ function App() {
                     element={<JoinMark />}
                 ></Route>
                 <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
-                <Route path="/sinh-vien/class/:classroom_id/:post_id/detail-student" element={<DetailAll />}></Route>
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
                 <Route
-                    path="/giang-vien/class/:classroom_id/:post_id/detail-test"
+                    path="/sinh-vien/class/:classroom_id/:post_id/detail-student"
                     element={<DetailAllStudent />}
                 ></Route>
 
