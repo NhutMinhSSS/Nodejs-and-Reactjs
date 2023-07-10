@@ -16,7 +16,7 @@ class StudentExamService {
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['first_name', 'last_name']
+                    attributes: ['student_code','first_name', 'last_name']
                 }],
                 attributes: ['id']
             });

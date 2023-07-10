@@ -366,7 +366,7 @@ class StudentController {
             const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
             if (!checkAnswersBelongToQuestion) {
                 student = await StudentExamService.findStudentByStudentExamId(studentExamId);
-                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
@@ -374,7 +374,7 @@ class StudentController {
             const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
             if (!update) {
                 student = await StudentExamService.findStudentByStudentExamId(studentExamId);
-                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
@@ -384,7 +384,7 @@ class StudentController {
         } catch (error) {
             logger.error(error);
             student = await StudentExamService.findStudentByStudentExamId(studentExamId);
-            logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+            logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
             await transaction.rollback();
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
