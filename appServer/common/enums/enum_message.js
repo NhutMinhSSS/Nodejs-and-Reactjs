@@ -79,7 +79,7 @@ class EnumMessage{
         //Post Not exists
         POST_NOT_EXISTS: 'Post not exists',
         POST_NOT_CLASSROOM: 'Post not classroom',
-        POST_NOT_CATEGORY: 'Post not category exercise',
+        POST_NOT_CATEGORY: 'Post not category Exam',
         EXERCISE_NOT_FILE: 'Not files submission'
     }
     //Error submission by student
