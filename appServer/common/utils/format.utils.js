@@ -176,7 +176,9 @@ class FormatUtils {
             // topic_id: post.topic_id,
             files: this.formatFile(postDetail.post_files),
             comments: formatComments,
-            student_exams: studentExams
+            student_exams: studentExams,
+            start_date: postDetail.start_date,
+            finish_date: postDetail.finish_date
         };
         return formattedPost;
     }
