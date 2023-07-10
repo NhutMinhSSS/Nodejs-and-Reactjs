@@ -11,10 +11,10 @@ interface Student {
     last_name: string;
 }
 
-const DetailTestStudent = ({ pagrams, id }: { pagrams: any; id: number | undefined }) => {
+const DetailTestStudent = ({ params, id }: { params: any; id: number | undefined }) => {
     const [isStudent, setIsStudent] = useState<Student>();
     useEffect(() => {
-        const temp = pagrams?.student_exams.find((x: any) => x.id === id);
+        const temp = params?.student_exams.find((x: any) => x.id === id);
         setIsStudent(temp);
     }, [id]);
     return (
@@ -22,7 +22,7 @@ const DetailTestStudent = ({ pagrams, id }: { pagrams: any; id: number | undefin
             <div className="text-lg font-medium">{isStudent?.first_name} </div>
             <div className="text-xl font-medium">
                 {isStudent?.submission === 1
-                    ? 'Chưa nộp chấm tự luận'
+                    ? 'Chưa chấm tự luận'
                     : isStudent?.submission === 2
                     ? 'Đã nộp hoàn thành'
                     : 'Chưa nộp'}
