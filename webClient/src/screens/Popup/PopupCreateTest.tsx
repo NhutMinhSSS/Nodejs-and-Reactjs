@@ -495,7 +495,7 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
                                 </div>
                                 <div className="flex items-center gap-x-2 mt-5 px-2">
                                     <p className="text-sm ">Chọn đảo câu trả lời</p>
-                                    <div className="p-1 w-[3.2rem] items-center flex rounded-2xlbg-slate-200">
+                                    <div className="p-1 w-[3.2rem] items-center flex rounded-2xl bg-slate-200">
                                         <Switch defaultChecked={isReverseAnswer} onChange={handleReverseAnswerChange} />
                                     </div>
                                 </div>
