@@ -290,6 +290,20 @@ class PostService {
                         attributes: ['first_name', 'last_name']
                     }],
                     as: 'student_exams',
+                }, {
+                    model: Account,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [{
+                        model: Teacher,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['first_name', 'last_name']
+                    }],
+                    attributes: ['id', 'role'],
+                    as: 'accounts'
                 }],
                 attributes: ['id', 'title', 'content', 'post_category_id', 'create_date']
             });
