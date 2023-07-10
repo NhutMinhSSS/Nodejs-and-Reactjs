@@ -23,15 +23,15 @@ class ClassroomStudentService {
                 },
                 include: [{
                     model: Student,
+                    required: false,
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['id', 'first_name', 'last_name'],
                     through: {
-                        attributes: [],
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
-                        }
+                        },
                     }
                 }],
                 attributes: ['id'],
