@@ -247,9 +247,7 @@ const JoinMark = () => {
                                                         showCount
                                                         value={
                                                             !checkChangeTextArea
-                                                                ? asw.student_answer_options.map((e) =>
-                                                                      e.essay_answer.toString(),
-                                                                  )
+                                                                ? asw.student_answer_options[0].essay_answer.toString()
                                                                 : textValue
                                                         }
                                                         placeholder="Nhập câu trả lời"
