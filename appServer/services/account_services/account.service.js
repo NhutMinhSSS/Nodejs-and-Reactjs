@@ -34,7 +34,22 @@ class AccountService {
                 where: {
                     email: email,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                include: [{
+                    model: Teacher,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['first_name', 'last_name']
+                }, {
+                    model: Student,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['first_name', 'last_name']
+                }]
             });
             return account;
         } catch (error) {

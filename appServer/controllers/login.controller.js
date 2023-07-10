@@ -5,6 +5,7 @@ const createToken = require("../config/create_token.config");
 const logger = require("../config/logger.config");
 const ServerResponse = require('../common/utils/server_response');
 const AccountService = require("../services/account_services/account.service");
+const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 
 class LoginController {
 
@@ -26,7 +27,9 @@ class LoginController {
                         result_message: EnumMessage.RESPONSE.SUCCESS,
                         token: accessToken,
                         role: account.role,
-                        account_id: account.id
+                        account_id: account.id,
+                        first_name: account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.first_name : account.Student.first_name,
+                        last_name: account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.last_name : account.Student.last_name
                     });
                 } else {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
