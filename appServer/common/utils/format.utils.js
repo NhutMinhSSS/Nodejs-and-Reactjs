@@ -169,6 +169,8 @@ class FormatUtils {
             title: postDetail.title,
             content: postDetail.content,
             create_date: postDetail.create_date,
+            start_date: postDetail.post_details.start_date,
+            finish_date: postDetail.post_details.finish_date,
             //category: post.post_categories.category_name,
             //classroom_id: post.classroom_id,
             //last_name: account.last_name,
@@ -177,8 +179,6 @@ class FormatUtils {
             files: this.formatFile(postDetail.post_files),
             comments: formatComments,
             student_exams: studentExams,
-            start_date: postDetail.start_date,
-            finish_date: postDetail.finish_date
         };
         return formattedPost;
     }
