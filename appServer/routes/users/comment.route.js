@@ -7,6 +7,6 @@ const checkPostBelongToClassroom = require('../../middlewares/check_post_classro
 
 const CommentRouter  = express.Router();
 
-CommentRouter.post('/create-comment', authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.TEACHER]), checkPostBelongToClassroom, CommentController.createComment);
+CommentRouter.post('/create-comment', authorize([EnumServerDefinitions.ROLE.TEACHER, EnumServerDefinitions.ROLE.STUDENT]), checkPostBelongToClassroom, CommentController.createComment);
 
 module.exports = CommentRouter;

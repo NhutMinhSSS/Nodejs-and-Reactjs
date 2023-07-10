@@ -25,7 +25,8 @@ class LoginController {
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
                         result_message: EnumMessage.RESPONSE.SUCCESS,
                         token: accessToken,
-                        role: account.role
+                        role: account.role,
+                        account_id: account.id
                     });
                 } else {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
