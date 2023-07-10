@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Answer = require('./answer.model');
 const sequelize = db.getPool();
 
 class StudentRandomizedAnswerList extends Model{}
@@ -64,6 +65,5 @@ StudentRandomizedAnswerList.init({
     updatedAt: 'updated_at'
 });
 
-StudentRandomizedAnswerList
 
 module.exports = StudentRandomizedAnswerList;

@@ -52,7 +52,7 @@ Question.init({
     updatedAt: 'updated_at'
 });
 Question.hasOne(StudentRandomizedQuestionList, { foreignKey: 'question_id'});
-Question.hasOne(StudentRandomizedAnswerList, { foreignKey: 'question_id'});
+Question.hasMany(StudentRandomizedAnswerList, { foreignKey: 'question_id'});
 StudentRandomizedQuestionList.belongsTo(Question, { foreignKey: 'question_id'});
 //StudentRandomizedQuestionList.hasOne(Question, { foreignKey: 'question_id'});
 

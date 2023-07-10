@@ -56,23 +56,23 @@ class QuestionController {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
           } else if (!postDetail.inverted_question && postDetail.inverted_answer) {
-            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id);
+            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id, post.id);
             if (listQuestionsAndAnswersTemp.length === EnumServerDefinitions.EMPTY) {
               const randomAnswers = FormatUtils.randomAnswers(listQuestionsAndAnswers, studentExam);
               //random answers
               await StudentRandomizedAnswerListService.addRandomizedAnswers(randomAnswers);
-              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id);
+              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id, post.id);
             } else {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
           } else if (postDetail.inverted_question && postDetail.inverted_answer) {
-            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id);
+            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id, post.id);
             if (listQuestionsAndAnswersTemp.length === EnumServerDefinitions.EMPTY) {
               const randomQuestions = FormatUtils.randomQuestions(listQuestionsAndAnswers, studentExam);
               const randomAnswers = FormatUtils.randomAnswers(listQuestionsAndAnswers, studentExam);
               //random questions and answers
               await StudentRandomizedQuestionService.addRandomizedQuestionAndAnswers(randomQuestions, randomAnswers);
-              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id);
+              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id, post.id);
             } else {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
