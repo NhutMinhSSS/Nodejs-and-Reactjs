@@ -45,7 +45,7 @@ const DetailExcercise = () => {
                 </div>
                 <div className="w-[45rem] gap-y-3 flex flex-col">
                     <div className="flex justify-between items-center ">
-                        <span className="text-3xl text-blue-300">Title</span>
+                        <span className="text-3xl text-blue-300">Bài kiểm tra 1 tiết</span>
                         <span>
                             <MdMoreVert
                                 className="hover:bg-blue-200 rounded-full transition-all duration-300  cursor-pointer"
@@ -54,9 +54,9 @@ const DetailExcercise = () => {
                         </span>
                     </div>
                     <div className="flex gap-x-2 items-center">
-                        <p>Lộc Trần</p>
+                        <p>Trần Tấn Lộc</p>
                         <span>•</span>
-                        <span className="opacity-50 text-sm">Hôm qua</span>
+                        <span className="opacity-50 text-sm">09/07/2023 21:58</span>
                     </div>
                     <hr className="my-2 border-blue-500" />
                     <div onClick={handleTest} className="border-2 flex gap-x-2 items-center p-4 rounded-md">

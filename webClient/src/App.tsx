@@ -25,6 +25,7 @@ import DetailTest from './screens/Detail/DetailTest';
 import DetailTestStudent from './screens/Detail/DetailTestStudent';
 import DetailExcercise from './screens/Detail/DetailExercise/DetailExcercise';
 import DetailAll from './screens/Detail/DetailAll';
+import DetailAllStudent from './screens/Detail/DetailAllStudent';
 
 function App() {
     return (
@@ -160,7 +161,11 @@ function App() {
                     element={<JoinMark />}
                 ></Route>
                 <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
-                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
+                <Route path="/sinh-vien/class/:classroom_id/:post_id/detail-student" element={<DetailAll />}></Route>
+                <Route
+                    path="/giang-vien/class/:classroom_id/:post_id/detail-test"
+                    element={<DetailAllStudent />}
+                ></Route>
 
                 <Route path="/test-mark" element={<JoinMark />} />
                 <Route path="/test-ngu" element={<JoinTest />} />

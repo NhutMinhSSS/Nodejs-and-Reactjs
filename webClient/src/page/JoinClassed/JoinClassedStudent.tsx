@@ -25,7 +25,7 @@ const JoinClassedStudent = () => {
         if (!token) {
             window.location.replace('/');
         } else {
-           handleFetchData();
+            handleFetchData();
         }
     }, []);
     const handleLogout = () => {
@@ -77,7 +77,7 @@ const JoinClassedStudent = () => {
             .finally(() => {
                 setIsLoading(false);
             });
-    }
+    };
     const items = [
         {
             label: <button onClick={handleLogout}>Logout</button>,
@@ -100,10 +100,10 @@ const JoinClassedStudent = () => {
                     <span className=" h-screen grid iphone 12:grid-flow-col">
                         <Tabs className=" items-center " defaultActiveKey="1">
                             <TabPane className="" tab="Bảng Tin" key="1">
-                                <ClassBulletinStudent onFetchData= {handleFetchData} data={isData} />
+                                <ClassBulletinStudent onFetchData={handleFetchData} data={isData} />
                             </TabPane>
                             <TabPane className="" tab="Bài Tập Trên Lớp" key="2">
-                                <ClassroomExercisesStudent />
+                                <ClassroomExercisesStudent data={isData} />
                             </TabPane>
                             <TabPane className="" tab="Mọi Người" key="3">
                                 <AllPeople />

@@ -87,7 +87,7 @@ const JoinClassedTeacher: React.FC = () => {
             .finally(() => {
                 setIsLoading(false);
             });
-    }
+    };
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
@@ -128,7 +128,7 @@ const JoinClassedTeacher: React.FC = () => {
                     <div className="grid iphone 12:grid-flow-col basis-2/3 justify-center">
                         <Tabs className=" items-center " defaultActiveKey="1" onChange={handleTabChange}>
                             <TabPane tab="Bảng Tin" key="1">
-                                <ClassBulletin onFetchData = {handleFetchData} data={isData} />
+                                <ClassBulletin onFetchData={handleFetchData} data={isData} />
                             </TabPane>
                             <TabPane tab="Bài tập trên lớp" key="2">
                                 <ClassroomExercisesTeacher data={isData} />
