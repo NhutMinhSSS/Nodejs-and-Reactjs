@@ -6,7 +6,7 @@ const EnumServerDefinitions = require('../../common/enums/enum_server_definition
 
 const StudentRouter = express.Router();
 
-StudentRouter.patch('/submission', checkPostBelongToClassroom, StudentController.studentSubmissionExam);
+StudentRouter.post('/submission', checkPostBelongToClassroom, StudentController.studentSubmissionExam);
 StudentRouter.patch('/update-answer', authorize([EnumServerDefinitions.ROLE.STUDENT]), StudentController.studentChooseAnswer);
 
 module.exports = StudentRouter;

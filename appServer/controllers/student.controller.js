@@ -268,11 +268,6 @@ class StudentController {
                         EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
                 }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
-            // const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
-            // if (isBeforeStartTime) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-            //         EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
-            // }
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
@@ -361,6 +356,7 @@ class StudentController {
         const questionId = req.body.question_id;
         const answerIds = req.body.answer_ids;
         const essayAnswer = req.body.essay_answer;
+        let student;
         const transaction = await sequelize.transaction();
         try {
             const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
@@ -372,6 +368,8 @@ class StudentController {
             const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
             if (!update) {
                 await transaction.rollback();
+                student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
             }
@@ -380,6 +378,8 @@ class StudentController {
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
+            student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+            logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }

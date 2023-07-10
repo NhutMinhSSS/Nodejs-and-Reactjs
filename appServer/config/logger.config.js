@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { createLogger, format, transports } = require('winston');
+const FormatUtils = require('../common/utils/format.utils');
 
 // Tạo folder để lưu trữ file log nếu chưa tồn tại
 const logDirectory = path.join(__dirname, '../logs');

@@ -20,7 +20,7 @@ class QuestionController {
     }
     //const transaction = await sequelize.transaction();
     try {
-     if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
+      if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
         //await transaction.rollback();
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
       }
@@ -36,6 +36,11 @@ class QuestionController {
         if (!studentExam) {
           //await transaction.rollback();
           return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.ACCESS_DENIED_ERROR);
+        }
+        const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
+        if (isBeforeStartTime) {
+          return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+            EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
         }
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, postDetail.inverted_question, studentExam.id);
         if (postDetail.inverted_question || postDetail.inverted_answer) {
@@ -81,7 +86,7 @@ class QuestionController {
       }
       if (studentExamId) {
         result.student_exam_id = studentExamId,
-        result.submission = submission
+          result.submission = submission
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
