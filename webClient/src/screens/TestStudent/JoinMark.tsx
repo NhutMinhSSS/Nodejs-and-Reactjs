@@ -173,8 +173,6 @@ const JoinMark = () => {
         setQuestionId(questionId);
         setShouldCallAPI(true);
     };
-    console.log(isData?.list_questions_answers);
-    
     return (
         <>
             <div>
