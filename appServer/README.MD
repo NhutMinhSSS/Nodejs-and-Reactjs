@@ -13,7 +13,7 @@
 <!-- create file .env --> cp .env.example .env
 <!-- Configure Env file according to mysql>
 <!-- create database name is "class_room">
-<!-- create tables into database--> npm run migration
+<!-- create tables into database--> npm run migration. Nếu lỗi comment dòng 50 trong thư mục model -> answer.model
 <!-- start Server-->
 <!-- use --> npm start
 
