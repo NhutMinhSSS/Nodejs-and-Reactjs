@@ -263,7 +263,7 @@ class PostService {
                 }, {
                     model: StudentExam,
                     where: {
-                        '$Post.post_category_id$': {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.DOCUMENT},
+                        // '$Post.post_category_id$': {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.DOCUMENT},
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['id', 'finish_date', 'total_score', 'submission'],
@@ -291,7 +291,7 @@ class PostService {
                     }],
                     as: 'student_exams',
                 }],
-                attributes: ['id', 'title', 'content', 'create_date']
+                attributes: ['id', 'title', 'content', 'post_category_id', 'create_date']
             });
             return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {

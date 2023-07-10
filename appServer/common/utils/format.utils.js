@@ -155,7 +155,7 @@ class FormatUtils {
         // });
         const formatComments = this.formatComments(postDetail.comments);
         //const account = this.formatAccount(postDetail.accounts);
-        const studentExams = postDetail.student_exams.map(item => ({
+        const studentExams = postDetail.post_category_id !== EnumServerDefinitions.POST_CATEGORY.DOCUMENT ?postDetail.student_exams.map(item => ({
             id: item.id,
             finish_date: item.finish_date,
             total_score: item.total_score,
@@ -163,7 +163,7 @@ class FormatUtils {
             first_name: item.Student.first_name,
             last_name: item.Student.last_name,
             file: this.formatFile(item.student_file_submissions)
-        }));
+        })): [];
         const formattedPost = {
             id: postDetail.id,
             title: postDetail.title,
