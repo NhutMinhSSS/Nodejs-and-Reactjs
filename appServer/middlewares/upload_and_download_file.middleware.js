@@ -6,7 +6,7 @@ const StudentService = require('../services/student_services/student.service');
 const uploadStorage = multer.diskStorage({
     destination: async (req, file, cb) => {
         if (!req.directoryPath) {
-            let studentCode;
+            let userCode;
             if (!req.user.student_code) {
                 const student = await StudentService.findStudentByAccountId(req.user.account_id);
                 studentCode = student.student_code;
