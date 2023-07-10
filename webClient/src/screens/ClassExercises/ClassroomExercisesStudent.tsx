@@ -32,7 +32,7 @@ const ClassroomExercisesStudent = ({ data }: { data: any }) => {
     const { classroom_id } = useParams();
     const handleClick = (item: any) => {
         if (item.post_category_id !== 1) {
-            navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+            navigate(`/sinh-vien/class/${classroom_id}/${item.id}/detail-student`);
         }
     };
     return (
