@@ -357,11 +357,17 @@ class StudentController {
         const answerIds = req.body.answer_ids;
         const essayAnswer = req.body.essay_answer;
         let student;
+        if (!Array.isArray(answerIds)) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_UPDATE);
+        }
         const transaction = await sequelize.transaction();
         try {
             const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
             if (!checkAnswersBelongToQuestion) {
                 await transaction.rollback();
+                student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
             }
