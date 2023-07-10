@@ -80,7 +80,15 @@ class QuestionsAndAnswersService {
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
             });
-            return listQuestionAndAnswer;
+            const result = listQuestionAndAnswer.map(({ id, content, score, question_category_id, answers, student_answer_options }) => ({
+                id,
+                content,
+                score,
+                question_category_id,
+                answers,
+                student_answer_options
+            }));
+            return result;
         } catch (error) {
             throw error;
         }
