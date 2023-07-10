@@ -173,6 +173,8 @@ const JoinMark = () => {
         setQuestionId(questionId);
         setShouldCallAPI(true);
     };
+    console.log(isData?.list_questions_answers);
+    
     return (
         <>
             <div>
@@ -194,7 +196,7 @@ const JoinMark = () => {
                                                             asw.question_category_id === 1
                                                                 ? 'radio-answer'
                                                                 : 'checkbox-answer'
-                                                        } ${answer.correct_answer && isData.submission !==0 && 'bg-green-300 rounded-md'}`}
+                                                        } ${answer.correct_answer && !isData.student_exam_id && isData.submission !==0 && 'bg-green-300 rounded-md'}`}
                                                         key={answer.id}
                                                     >
                                                         {asw.question_category_id === 1 && (
@@ -247,7 +249,7 @@ const JoinMark = () => {
                                                         showCount
                                                         value={
                                                             !checkChangeTextArea
-                                                                ? asw.student_answer_options[0].essay_answer.toString()
+                                                                ? asw.student_answer_options[0]?.essay_answer?.toString()
                                                                 : textValue
                                                         }
                                                         placeholder="Nhập câu trả lời"
