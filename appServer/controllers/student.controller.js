@@ -365,27 +365,27 @@ class StudentController {
         try {
             const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
             if (!checkAnswersBelongToQuestion) {
-                await transaction.rollback();
                 student = await StudentExamService.findStudentByStudentExamId(studentExamId);
                 logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
             }
             const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
             if (!update) {
-                await transaction.rollback();
                 student = await StudentExamService.findStudentByStudentExamId(studentExamId);
                 logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
-            await transaction.rollback();
             logger.error(error);
             student = await StudentExamService.findStudentByStudentExamId(studentExamId);
             logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.student_id} có tên là ${student.Students.last_name} ${student.Students.first_name}`);
+            await transaction.rollback();
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }
