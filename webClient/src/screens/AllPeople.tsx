@@ -78,6 +78,7 @@ const AllPeople = () => {
                             <tr key={teacher['id']}>
                                 <td>
                                     {teacher['last_name']} {teacher['first_name']}
+                                    <hr className="w-[40rem] mt-2 border-slate-300" />
                                 </td>
                             </tr>
                         ))}
@@ -94,7 +95,7 @@ const AllPeople = () => {
                                 <tr key={student['id']}>
                                     <td>
                                         {student['last_name']} {student['first_name']}
-                                        <Divider className="w-[40rem]  border-slate-400" />
+                                        <hr className="w-[40rem] mt-6 border-slate-300" />
                                     </td>
                                 </tr>
                             ))}
