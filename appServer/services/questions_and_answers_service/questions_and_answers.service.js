@@ -7,11 +7,11 @@ const StudentAnswerOption = require("../../models/student_answer_option.model");
 const { Op } = require("sequelize");
 
 class QuestionsAndAnswersService {
-    async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null, submisson = false) {
+    async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null, submission = false) {
         try {
             const questionsOrder = randomQuestions ? Question.sequelize.random() : [];
             const attributes = ['id', 'question_id', 'answer'];
-            if (!studentExamId || submisson) {
+            if (!studentExamId || submission) {
                 attributes.push('correct_answer')
             }
             const questionsAndAnswers = await Question.findAll({
