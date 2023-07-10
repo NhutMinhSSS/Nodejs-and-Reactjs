@@ -22,11 +22,14 @@ class CommentController {
         const transaction = await sequelize.transaction();
         try {
             const newComment = await CommentService.createComment(post.id, content, accountId, transaction);
-            const user = role === await (EnumServerDefinitions.ROLE.TEACHER ?  TeacherService.findTeacherByAccountId(accountId) : StudentService.findStudentByAccountId(accountId));
-            newComment.first_name = user.first_name;
-            newComment.last_name = user.last_name;
+            const user = await (role === EnumServerDefinitions.ROLE.TEACHER ?  TeacherService.findTeacherByAccountId(accountId) : StudentService.findStudentByAccountId(accountId));
+            const result = {
+                ...newComment.dataValues,
+                first_name: user.first_name,
+                last_name: user.last_name
+            }
             await transaction.commit();
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newComment);
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             await transaction.rollback();
