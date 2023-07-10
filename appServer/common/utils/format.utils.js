@@ -171,7 +171,7 @@ class FormatUtils {
             create_date: postDetail.create_date,
             start_date: postDetail.post_details.start_date,
             finish_date: postDetail.post_details.finish_date,
-            post_category_id: post.post_category_id,
+            post_category_id: postDetail.post_category_id,
             //classroom_id: post.classroom_id,
             last_name: account.last_name,
             first_name: account.first_name,
