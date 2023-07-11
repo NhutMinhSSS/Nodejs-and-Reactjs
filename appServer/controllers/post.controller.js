@@ -126,8 +126,8 @@ class PostController {
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
                 const finishDate = req.body.finish_date;
-                const invertedQuestion = req.body.inverted_question || 0;
-                const invertedAnswer = req.body.inverted_answer || 0;
+                const invertedQuestion = req.body.inverted_questions || 0;
+                const invertedAnswer = req.body.inverted_answers || 0;
                 const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
                 //PostDetail
