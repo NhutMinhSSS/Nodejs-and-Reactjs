@@ -133,7 +133,7 @@ class FormatUtils {
                 files: formattedPostFiles,
                 comments: formatComments
             };
-            if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
+            if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS && post.post_details) {
                 formattedPost.finish_date = post.post_details.finish_date;
             }
             return formattedPost;
