@@ -23,13 +23,18 @@ class LoginController {
                 const isMatch = await BcryptUtils.comparePassword(password, account.password);
                 if (isMatch) {
                     const accessToken = createToken({ account_id: account.id, role: account.role });
-                    return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
-                        result_message: EnumMessage.RESPONSE.SUCCESS,
+                    const result = {
                         token: accessToken,
                         role: account.role,
                         account_id: account.id,
-                        first_name: account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.first_name : account.Student.first_name,
-                        last_name: account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.last_name : account.Student.last_name
+                    }
+                    if (account.role !== EnumServerDefinitions.ROLE.ADMIN) {
+                        result.first_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.first_name : account.Student.first_name,
+                        result.last_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.last_name : account.Student.last_name
+                    }
+                    return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
+                        result_message: EnumMessage.RESPONSE.SUCCESS,
+                        ...result
                     });
                 } else {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,
