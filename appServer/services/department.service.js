@@ -173,13 +173,13 @@ class DepartmentService {
     }
     async activeDepartment(id, departmentName, facultyId) {
         try {
-            const dateNow = FormatUtils.formatDateNow();
+            //const dateNow = FormatUtils.formatDateNow();
             const isActive = await Department.update({
                 department_name: departmentName,
                 faculty_id: facultyId,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
-                created_at: dateNow,
-                updated_at: dateNow
+                // created_at: dateNow,
+                // updated_at: dateNow
             }, {
                 where: {
                     id: id,

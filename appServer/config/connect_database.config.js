@@ -18,7 +18,7 @@ class Database {
                     acquire: 10000, // thời gian tối đa để lấy được một connection từ pool (đơn vị là milliseconds)
                     idle: 5000 // thời gian tối đa một connection có thể ở trong pool mà không được sử dụng (đơn vị là milliseconds)
                 },
-                timezone: process.env.TIME_ZONE,
+                //timezone: process.env.TIME_ZONE,
                 //option connect mssql
                 // dialectOptions: {
                 //     options: {

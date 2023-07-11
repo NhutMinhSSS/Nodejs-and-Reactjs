@@ -37,5 +37,16 @@ class CommentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
+    async deleteComment(req, res) {
+        const accountId = req.user.account_id;
+        const commentId = req.params.comment_id;
+        try {
+            const isDelete = await CommentService.deleteComment(commentId, )
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
 }
 module.exports = new CommentController;

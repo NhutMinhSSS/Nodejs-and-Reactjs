@@ -9,18 +9,17 @@ class FormatUtils {
         return role === EnumServerDefinitions.ROLE.TEACHER ? 'GV' : 'SV';
     }
     checkPostsDeadline(dateString) {
-        const timeZone = SystemConst.TIME_ZONE;
-        const now = moment().tz(timeZone);
-        const tomorrow = moment().tz(timeZone).add(1,'day');
+        const now = moment().utc();
+        const tomorrow = moment().utc().add(1,'day');
         const exam_deadline = moment(dateString);
         return exam_deadline <= tomorrow && now < exam_deadline;
     }
-    formatDateNow() {
-        return moment.tz(SystemConst.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
-    }
+    // formatDateNow() {
+    //     return moment.utc().format('YYYY-MM-DD HH:mm:ss');
+    // }
     // check before start time
     checkBeforeStartTime(startDate) {
-        const dateNow = moment().tz(SystemConst.TIME_ZONE);
+        const dateNow = moment().utc();
         if (dateNow < startDate) {
             return true;
         }
@@ -28,7 +27,7 @@ class FormatUtils {
     }
     // check dead line exceeded
     checkDeadlineExceeded(finishDate) {
-        const submissionDate = moment().tz(SystemConst.TIME_ZONE);
+        const submissionDate = moment().utc();
         if (submissionDate > finishDate && finishDate) {
             return true;
         }
@@ -52,11 +51,11 @@ class FormatUtils {
     }
     //get date time now
     dateTimeNow() {
-        return moment.tz(SystemConst.TIME_ZONE);
+        return moment.utc();
     }
     //format date time now
     dateTimeNowString() {
-        return moment().tz(SystemConst.TIME_ZONE).format('YYYYMMDDHHmmssSSS');
+        return moment().utc().format('YYYYMMDDHHmmssSSS');
     }
     //// Format post
     //format file

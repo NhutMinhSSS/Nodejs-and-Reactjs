@@ -191,12 +191,12 @@ class FacultyService {
     }
     async activeFaculty(id, facultyName) {
         try {
-            const dateNow = FormatUtils.formatDateNow();
+            //const dateNow = FormatUtils.formatDateNow();
             const isActive = await Faculty.update({
                 faculty_name: facultyName,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
-                created_at: dateNow,
-                updated_at: dateNow
+                // created_at: dateNow,
+                // updated_at: dateNow
             }, {
                 where: {
                     id: id,
