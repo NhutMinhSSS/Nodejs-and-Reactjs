@@ -1,8 +1,30 @@
 const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const StudentExam = require("../../models/student_exam.model");
+const Student = require("../../models/student.model");
 
 class StudentExamService {
+    async findStudentByStudentExamId(studentExamId) {
+        try {
+            const studentExam = await StudentExam.findOne({
+                where: {
+                    id: studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: [{
+                    model: Student,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['student_code','first_name', 'last_name']
+                }],
+                attributes: ['id']
+            });
+            return studentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findStudentExam(postId, studentId) {
         try {
             const studentExam = await StudentExam.findOne({

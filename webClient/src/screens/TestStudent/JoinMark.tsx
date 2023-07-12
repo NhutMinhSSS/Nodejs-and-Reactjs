@@ -133,9 +133,6 @@ const JoinMark = () => {
     const handleSubmit = () => {
         // Gửi dữ liệu đã được lưu trong selectedAnswers về server
         // Sử dụng axios hoặc phương thức gửi dữ liệu tương tự
-        // // axios.post(`${BASE_URL}/submit`, { answers: selectedAnswers }).then((response) => {
-        // //     // Xử lý phản hồi từ server (nếu cần)
-        // // });
         setSend(true);
         clearTimeout(timer);
         if (isData?.student_exam_id && isData.submission === 0) {
@@ -143,6 +140,7 @@ const JoinMark = () => {
                 const config = HeaderToken.getTokenConfig();
                 const data = {
                     student_exam_id: isData.student_exam_id,
+<<<<<<< HEAD
                     post_id: post_id,
                 };
                 axios
@@ -155,6 +153,18 @@ const JoinMark = () => {
                         setSend(false);
                         console.log(error);
                     });
+=======
+                    post_id: post_id
+                }
+                axios.post(`${BASE_URL}/students/submission`,data, config).then((response) => {
+                    setSend(false);
+                    console.log(response);
+                }).catch((error) => {
+                    setSend(false);
+                    console.log(error);
+                    
+                })
+>>>>>>> main
             }, 1500);
         }
         //handleFetchData();
@@ -184,6 +194,8 @@ const JoinMark = () => {
         setQuestionId(questionId);
         setShouldCallAPI(true);
     };
+    console.log(isData?.list_questions_answers);
+    
     return (
         <>
             <div>
@@ -205,14 +217,14 @@ const JoinMark = () => {
                                                             asw.question_category_id === 1
                                                                 ? 'radio-answer'
                                                                 : 'checkbox-answer'
-                                                        } ${answer.correct_answer && 'bg-green-300 rounded-md'}`}
+                                                        } ${answer.correct_answer && !isData.student_exam_id && isData.submission !==0 && 'bg-green-300 rounded-md'}`}
                                                         key={answer.id}
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
                                                                 disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id.toString()))
+                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 type="radio"
                                                                 name={`asw${index}`}
@@ -236,7 +248,7 @@ const JoinMark = () => {
                                                                 className="focus:border-blue-300"
                                                                 disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id.toString()))
+                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
@@ -267,9 +279,7 @@ const JoinMark = () => {
                                                         showCount
                                                         value={
                                                             !checkChangeTextArea
-                                                                ? asw.student_answer_options.map((e) =>
-                                                                      e.essay_answer.toString(),
-                                                                  )
+                                                                ? asw.student_answer_options[0]?.essay_answer?.toString()
                                                                 : textValue
                                                         }
                                                         placeholder="Nhập câu trả lời"

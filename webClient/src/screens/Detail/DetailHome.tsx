@@ -19,12 +19,12 @@ interface Data {
     title: string;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const DetailHome = ({ pagrams }: { pagrams: any }) => {
+const DetailHome = ({ params }: { params: any }) => {
     const { post_id } = useParams();
     const [isData, setIsData] = useState<Data>();
     useEffect(() => {
-        setIsData(pagrams);
-    }, [pagrams]);
+        setIsData(params);
+    }, [params]);
     return (
         <>
             <div className="mb-10">

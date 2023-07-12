@@ -20,7 +20,7 @@ class QuestionController {
     }
     //const transaction = await sequelize.transaction();
     try {
-     if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
+      if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.EXAM) {
         //await transaction.rollback();
         return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST, EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
       }
@@ -37,6 +37,11 @@ class QuestionController {
           //await transaction.rollback();
           return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.ACCESS_DENIED_ERROR);
         }
+        const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
+        if (isBeforeStartTime) {
+          return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+            EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
+        }
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, postDetail.inverted_question, studentExam.id);
         if (postDetail.inverted_question || postDetail.inverted_answer) {
           let listQuestionsAndAnswersTemp = [];
@@ -51,23 +56,23 @@ class QuestionController {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
           } else if (!postDetail.inverted_question && postDetail.inverted_answer) {
-            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id);
+            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id, post.id);
             if (listQuestionsAndAnswersTemp.length === EnumServerDefinitions.EMPTY) {
               const randomAnswers = FormatUtils.randomAnswers(listQuestionsAndAnswers, studentExam);
               //random answers
               await StudentRandomizedAnswerListService.addRandomizedAnswers(randomAnswers);
-              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id);
+              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersRandomizedByExamId(studentExam.id, post.id);
             } else {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
           } else if (postDetail.inverted_question && postDetail.inverted_answer) {
-            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id);
+            listQuestionsAndAnswersTemp = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id, post.id);
             if (listQuestionsAndAnswersTemp.length === EnumServerDefinitions.EMPTY) {
               const randomQuestions = FormatUtils.randomQuestions(listQuestionsAndAnswers, studentExam);
               const randomAnswers = FormatUtils.randomAnswers(listQuestionsAndAnswers, studentExam);
               //random questions and answers
               await StudentRandomizedQuestionService.addRandomizedQuestionAndAnswers(randomQuestions, randomAnswers);
-              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id);
+              listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExam.id, post.id);
             } else {
               listQuestionsAndAnswers = listQuestionsAndAnswersTemp;
             }
@@ -81,7 +86,7 @@ class QuestionController {
       }
       if (studentExamId) {
         result.student_exam_id = studentExamId,
-        result.submission = submission
+          result.submission = submission
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);

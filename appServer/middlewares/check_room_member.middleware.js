@@ -16,8 +16,7 @@ const checkRoomMember = async (req, res, next) => {
         const user = role === EnumServerDefinitions.ROLE.TEACHER
             ? await TeacherService.findTeacherByAccountId(accountId)
             : await StudentService.findStudentByAccountId(accountId);
-        const classroomIdParseInt = parseInt(classroomId)
-        const classroom = await ClassroomService.findClassroomById(classroomIdParseInt);
+        const classroom = await ClassroomService.findClassroomById(classroomId);
         if (!classroom) {
             if (req.directoryPath) {
                 fs.removeSync(req.directoryPath);

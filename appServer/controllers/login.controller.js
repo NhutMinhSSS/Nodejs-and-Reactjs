@@ -5,6 +5,7 @@ const createToken = require("../config/create_token.config");
 const logger = require("../config/logger.config");
 const ServerResponse = require('../common/utils/server_response');
 const AccountService = require("../services/account_services/account.service");
+const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 
 class LoginController {
 
@@ -22,10 +23,18 @@ class LoginController {
                 const isMatch = await BcryptUtils.comparePassword(password, account.password);
                 if (isMatch) {
                     const accessToken = createToken({ account_id: account.id, role: account.role });
+                    const result = {
+                        token: accessToken,
+                        role: account.role,
+                        account_id: account.id,
+                    }
+                    if (account.role !== EnumServerDefinitions.ROLE.ADMIN) {
+                        result.first_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.first_name : account.Student.first_name,
+                        result.last_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.last_name : account.Student.last_name
+                    }
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
                         result_message: EnumMessage.RESPONSE.SUCCESS,
-                        token: accessToken,
-                        role: account.role
+                        ...result
                     });
                 } else {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST,

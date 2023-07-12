@@ -33,11 +33,11 @@ const checkPostBelongToClassroom = async(req, res, next) => {
             user = await ClassroomStudentService.isStudentJoined(post.classroom_id, student.id);
             req.student_id = student.id;
        }
-       req.post = post;
        if (!user) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION);
        }
+       req.post = post;
        next();
     } catch (error) {
         logger.error(error);

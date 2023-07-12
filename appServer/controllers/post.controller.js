@@ -98,15 +98,24 @@ class PostController {
         if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.NEWS) {
             title = "Bảng tin";
             if (!content) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.REQUIRED_INFORMATION);
             }
         }
         if (!postCategoryId || !title) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
         if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION)
         }
@@ -117,8 +126,8 @@ class PostController {
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
                 const finishDate = req.body.finish_date;
-                const invertedQuestion = req.body.inverted_question || 0;
-                const invertedAnswer = req.body.inverted_answer || 0;
+                const invertedQuestion = req.body.inverted_questions || 0;
+                const invertedAnswer = req.body.inverted_answers || 0;
                 const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
                 //PostDetail

@@ -157,14 +157,14 @@ class RegularClassService {
     }
     async activeRegularClass(id, className, departmentId) {
         try {
-            const dateNow = FormatUtils.formatDateNow();
+            //const dateNow = FormatUtils.formatDateNow();
             const isActive = await RegularClass.update({
                 class_name: className,
                 create_date: dateNow,
                 department_id: departmentId,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
-                created_at: dateNow,
-                updated_at: dateNow
+                // created_at: dateNow,
+                // updated_at: dateNow
             }, {
                 where: {
                     id: id,

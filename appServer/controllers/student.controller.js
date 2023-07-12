@@ -1,4 +1,5 @@
 const SystemConst = require("../common/consts/system_const");
+const fs = require('fs-extra');
 const EnumMessage = require("../common/enums/enum_message");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const FileService = require("../services/file_service/file.service");
@@ -260,19 +261,20 @@ class StudentController {
             //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
             const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
             if (!isStudentExam || isStudentExam.submission !== EnumServerDefinitions.SUBMISSION.UNSENT) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
                 }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
-            // const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
-            // if (isBeforeStartTime) {
-            //     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-            //         EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
-            // }
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
@@ -280,11 +282,11 @@ class StudentController {
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
                 const files = req.files;
-                if (files.length === EnumServerDefinitions.EMPTY) {
+                if (!files || files.length === EnumServerDefinitions.EMPTY) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                        'Nộp cc à không có file');
+                        EnumMessage.ERROR_POST.EXERCISE_NOT_FILE);
                 }
-                await StudentController.prototype.submissionExercise(studentExamId, submissionDate, files, accountId);
+                await StudentController.prototype.submissionExercise(studentExamId, files, accountId);
             } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
                 await StudentController.prototype.submissionExam(post.id, studentExamId);
@@ -295,21 +297,25 @@ class StudentController {
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async submissionExercise(studentExamId, submissionDate, files, accountId) {
+    async submissionExercise(studentExamId, files, accountId) {
         const transaction = await sequelize.transaction();
         try {
+            const submissionDate = FormatUtils.dateTimeNow();
             const listFiles = FormatUtils.formatFileRequest(files, accountId);
             const newFile = await FileService.createFiles(listFiles, transaction);
             const listFileIds = newFile.map(item => item.id);
+            await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
                 throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
             }
-            await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
@@ -361,16 +367,25 @@ class StudentController {
         const questionId = req.body.question_id;
         const answerIds = req.body.answer_ids;
         const essayAnswer = req.body.essay_answer;
+        let student;
+        if (!Array.isArray(answerIds)) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_UPDATE);
+        }
         const transaction = await sequelize.transaction();
         try {
             const checkAnswersBelongToQuestion = await QuestionsAndAnswersService.checkAnswersBeLongToQuestion(questionId, answerIds);
             if (!checkAnswersBelongToQuestion) {
+                student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
             }
             const update = await StudentAnswerOptionService.createStudentAnswerOption(studentExamId, questionId, answerIds, essayAnswer, transaction);
             if (!update) {
+                student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+                logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_UPDATE);
@@ -378,8 +393,10 @@ class StudentController {
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
-            await transaction.rollback();
             logger.error(error);
+            student = await StudentExamService.findStudentByStudentExamId(studentExamId);
+            logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
+            await transaction.rollback();
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }

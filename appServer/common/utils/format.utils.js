@@ -9,26 +9,25 @@ class FormatUtils {
         return role === EnumServerDefinitions.ROLE.TEACHER ? 'GV' : 'SV';
     }
     checkPostsDeadline(dateString) {
-        const timeZone = SystemConst.TIME_ZONE;
-        const now = moment().tz(timeZone);
-        const tomorrow = moment().tz(timeZone).add(1,'day');
+        const now = moment().utc();
+        const tomorrow = moment().utc().add(1,'day');
         const exam_deadline = moment(dateString);
         return exam_deadline <= tomorrow && now < exam_deadline;
     }
-    formatDateNow() {
-        return moment.tz(SystemConst.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss');
-    }
+    // formatDateNow() {
+    //     return moment.utc().format('YYYY-MM-DD HH:mm:ss');
+    // }
     // check before start time
     checkBeforeStartTime(startDate) {
-        const submissionDate = moment().tz(SystemConst.TIME_ZONE);
-        if (submissionDate < startDate) {
+        const dateNow = moment().utc();
+        if (dateNow < startDate) {
             return true;
         }
         return false;
     }
     // check dead line exceeded
     checkDeadlineExceeded(finishDate) {
-        const submissionDate = moment().tz(SystemConst.TIME_ZONE);
+        const submissionDate = moment().utc();
         if (submissionDate > finishDate && finishDate) {
             return true;
         }
@@ -52,11 +51,11 @@ class FormatUtils {
     }
     //get date time now
     dateTimeNow() {
-        return moment.tz(SystemConst.TIME_ZONE);
+        return moment.utc();
     }
     //format date time now
     dateTimeNowString() {
-        return moment().tz(SystemConst.TIME_ZONE).format('YYYYMMDDHHmmssSSS');
+        return moment().utc().format('YYYYMMDDHHmmssSSS');
     }
     //// Format post
     //format file
@@ -154,8 +153,8 @@ class FormatUtils {
         //     }
         // });
         const formatComments = this.formatComments(postDetail.comments);
-        //const account = this.formatAccount(postDetail.accounts);
-        const studentExams = postDetail.student_exams.map(item => ({
+        const account = this.formatAccount(postDetail.accounts);
+        const studentExams = postDetail.post_category_id !== EnumServerDefinitions.POST_CATEGORY.DOCUMENT ?postDetail.student_exams.map(item => ({
             id: item.id,
             finish_date: item.finish_date,
             total_score: item.total_score,
@@ -163,20 +162,22 @@ class FormatUtils {
             first_name: item.Student.first_name,
             last_name: item.Student.last_name,
             file: this.formatFile(item.student_file_submissions)
-        }));
+        })): [];
         const formattedPost = {
             id: postDetail.id,
             title: postDetail.title,
             content: postDetail.content,
             create_date: postDetail.create_date,
-            //category: post.post_categories.category_name,
+            start_date: postDetail.post_details.start_date,
+            finish_date: postDetail.post_details.finish_date,
+            post_category_id: postDetail.post_category_id,
             //classroom_id: post.classroom_id,
-            //last_name: account.last_name,
-            //first_name: account.first_name,
+            last_name: account.last_name,
+            first_name: account.first_name,
             // topic_id: post.topic_id,
             files: this.formatFile(postDetail.post_files),
             comments: formatComments,
-            student_exams: studentExams
+            student_exams: studentExams,
         };
         return formattedPost;
     }

@@ -7,11 +7,11 @@ const StudentAnswerOption = require("../../models/student_answer_option.model");
 const { Op } = require("sequelize");
 
 class QuestionsAndAnswersService {
-    async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null, submisson = false) {
+    async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null, submission = false) {
         try {
             const questionsOrder = randomQuestions ? Question.sequelize.random() : [];
             const attributes = ['id', 'question_id', 'answer'];
-            if (!studentExamId || submisson) {
+            if (!studentExamId || submission) {
                 attributes.push('correct_answer')
             }
             const questionsAndAnswers = await Question.findAll({
@@ -58,14 +58,15 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: [],
+                    attributes: ['question_id'],
                     order: [['order', 'ASC']],
                 }, {
-                        model: Answer,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        attributes: ['id', 'question_id', 'answer', 'correct_answer'],
+                    model: Answer,
+                    required: false,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'question_id', 'answer', 'correct_answer'],
                     as: 'answers'
                 }, {
                     model: StudentAnswerOption,
@@ -79,33 +80,52 @@ class QuestionsAndAnswersService {
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'],
             });
-            return listQuestionAndAnswer;
+            const result = listQuestionAndAnswer.map(({ id, content, score, question_category_id, answers, student_answer_options }) => ({
+                id,
+                content,
+                score,
+                question_category_id,
+                answers,
+                student_answer_options
+            }));
+            return result;
         } catch (error) {
             throw error;
         }
     }
-    async findQuestionsAndAnswersRandomizedByExamId(studentExamId) {
+    async findQuestionsAndAnswersRandomizedByExamId(studentExamId, postId) {
         try {
-            const listQuestionAndAnswer  = await Question.findAll({
+            const checkRandomAnswer = await StudentRandomizedAnswerList.findOne({
                 where: {
+                    student_exam_id: studentExamId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            if (!checkRandomAnswer) {
+                return [];
+            }
+            const listQuestionAndAnswer = await Question.findAll({
+                where: {
+                    exam_id: postId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE,
                 },
                 include: [{
-                    model: Answer,
+                    model: StudentRandomizedAnswerList,
+                    required: false,
                     where: {
+                        student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     include: [{
-                        model: StudentRandomizedAnswerList,
+                        model: Answer,
+                        required: true,
                         where: {
-                            student_exam_id: studentExamId,
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: [],
-                        order: [['order', 'ACS']]
+                        attributes: ['id', 'question_id', 'answer', 'correct_answer']
                     }],
-                    attributes: ['id', 'question_id', 'answer', 'correct_answer'],
-                    as: 'answers'
+                    attributes: ['id'],
+                    order: [['order', 'ACS']]
                 }, {
                     model: StudentAnswerOption,
                     required: false,
@@ -118,12 +138,21 @@ class QuestionsAndAnswersService {
                 }],
                 attributes: ['id', 'content', 'score', 'question_category_id'], //cần thêm
             });
-            return listQuestionAndAnswer;
+            const result = listQuestionAndAnswer.map(({ id, content, score, question_category_id, StudentRandomizedAnswerLists, student_answer_options }) => ({
+                id,
+                content,
+                score,
+                question_category_id,
+                answers: StudentRandomizedAnswerLists.map(item => item.Answer),
+                student_answer_options
+            }));
+
+            return result;
         } catch (error) {
             throw error;
         }
     }
-    async findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExamId) {
+    async findQuestionsRandomizedAndAnswersRandomizedByExamId(studentExamId, postId) {
         try {
             const listQuestionAndAnswer = await StudentRandomizedQuestionList.findAll({
                 where: {
@@ -134,22 +163,25 @@ class QuestionsAndAnswersService {
                     model: Question,
                     required: true,
                     where: {
+                        exam_id: postId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     include: [{
-                        model: Answer,
+                        model: StudentRandomizedAnswerList,
+                        required: false,
                         where: {
+                            student_exam_id: studentExamId,
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
                         include: [{
-                            model: StudentRandomizedAnswerList,
+                            model: Answer,
+                            required: true,
                             where: {
                                 status: EnumServerDefinitions.STATUS.ACTIVE
                             },
-                            attributes: []
+                            attributes: ['id', 'question_id', 'answer', 'correct_answer']
                         }],
-                        as: 'answers',
-                        attributes: ['id', 'question_id', 'answer', 'correct_answer'], //cần thêm
+                        attributes: ['id'], //cần thêm
                         order: [['order', 'ASC']]
                     }, {
                         model: StudentAnswerOption,
@@ -166,24 +198,33 @@ class QuestionsAndAnswersService {
                 },
                 attributes: ['id']
             });
-            return listQuestionAndAnswer.map(item => item.Question);
+            const question = listQuestionAndAnswer.map(item => item.Question);
+            const result = question.map(({ id, content, score, question_category_id, StudentRandomizedAnswerLists, student_answer_options }) => ({
+                    id,
+                content,
+                score,
+                question_category_id,
+                answers: StudentRandomizedAnswerLists.map(item => item.Answer),
+                student_answer_options
+                }));
+            return result;
         } catch (error) {
             throw error;
         }
     }
     async checkAnswersBeLongToQuestion(questionId, listAnswersId) {
         try {
-           const isCheck = await Answer.count({
-            where: {
-                id: Array.isArray(listAnswersId) ? {[Op.in]: listAnswersId} : listAnswersId,
-                question_id: questionId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+            const isCheck = await Answer.count({
+                where: {
+                    id: Array.isArray(listAnswersId) ? { [Op.in]: listAnswersId } : listAnswersId,
+                    question_id: questionId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            if (isCheck !== listAnswersId.length && Array.isArray(listAnswersId)) {
+                return false;
             }
-           });
-           if (isCheck !== listAnswersId.length && Array.isArray(listAnswersId)) {
-            return false;
-           }
-           return true;
+            return true;
         } catch (error) {
             throw error;
         }

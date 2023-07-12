@@ -9,6 +9,7 @@ const AdminRouter = require('./admin/admin.route');
 const FileRouter = require('./users/file.route');
 const QuestionRouter = require('./users/question.router');
 const StudentRouter = require('./users/student.route');
+const CommentRouter =require('../routes/users/comment.route');
 const server_response = require('../common/utils/server_response');
 const SystemConst = require('../common/consts/system_const');
 
@@ -25,7 +26,8 @@ router.use('/classrooms', authenticateToken, classroomRouter);
 router.use('/posts', authenticateToken, postRouter);
 router.use('/files', authenticateToken, FileRouter);
 router.use('/questions-and-answers', authenticateToken, QuestionRouter);
-router.use('/students', authenticateToken, StudentRouter)
+router.use('/students', authenticateToken, StudentRouter);
+router.use('/comments', authenticateToken, CommentRouter);
 
 router.get('/test', (req, res) => {
     const questions = [

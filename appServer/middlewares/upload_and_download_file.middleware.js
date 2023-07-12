@@ -18,7 +18,7 @@ const uploadStorage = multer.diskStorage({
             const directory = `public/uploads/${folderName}/`;
             fs.mkdirSync(directory, { recursive: true });
             req.directoryPath = directory; // Lưu đường dẫn thư mục vào biến req
-            req.user.user_code = userCode;
+            req.user.student_code = studentCode;
         }
         cb(null, req.directoryPath);
     },
