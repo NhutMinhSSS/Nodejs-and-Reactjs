@@ -9,7 +9,7 @@ const { Op } = require("sequelize");
 class QuestionsAndAnswersService {
     async findQuestionsAndAnswersByExamId(examId, randomQuestions = false, studentExamId = null, submission = false) {
         try {
-            const questionsOrder = randomQuestions ? Question.sequelize.random() : [];
+            const questionsOrder = randomQuestions ? Question.sequelize.random() : ['id'];
             const attributes = ['id', 'question_id', 'answer'];
             if (!studentExamId || submission) {
                 attributes.push('correct_answer')

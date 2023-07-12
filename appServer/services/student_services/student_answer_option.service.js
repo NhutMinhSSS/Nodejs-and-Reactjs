@@ -43,23 +43,19 @@ class StudentAnswerOptionService {
             });
             if (answerIds && essayAnswer == null) {
                if (answerIds.length === existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
-                    let index = 0;
-                    for (const item of existingStudentAnswerOption) {
-                        if (item.answer_id !== answerIds[index]) {
+                        if (existingStudentAnswerOption[0].answer_id !== answerIds[0]) {
                             await StudentAnswerOption.update({
-                                answer_id: answerIds[index]
-                            }, { where: { id: item.id }, transaction });
-                        }
-                        index++;
+                                answer_id: answerIds[0]
+                            }, { where: { id: existingStudentAnswerOption[0].id }, transaction });
                     }
                 } else if (answerIds.length > existingStudentAnswerOption.length && !existingStudentAnswerOption.essay_answer) {
-                    let index = 0;
-                    for (const item of existingStudentAnswerOption) {
-                        await StudentAnswerOption.update({
-                            answer_id: answerIds[index]
-                        }, { where: { id: item.id, answer_id: { [Op.notIn]: answerIds } }, transaction });
-                        index++;
-                    }
+                    // let index = 0;
+                    // for (const item of existingStudentAnswerOption) {
+                    //     await StudentAnswerOption.update({
+                    //         answer_id: answerIds[index]
+                    //     }, { where: { id: item.id, answer_id: { [Op.notIn]: answerIds } }, transaction });
+                    //     index++;
+                    // }
                     let listAnswers = [];
                     for (let i = existingStudentAnswerOption.length; i <= answerIds.length - 1; i++) {
                         listAnswers.push({
@@ -77,9 +73,8 @@ class StudentAnswerOptionService {
                         }
                     });
                 }
-            } else if (existingStudentAnswerOption.length !== EnumServerDefinitions.EMPTY) {
-                for (const item of existingStudentAnswerOption) {
-                    if (item.essay_answer !== essayAnswer) {
+            } else if (existingStudentAnswerOption.length === 1 && essayAnswer !== null) {
+                    if (existingStudentAnswerOption[0].essay_answer !== essayAnswer) {
                       await StudentAnswerOption.update(
                         { essay_answer: essayAnswer },
                         {
@@ -92,13 +87,14 @@ class StudentAnswerOptionService {
                         }
                       );
                     }
-                  }
-            } else {
+            } else if (essayAnswer !== null && existingStudentAnswerOption.length === EnumServerDefinitions.EMPTY){
                 await StudentAnswerOption.create({
                     student_exam_id: studentExamId,
                     question_id: questionId,
                     essay_answer: essayAnswer
                 }, { transaction });
+            } else {
+                return false;
             }
             return true
         } catch (error) {
