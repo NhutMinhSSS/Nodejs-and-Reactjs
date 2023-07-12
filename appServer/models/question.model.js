@@ -2,6 +2,9 @@ const {DataTypes, Model} = require('sequelize');
 const db = require('../config/connect_database.config');
 const sequelize = db.getPool();
 const Answer = require('./answer.model');
+const StudentRandomizedQuestionList = require('./student_randomized_question_list.model');
+const StudentRandomizedAnswerList = require('./student_randomized_answer_list.model');
+
 class Question extends Model{}
 
 Question.init({
@@ -48,6 +51,9 @@ Question.init({
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+Question.hasOne(StudentRandomizedQuestionList, { foreignKey: 'question_id'});
+Question.hasMany(StudentRandomizedAnswerList, { foreignKey: 'question_id'});
+StudentRandomizedQuestionList.belongsTo(Question, { foreignKey: 'question_id'});
+//StudentRandomizedQuestionList.hasOne(Question, { foreignKey: 'question_id'});
 
-Question.hasMany(Answer, { foreignKey: 'question_id', as: 'answers'});
 module.exports = Question;

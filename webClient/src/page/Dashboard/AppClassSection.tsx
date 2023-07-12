@@ -31,7 +31,7 @@ interface DataType {
     detail: React.ReactNode;
 }
 
-const BASE_URL = `${SystemConst.DOMAIN}/admin`;
+const BASE_URL = `${SystemConst.DOMAIN}`;
 const option = [
     {
         key: '1',
@@ -78,12 +78,16 @@ const AppClassSection: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [statusModalVisible, setStatusModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [storageModalVisible, setStorageModalVisible] = useState(false);
     const [dataClassSection, setDataClassSection] = useState<DataType[]>([]);
     const [isOpenModalEdit, setIsModalOpenEdit] = useState(false);
     const [isOpenModalRowTable, setIsModalOpenModalRowTable] = useState(false);
     const [selectedItemEditClassName, setSelectedItemEditClassName] = useState<{
         id?: number;
         class_name: string;
+    } | null>(null);
+    const [selectedItemStorageClassName, setSelectedItemStorageClassName] = useState<{
+        id?: number;
     } | null>(null);
     const [selectedItemEditSemester, setSelectedItemEditSemester] = useState<{
         id?: number;
@@ -172,16 +176,20 @@ const AppClassSection: React.FC = () => {
         },
     ];
     useEffect(() => {
-        handleFetchData();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFetchData();
+        }
     }, []);
     const handleFetchData = () => {
         setLoading(true);
         const config = HeaderToken.getTokenConfig();
         axios
-            .get(`${BASE_URL}/classrooms`, config)
+            .get(`${BASE_URL}/admin/classrooms`, config)
             .then((response) => {
                 const Api_class_section = response.data.response_data;
-                console.log('Data: ', Api_class_section);
                 const newData: DataType[] = Api_class_section.map(
                     (item: {
                         id: any;
@@ -276,7 +284,7 @@ const AppClassSection: React.FC = () => {
                                                     </div>
                                                 )}
                                             </Menu.Item>
-                                            <Menu.Item onClick={() => handleEdit(item)}>
+                                            <Menu.Item onClick={() => handleStorage(item)}>
                                                 <div className="flex items-center gap-x-1">
                                                     <MdOutlineSave size={20} />
                                                     Lưu trữ lớp học phần
@@ -334,11 +342,10 @@ const AppClassSection: React.FC = () => {
             teacher_id: parseInt(selectedNameTeacher),
             school_year: parseInt(schoolYear),
         };
-        console.log('Data', roomData);
         const config = HeaderToken.getTokenConfig();
         setLoading(false);
         axios
-            .post(`${BASE_URL}/classrooms/create-classroom`, roomData, config)
+            .post(`${BASE_URL}/admin/classrooms/create-classroom`, roomData, config)
             .then((response) => {
                 //Đặt lại giá trị của các ô đầu vào sau khi tạo lớp học thành công
                 setNameClass('');
@@ -381,9 +388,9 @@ const AppClassSection: React.FC = () => {
             school_year: selectedItemEditSchoolYear?.school_year,
             semester: selectedItemEditSemester?.semester,
         };
-        console.log('Ddataa update', dataUpdate);
+
         axios
-            .patch(`${BASE_URL}/classrooms/update-classroom`, dataUpdate, config)
+            .patch(`${BASE_URL}/admin/classrooms/update-classroom`, dataUpdate, config)
             .then((response) => {
                 handleFetchData();
                 handleSuccesUpdate();
@@ -420,7 +427,7 @@ const AppClassSection: React.FC = () => {
         const config = HeaderToken.getTokenConfig();
         const dataStatus = { classroom_id: selectedItemStatus?.id };
         axios
-            .patch(`${BASE_URL}/classrooms/update-status-classroom`, dataStatus, config)
+            .patch(`${BASE_URL}/admin/classrooms/update-status-classroom`, dataStatus, config)
             .then((response) => {
                 handleFetchData();
                 handleSuccesStatus(selectedItemStatus?.status);
@@ -449,7 +456,7 @@ const AppClassSection: React.FC = () => {
         const config = HeaderToken.getTokenConfig();
         const dataStatus = selectedItemDelete?.id;
         axios
-            .delete(`${BASE_URL}/classrooms/delete-classroom/${dataStatus}`, config)
+            .delete(`${BASE_URL}/admin/classrooms/delete-classroom/${dataStatus}`, config)
             .then((response) => {
                 handleFetchData();
                 handleSuccesDelete();
@@ -473,6 +480,15 @@ const AppClassSection: React.FC = () => {
                     ErrorCommon(title, content);
                 }
             });
+    };
+    const handleClassSectionStorage = () => {
+        const config = HeaderToken.getTokenConfig();
+        const classroom_id = selectedItemStorageClassName?.id;
+
+        axios.patch(`${BASE_URL}/classrooms/${classroom_id}/close-storage`, {}, config).then((response) => {
+            handleFetchData();
+            Notification('success', 'Thông báo', 'Lưu trữ thành công lớp học phần');
+        });
     };
     // const handleClassSectionDetail = () => {
     //     const config = HeaderToken.getTokenConfig();
@@ -558,7 +574,11 @@ const AppClassSection: React.FC = () => {
         console.log('id: ', id);
         // handleClassSectionDetail();
     };
-
+    const handleStorage = (item: { id: number }) => {
+        setSelectedItemStorageClassName(item);
+        setStorageModalVisible(true);
+        console.log('id: ', item);
+    };
     const showModal = () => {
         fecthDataOption();
         setIsModalOpen(true);
@@ -636,6 +656,10 @@ const AppClassSection: React.FC = () => {
         handleClassSectionDelete();
         setDeleteModalVisible(false);
     };
+    const handleSubmitStorageClassSection = () => {
+        handleClassSectionStorage();
+        setStorageModalVisible(false);
+    };
     const handleSubmitStatusClassSection = () => {
         handleClassSectionStatus();
         setStatusModalVisible(false);
@@ -670,10 +694,7 @@ const AppClassSection: React.FC = () => {
     return (
         <>
             <div className="container mt-5">
-                <div className="flex justify-between mb-5">
-                    <div>
-                        <input className="outline-none focus:outline-blue-200 h-6 w-52" type="text" />
-                    </div>
+                <div className="flex justify-end mb-5">
                     <div>
                         <Button onClick={showModal} type="primary">
                             <MdBookmarkAdd />
@@ -682,13 +703,8 @@ const AppClassSection: React.FC = () => {
                         {/* Modal Edit */}
                     </div>
                 </div>
-                {loading ? (
-                    <Spin className="mt-40" tip="Loading...">
-                        <div className="content"></div>
-                    </Spin>
-                ) : (
-                    <Table dataSource={dataClassSection} columns={columns} />
-                )}
+
+                <Table dataSource={dataClassSection} columns={columns} />
 
                 <div className="">
                     <Modal
@@ -1027,7 +1043,7 @@ const AppClassSection: React.FC = () => {
                 <div>
                     <Modal
                         className="custom-delete "
-                        title="Xác nhận đóng "
+                        title="Xác nhận  "
                         visible={statusModalVisible}
                         onCancel={() => setStatusModalVisible(false)}
                         footer={null}
@@ -1037,7 +1053,7 @@ const AppClassSection: React.FC = () => {
                         </div>
                         <div className="flex justify-end h-full mt-20">
                             <Button onClick={handleSubmitStatusClassSection} type="primary" className="mr-5">
-                                Đóng
+                                Xác nhận
                             </Button>
                             <Button onClick={() => setStatusModalVisible(false)} type="default" className="mr-5">
                                 Hủy
@@ -1063,6 +1079,29 @@ const AppClassSection: React.FC = () => {
                                 Xóa
                             </Button>
                             <Button onClick={() => setDeleteModalVisible(false)} type="default" className="mr-5">
+                                Hủy
+                            </Button>
+                        </div>
+                    </Modal>
+                </div>
+            </>
+            <>
+                <div>
+                    <Modal
+                        className="custom-delete"
+                        title="Xác nhận lưu trữ"
+                        visible={storageModalVisible}
+                        onCancel={() => setStorageModalVisible(false)}
+                        footer={null}
+                    >
+                        <div>
+                            <p>Bạn có bạn có muốn lưu trữ ?</p>
+                        </div>
+                        <div className="flex justify-end h-full mt-20">
+                            <Button onClick={handleSubmitStorageClassSection} type="primary" className="mr-5">
+                                Xác nhận
+                            </Button>
+                            <Button onClick={() => setStorageModalVisible(false)} type="default" className="mr-5">
                                 Hủy
                             </Button>
                         </div>

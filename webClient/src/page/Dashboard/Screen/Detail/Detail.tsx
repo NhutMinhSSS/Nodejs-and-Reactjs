@@ -1,5 +1,12 @@
 import React, { Key, useEffect, useState } from 'react';
-import { MdAccountCircle, MdArrowBack, MdDelete, MdDeleteForever, MdOutlinePersonAdd } from 'react-icons/md';
+import {
+    MdAccountCircle,
+    MdArrowBack,
+    MdDelete,
+    MdDeleteForever,
+    MdOutlinePersonAdd,
+    MdPersonAdd,
+} from 'react-icons/md';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Table, { ColumnsType } from 'antd/es/table';
 import { Button, Checkbox, Input, Layout, Modal, Select, Tooltip } from 'antd';
@@ -19,7 +26,7 @@ interface DataType {
     class_name: string;
 }
 
-const BASE_URL = `${SystemConst.DOMAIN}/admin`;
+const BASE_URL = `${SystemConst.DOMAIN}`;
 const Detail = () => {
     const [dataDetailTeacher, setDataDetailTeacher] = useState<DataType[]>([]);
     const [dataDetailStudent, setDataDetailStudent] = useState<DataType[]>([]);
@@ -160,12 +167,13 @@ const Detail = () => {
             .get(`${BASE_URL}/classrooms/get-classroom-detail/${id}`, config)
             .then((response) => {
                 const data = response.data.response_data.students;
+                console.log(data);
                 const newData: DataType[] = data.map(
-                    (item: { id: any; first_name: any; last_name: any; class_name: any }) => ({
+                    (item: { id: any; first_name: any; last_name: any; regular_class_name: any }) => ({
                         id: item.id,
                         first_name: item.first_name,
                         last_name: item.last_name,
-                        class_name: item.class_name,
+                        class_name: item.regular_class_name,
                     }),
                 );
                 setDataDetailStudent(newData);
@@ -176,7 +184,7 @@ const Detail = () => {
         const config = HeaderToken.getTokenConfig();
         const classroom_id = id;
         axios
-            .get(`${BASE_URL}/students/get-students-not-in-classroom/${classroom_id}/${regular_class_id}`, config)
+            .get(`${BASE_URL}/admin/students/get-students-not-in-classroom/${classroom_id}/${regular_class_id}`, config)
             .then((response) => {
                 const data = response.data.response_data;
                 const newData: DataType[] = data.map(
@@ -193,7 +201,7 @@ const Detail = () => {
 
     const fecthOptionClass = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
+        axios.get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
             const data_option_class = response.data.response_data.regular_class;
             setSelectClasses(data_option_class);
 
@@ -203,19 +211,21 @@ const Detail = () => {
     const fetchOptionTeacher = () => {
         const config = HeaderToken.getTokenConfig();
         const classroom_id = id;
-        axios.get(`${BASE_URL}/teachers/get-teachers-not-in-classroom/${classroom_id}`, config).then((response) => {
-            const data = response.data.response_data;
-            console.log('Teacher', data);
-            const newData: DataType[] = data.map(
-                (item: { id: any; first_name: any; last_name: any; department_name: any }) => ({
-                    id: item.id,
-                    first_name: item.first_name,
-                    last_name: item.last_name,
-                    department_name: item.department_name,
-                }),
-            );
-            setSelectedTeacher(newData);
-        });
+        axios
+            .get(`${BASE_URL}/admin/teachers/get-teachers-not-in-classroom/${classroom_id}`, config)
+            .then((response) => {
+                const data = response.data.response_data;
+                console.log('Teacher', data);
+                const newData: DataType[] = data.map(
+                    (item: { id: any; first_name: any; last_name: any; department_name: any }) => ({
+                        id: item.id,
+                        first_name: item.first_name,
+                        last_name: item.last_name,
+                        department_name: item.department_name,
+                    }),
+                );
+                setSelectedTeacher(newData);
+            });
     };
     const handleAddStudentInClass = () => {
         const payload = {
@@ -224,7 +234,7 @@ const Detail = () => {
         };
         const config = HeaderToken.getTokenConfig();
         axios
-            .post(`${BASE_URL}/students/add-students-to-classroom`, payload, config)
+            .post(`${BASE_URL}/admin/students/add-students-to-classroom`, payload, config)
             .then((response) => {
                 setSelectedIds([]);
                 handleFetchDataStudent();
@@ -238,7 +248,7 @@ const Detail = () => {
         };
         const config = HeaderToken.getTokenConfig();
         axios
-            .post(`${BASE_URL}/teachers/add-teachers-to-classroom`, payload, config)
+            .post(`${BASE_URL}/admin/teachers/add-teachers-to-classroom`, payload, config)
             .then(() => {
                 setSelectedIds([]);
                 handleFetchDataTeacher();
@@ -253,7 +263,7 @@ const Detail = () => {
         };
 
         axios
-            .patch(`${BASE_URL}/teachers/remove-teachers-from-classroom`, payload, config)
+            .patch(`${BASE_URL}/admin/teachers/remove-teachers-from-classroom`, payload, config)
             .then((response) => {
                 handleFetchDataTeacher();
                 Notification('success', 'Thông báo', 'Xóa thành công giảng viên');
@@ -268,7 +278,7 @@ const Detail = () => {
         };
 
         axios
-            .patch(`${BASE_URL}/students/remove-students-from-classroom`, payload, config)
+            .patch(`${BASE_URL}/admin/students/remove-students-from-classroom`, payload, config)
             .then((response) => {
                 handleFetchDataStudent();
                 Notification('success', 'Thông báo', 'Xóa thành công sinh viên');
@@ -450,16 +460,19 @@ const Detail = () => {
                     <div>
                         <div className="flex justify-between py-1">
                             <Button
+                                type="primary"
+                                danger
                                 onClick={handleDeleteModalTeacher}
                                 className="hover:text-blue-500 duration-150 transition-all"
                             >
                                 <MdDeleteForever size={20} />
                             </Button>
                             <Button
+                                type="primary"
                                 onClick={handleOpenModalAddTeacher}
                                 className="hover:text-blue-500 duration-150 transition-all"
                             >
-                                <MdOutlinePersonAdd size={20} />
+                                <MdPersonAdd size={16} />
                             </Button>
                         </div>
                         <div>
@@ -482,16 +495,19 @@ const Detail = () => {
                 <div className="mt-2">
                     <div className="flex justify-between py-1">
                         <Button
+                            type="primary"
+                            danger
                             onClick={handleDeleteModalVisibleStudent}
                             className="hover:text-blue-500 duration-150 transition-all"
                         >
                             <MdDeleteForever size={20} />
                         </Button>
                         <Button
+                            type="primary"
                             onClick={handleOpenModalAddStudent}
                             className="hover:text-blue-500 duration-150 transition-all"
                         >
-                            <MdOutlinePersonAdd size={20} />
+                            <MdPersonAdd size={16} />
                         </Button>
                     </div>
                     <div>

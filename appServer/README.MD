@@ -13,7 +13,7 @@
 <!-- create file .env --> cp .env.example .env
 <!-- Configure Env file according to mysql>
 <!-- create database name is "class_room">
-<!-- create tables into database--> npm run migration
+<!-- create tables into database--> npm run migration. Nếu lỗi comment dòng 50 trong thư mục model -> answer.model
 <!-- start Server-->
 <!-- use --> npm start
 
@@ -121,30 +121,58 @@ Json initial classroom
 ]
 
 //question
-const questions = [
-    {
-      content: 'Câu hỏi 1',
-      ...
-      answers: [
-        { content: 'Đáp án 1.1', isCorrect: true },
-        { content: 'Đáp án 1.2', isCorrect: false },
-        { content: 'Đáp án 1.3', isCorrect: false }
-      ]
-    },
-    {
-      content: 'Câu hỏi 2',
-      answers: [
-        { content: 'Đáp án 2.1', isCorrect: true },
-        { content: 'Đáp án 2.2', isCorrect: false },
-        { content: 'Đáp án 2.3', isCorrect: false }
-      ]
-    },
-    {
-      content: 'Câu hỏi 3',
-      answers: [
-        { content: 'Đáp án 3.1', isCorrect: true },
-        { content: 'Đáp án 3.2', isCorrect: false },
-        { content: 'Đáp án 3.3', isCorrect: false }
-      ]
-    }
-  ];
+  Json Question And Answer
+
+{
+    "title": "Bài tập",
+    "content": "nhutminhsss",
+    "post_category_id": 4,
+    "list_questions_and_answers": [
+  {
+    "content": "Đâu là thủ đô của Việt Nam?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      { "answer": "Hà Nội", "correct_answer": true},
+      { "answer": "Hồ Chí Minh", "correct_answer": false},
+      { "answer": "Đà Nẵng", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Ai là người đầu tiên đặt chân lên mặt trăng?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      {"answer": "Neil Armstrong", "correct_answer": true},
+      { "answer": "Buzz Aldrin", "correct_answer": false},
+      { "answer": "Michael Collins", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu là gì?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      { "answer": "Một cảm giác mạnh mẽ và tình cảm sâu sắc dành cho người khác", "correct_answer": true},
+      { "answer": "Một loại bệnh", "correct_answer": false},
+      { "answer": "Một trạng thái của tâm hồn", "correct_answer": true},
+      { "answer": "Sự hợp tác và chia sẻ giữa hai người", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu có thể đến bất ngờ ở đâu?",
+    "score": 10,
+    "question_category_id": 1,
+    "answers": [
+      {"answer": "Trong một buổi hẹn đầu tiên", "correct_answer": false},
+      {"answer": "Ở nơi làm việc", "correct_answer": true},
+      { "answer": "Trên mạng xã hội", "correct_answer": true},
+      { "answer": "Chỉ trong tiểu thuyết và phim ảnh", "correct_answer": false}
+    ]
+  },
+  {
+    "content": "Tình yêu có thể tồn tại trong thời gian dài không?",
+    "score": 10,
+    "question_category_id": 3
+  }]
+}

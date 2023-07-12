@@ -15,30 +15,35 @@ const HomeScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const config = HeaderToken.getTokenConfig();
-        setIsLoading(true);
-        axios
-            .get('https://20.39.197.125:3443/api/classrooms', config)
-            .then((response) => {
-                // Xử lý dữ liệu từ response
-                const data = response.data.response_data;
-                console.log('data', data);
-                setScreenClass(data);
-                //Chuyển dữ liệu khi tạo mới phòng
-            })
-            .catch((error) => {
-                const isError = UnauthorizedError.checkError(error);
-                if (!isError) {
-                    const content = 'Lỗi máy chủ';
-                    const title = 'Lỗi';
-                    ErrorCommon(title, content);
-                }
-                // Xử lý lỗi nếu có
-                console.error(error);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            const config = HeaderToken.getTokenConfig();
+            setIsLoading(true);
+            axios
+                .get('https://20.39.197.125:3443/api/classrooms', config)
+                .then((response) => {
+                    // Xử lý dữ liệu từ response
+                    const data = response.data.response_data;
+                    console.log('data', data);
+                    setScreenClass(data);
+                    //Chuyển dữ liệu khi tạo mới phòng
+                })
+                .catch((error) => {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const content = 'Lỗi máy chủ';
+                        const title = 'Lỗi';
+                        ErrorCommon(title, content);
+                    }
+                    // Xử lý lỗi nếu có
+                    console.error(error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
     }, []);
 
     return (

@@ -43,7 +43,7 @@ class PostService {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     as: 'post_details',
-                    attributes: []
+                    attributes: ['id', 'is_public']
                 }]
             });
             return listPosts;
@@ -257,11 +257,13 @@ class PostService {
                         }],
                         attributes: ['id', 'role']
                     }],
+                    as: 'comments',
                     attributes: ['id', 'content', 'comment_date'],
                     order: [['comment_date', 'ASC']]
                 }, {
                     model: StudentExam,
                     where: {
+                        // '$Post.post_category_id$': {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.DOCUMENT},
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: ['id', 'finish_date', 'total_score', 'submission'],
@@ -280,10 +282,30 @@ class PostService {
                             },
                             attributes: ['id', 'file_name', 'create_date']
                         }]
+                    }, {
+                        model: Student,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['first_name', 'last_name']
                     }],
                     as: 'student_exams',
+                }, {
+                    model: Account,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [{
+                        model: Teacher,
+                        where: {
+                            status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        attributes: ['first_name', 'last_name']
+                    }],
+                    attributes: ['id', 'role'],
+                    as: 'accounts'
                 }],
-                attributes: ['id', 'create_date']
+                attributes: ['id', 'title', 'content', 'post_category_id', 'create_date']
             });
             return FormatUtils.formatPostDetail(postDetails);
         } catch (error) {
@@ -303,7 +325,8 @@ class PostService {
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: []
+                    attributes: [],
+                    as: 'classrooms'
                 }]
             });
             return post;
@@ -352,6 +375,23 @@ class PostService {
     }
     async deletePost(id, transaction) {
         try {
+            await PostFile.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    post_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
+            await File.update({
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
+            }, {
+                where: {
+                    id: { [Op.in]: Post.sequelize.literal('(SELECT file_id FROM post_files WHERE post_id = :postId)') },
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction,
+                bind: { postId: id }
+            });
             const isDelete = await Post.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
@@ -360,7 +400,7 @@ class PostService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            return isDelete > EnumServerDefinitions.ERROR;
+            return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

@@ -1,6 +1,7 @@
 const { Model, DataTypes } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const Answer = require('./answer.model');
 const sequelize = db.getPool();
 
 class StudentRandomizedAnswerList extends Model{}
@@ -44,14 +45,25 @@ StudentRandomizedAnswerList.init({
         type: DataTypes.SMALLINT,
         allowNull: false,
         defaultValue: 1
-    }
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    },
+    updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW
+    }   
 }, {
     sequelize,
     modelName: 'StudentRandomizedAnswerList',
-    tableName: 'Student_randomized_answer_lists',
+    tableName: 'student_randomized_answer_lists',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+
 
 module.exports = StudentRandomizedAnswerList;

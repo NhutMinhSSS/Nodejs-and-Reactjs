@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
-import imgBook from '../img/imgBook.png';
+import React, { useEffect, useState } from 'react';
 import { Col, Row } from 'antd';
-import background from '../img/bg.png';
-import AddCard from './AddCard';
-import { Link } from 'react-router-dom';
+import background from '../../img/bg.png';
+import AddCard from '../AddCardNoti/AddCard';
+import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
+import AddCardStudent from '../AddCardNoti/AddCardStudent';
 
-const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
-    const [visible, setVisble] = useState(false);
+const ClassBulletinStudent: React.FC<{ onFetchData: any, data: any }> = ({ onFetchData, data }) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
         navigator.clipboard.writeText(textToCopy);
     };
-
+    const dataPost = data.list_post;
     return (
         <div className="py-5">
             <div className="">
@@ -37,7 +36,6 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                                 <div className="text-lg font-semibold">Mã lớp</div>
                                 <div className="mt-3 text-2xl font-semibold hover:text-blue-300">
                                     <p style={{ position: 'relative' }}>
-                                        {data.class_code}
                                         <button
                                             onClick={handleCopyClick}
                                             style={{
@@ -63,8 +61,6 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                                 <p>Bài tập 2</p>
                                 <p>Bài tập 3</p>
                                 <p>Bài tập 4</p>
-                                <p>Bài tập 5</p>
-                                <p>Bài tập 6</p>
                             </div>
                             <Link className="flex justify-end" to="/AllExercises">
                                 Xem bài tập
@@ -72,7 +68,7 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCard />
+                        <AddCardStudent onFetchData= {onFetchData} data={dataPost}/>
                     </div>
                 </div>
             </div>
@@ -80,7 +76,7 @@ const ClassBulletin: React.FC<{ data: any }> = ({ data }) => {
     );
 };
 
-export default ClassBulletin;
+export default ClassBulletinStudent;
 {
     /* <Row className='h-auto '>
                         <Col span={12}>

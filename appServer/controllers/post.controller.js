@@ -26,7 +26,7 @@ class PostController {
             const classroom = req.classroom;
             let user;
             if (role === EnumServerDefinitions.ROLE.STUDENT) {
-                user = await StudentService.findStudentByAccountId(accountId);   
+                user = await StudentService.findStudentByAccountId(accountId);
             }
             const listPost = await PostService.findPostsByClassroomIdAndAccountId(classroom.id, user ? user.id : null);
             const data = {
@@ -53,12 +53,12 @@ class PostController {
     //get post detail
     async getPostDetail(req, res) {
         try {
-            const postId = req.post.post_id;
+            const postId = req.params.post_id;
             const role = req.user.role;
             const studentId = req.student_id || null;
             const postDetail = await PostService.getDetailPost(postId, studentId);
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
-                const { delivered, submitted } = student_exams.reduce((counts, exam) => {
+                const { delivered, submitted } = postDetail.student_exams.reduce((counts, exam) => {
                     if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
                         counts.delivered++;
                     } else {
@@ -68,6 +68,15 @@ class PostController {
                 }, { delivered: 0, submitted: 0 });
                 postDetail.delivered = delivered;
                 postDetail.submitted = submitted;
+            } else {
+                postDetail.student_exams = postDetail.student_exams.map(item => {
+                    if (item.submission !== EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+                      const { total_score, ...rest } = item; // Bỏ cột "total_score" khỏi đối tượng item
+                      return rest;
+                    } else {
+                        return item;
+                    }
+                  });
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {
@@ -88,12 +97,25 @@ class PostController {
         const postCategoryIdParseInt = parseInt(postCategoryId);
         if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.NEWS) {
             title = "Bảng tin";
+            if (!content) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.REQUIRED_INFORMATION);
+            }
         }
         if (!postCategoryId || !title) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
-        } 
+        }
         if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && role !== EnumServerDefinitions.ROLE.TEACHER) {
+            if (req.directoryPath) {
+                fs.removeSync(req.directoryPath);
+            }
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                 EnumMessage.NO_PERMISSION)
         }
@@ -104,9 +126,9 @@ class PostController {
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
                 const finishDate = req.body.finish_date;
-                const invertedQuestion = req.body.inverted_question || 0;
-                const invertedAnswer = req.body.inverted_answer || 0;
-                const isPublic = req.body.is_public || false;
+                const invertedQuestion = req.body.inverted_questions || 0;
+                const invertedAnswer = req.body.inverted_answers || 0;
+                const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
@@ -127,13 +149,16 @@ class PostController {
                 if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                     //create question
                     const listQuestionAndAnswers = req.body.list_questions_and_answers;
-                    //tổng điểm
-                    //update postDeatil
-                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, transaction); 
+                    if (!listQuestionAndAnswers || listQuestionAndAnswers.length === EnumServerDefinitions.EMPTY) {
+                        await transaction.rollback();
+                        return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                            EnumMessage.REQUIRED_INFORMATION);
+                    }
+                    await QuestionService.addQuestionsAndAnswers(listQuestionAndAnswers, newPost.id, transaction);
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
-            if (files.length > EnumServerDefinitions.EMPTY) {
+            if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
@@ -156,25 +181,39 @@ class PostController {
         const postId = req.body.post_id;
         const title = req.body.title;
         const content = req.body.content;
-        const isPublic = req.body.is_public;
-        const postCategoryId = req.body.post_category_id;
+        const topicId = req.body.topic_id;
+        //const postCategoryId = req.body.post_category_id;
         const listFileRemove = req.body.list_file_remove;
         const files = req.files;
-        const postCategoryIdParseInt = parseInt(postCategoryId);
+        const postIdParseInt = parseInt(postId);
         const transaction = await sequelize.transaction();
         try {
+            const post = await PostService.findPostById(postIdParseInt);
+            if (!post) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.ERROR_POST.POST_NOT_EXISTS);
+            }
+            await PostService.updatePost(post.id, title, content, topicId, transaction);
             //const isUpdatePost = await PostFileService
-            if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS && isPublic === false) {
+            if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                const isPublic = req.body.is_public;
+                const startDate = req.body.start_date;
+                const finishDate = req.body.finish_date;
+                const invertedQuestion = req.body.inverted_question;
+                const invertedAnswer = req.body.inverted_answer;
+                await PostDetailService.updatePostDetail(post.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic);
                 const newListStudentExams = req.body.list_student_exams;
-                if (newListStudentExams.length > EnumServerDefinitions.EMPTY) {
-                    const studentExams = await StudentExamService.findStudentExamsByPostId(postId);
+                if (newListStudentExams && newListStudentExams.length > EnumServerDefinitions.EMPTY) {
+                    const studentExams = await StudentExamService.findStudentExamsByPostId(post.id);
                     const studentExamIds = studentExams.map(item => item.student_id);
                     const studentsToRemove = studentExamIds.filter(student => !newListStudentExams.includes(student));
                     const studentsToAdd = newListStudentExams.filter(student => !studentExamIds.includes(student));
-
+                    await StudentExamService.updateListStudentExamsByPostId(studentsToAdd, post.id, transaction);
+                    await StudentExamService.removeStudentExamsByPostId(studentsToRemove, post.id, transaction);
                 }
             }
-            if (listFileRemove.length > EnumServerDefinitions.EMPTY) {
+            if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
                 const isRemove = await FileService.removeFiles(listFileRemove, transaction);
                 if (!isRemove) {
                     await transaction.rollback();
@@ -182,18 +221,43 @@ class PostController {
                         EnumMessage.ERROR_DELETE);
                 }
             }
-            if(files.length > EnumServerDefinitions.EMPTY) {
+            if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
                 await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
             }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             await transaction.rollback();
             logger.error(error);
             if (req.directoryPath) {
                 fs.removeSync(req.directoryPath);
             }
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async deletePost(req, res) {
+        const postId = req.params.post_id;
+        if (!postId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        const transaction = await sequelize.transaction();
+        try {
+            const isDelete = await PostService.deletePost(postId, transaction);
+            if (!isDelete) {
+                await transaction.rollback();
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            await transaction.commit();
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            await transaction.rollback();
+            logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }

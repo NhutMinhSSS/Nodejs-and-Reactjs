@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Menu, Modal } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './style.scss';
 import { MdAccountCircle, MdOutlineAdd, MdOutlineAssignment } from 'react-icons/md';
 import PopupCreateExercise from '../Popup/PopupCreateExercise';
 import PopupCreateTest from '../Popup/PopupCreateTest';
 import CardExercise from '../../components/CardExercise';
+import PopupCreateDocument from '../Popup/PopupCreateDocument';
 
 const dataExersise = [
     {
@@ -40,13 +41,19 @@ const dataExersise = [
     },
 ];
 
-const ClassroomExercisesTeacher: React.FC = () => {
+const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
     const navigate = useNavigate();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [isPopupVisibleDocument, setIsPopupVisibleDocument] = useState(false);
     const [isPopupVisibleCreateTest, setIsPopupVisibleCreateTest] = useState(false);
+
+    const dataList = data.list_post;
+    console.log(dataList);
+
     const onCheckboxChange = (selection: string[]) => {
         console.log(selection);
     };
+    const { classroom_id } = useParams();
     const items = [
         {
             key: '1',
@@ -61,13 +68,13 @@ const ClassroomExercisesTeacher: React.FC = () => {
         {
             key: '3',
             label: <span className="text-lg">Tài Liệu</span>,
-            onClick: () => navigate('/createExcersice'),
+            onClick: () => setIsPopupVisibleDocument(true),
         },
-        {
-            key: '4',
-            label: <span className="text-lg">Câu Hỏi</span>,
-            onClick: () => navigate('/createExcersice'),
-        },
+        // {
+        //     key: '4',
+        //     label: <span className="text-lg">Câu Hỏi</span>,
+        //     onClick: () => navigate('/createExcersice'),
+        // },
     ];
     const handlePopupCancel = () => {
         setIsPopupVisible(false);
@@ -75,7 +82,15 @@ const ClassroomExercisesTeacher: React.FC = () => {
     const handlePopupCancelPopupCreateTest = () => {
         setIsPopupVisibleCreateTest(false);
     };
-
+    const handlePopupCancelDocument = () => {
+        setIsPopupVisibleDocument(false);
+    };
+    const {} = useParams();
+    const handleClick = (item: any) => {
+        if (item.post_category_id !== 1) {
+            navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+        }
+    };
     return (
         <>
             <div className="w-[45rem]">
@@ -113,7 +128,7 @@ const ClassroomExercisesTeacher: React.FC = () => {
                 </div>
                 <div>
                     <Modal visible={isPopupVisible} onCancel={handlePopupCancel} width="100%" footer={null}>
-                        <PopupCreateExercise />
+                        <PopupCreateExercise visible={handlePopupCancel} />
                     </Modal>
                 </div>
                 <div>
@@ -123,15 +138,27 @@ const ClassroomExercisesTeacher: React.FC = () => {
                         width="100%"
                         footer={null}
                     >
-                        <PopupCreateTest />
+                        <PopupCreateTest visible={handlePopupCancelPopupCreateTest} data={classroom_id} />
+                    </Modal>
+                </div>
+                <div>
+                    <Modal
+                        visible={isPopupVisibleDocument}
+                        onCancel={handlePopupCancelDocument}
+                        width="100%"
+                        footer={null}
+                    >
+                        <PopupCreateDocument visible={handlePopupCancelDocument} />
                     </Modal>
                 </div>
             </div>
             <div className="mt-6 ">
                 <div className="grid gap-y-4">
-                    {dataExersise.map((item) => (
-                        <CardExercise item={item} />
-                    ))}
+                    {dataList
+                        .filter((item: any) => item.post_category_id !== 1)
+                        .map((item: any) => (
+                            <CardExercise onClick={() => handleClick(item)} item={item} />
+                        ))}
                 </div>
             </div>
         </>

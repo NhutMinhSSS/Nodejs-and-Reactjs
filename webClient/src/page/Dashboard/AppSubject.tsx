@@ -107,8 +107,12 @@ const AppSubject = () => {
             });
     };
     useEffect(() => {
-        handleFecthData();
-        selectOptionAPISubject();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFecthData();
+        }
     }, []);
     const handlecCreateSubject = () => {
         const dataSubject = { subject_name: nameSubject, credit: credits, department_id: selectOptionSubject };
@@ -262,6 +266,7 @@ const AppSubject = () => {
 
     const handleShowModal = () => {
         setOpenModal(true);
+        selectOptionAPISubject();
     };
     // const handleShowModalEdit = () => {
     //     setOpenModalEdit(true);

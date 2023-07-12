@@ -1,9 +1,45 @@
 const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const StudentExam = require("../../models/student_exam.model");
-const StudentList = require("../../models/student_list.model");
+const Student = require("../../models/student.model");
 
 class StudentExamService {
+    async findStudentByStudentExamId(studentExamId) {
+        try {
+            const studentExam = await StudentExam.findOne({
+                where: {
+                    id: studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: [{
+                    model: Student,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['student_code','first_name', 'last_name']
+                }],
+                attributes: ['id']
+            });
+            return studentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async findStudentExam(postId, studentId) {
+        try {
+            const studentExam = await StudentExam.findOne({
+                where: {
+                    exam_id: postId,
+                    student_id: studentId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'finish_date', 'submission']
+            });
+            return studentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
     async checkStudentExamByIdAndStudentId(id, studentId) {
         try {
             const studentExam = await StudentExam.findOne({
@@ -12,14 +48,14 @@ class StudentExamService {
                     student_id: studentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                attributes: ['id']
+                attributes: ['id', 'submission']
             });
             return studentExam;
         } catch (error) {
             throw error;
         }
     }
-    async findStudentExamsByPostId(postId) {
+    async findStudentsExamsByPostId(postId) {
         try {
             const studentExams = await StudentExam.findAll({
                 where: {
@@ -97,11 +133,15 @@ class StudentExamService {
     }
     async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
         try {
-            const studentExam = await StudentExam.update({
+            const updateData = {
                 finish_date: finishDate,
-                total_score: totalScore,
-                submission: submission ?? undefined
-            }, {
+                total_score: totalScore
+              };
+          
+              if (submission) {
+                updateData.submission = submission;
+              }
+            const studentExam = await StudentExam.update(updateData, {
                 where: {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
@@ -128,7 +168,8 @@ class StudentExamService {
                 }, {
                     where: {
                         exam_id: postId,
-                        student_id: {[Op.in]: studentsExamToUpdate}
+                        student_id: {[Op.in]: studentsExamToUpdate},
+                        status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, transaction
                 });
             }

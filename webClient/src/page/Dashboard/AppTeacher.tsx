@@ -49,7 +49,12 @@ const AppTeacher: React.FC = () => {
     const [dataTeacher, setDataTeacher] = useState<DataType[]>([]);
 
     useEffect(() => {
-        handleFecthData();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            handleFecthData();
+        }
     }, []);
     const handleFecthData = () => {
         const config = HeaderToken.getTokenConfig();
@@ -310,17 +315,23 @@ const AppTeacher: React.FC = () => {
     return (
         <>
             <div className="container mt-5">
-                <div className="flex justify-between mb-5">
-                    <div>
-                        <input className="outline-none focus:outline-blue-200 h-6 w-52" type="text" />
-                    </div>
+                <div className="text-end mb-5">
                     <div>
                         <Button type="primary" onClick={handleShowModal}>
                             <MdPersonAdd />
                         </Button>
                     </div>
                 </div>
-                <Table columns={columns} dataSource={dataTeacher} size="large" />
+                <Table
+                    columns={columns}
+                    dataSource={dataTeacher}
+                    pagination={{
+                        defaultPageSize: 6,
+                        showSizeChanger: true,
+                        pageSizeOptions: ['4', '6', '8', '12', '16'],
+                    }}
+                    size="large"
+                />
             </div>
             {/* Modal Thêm giảng viên */}
             <Modal className="custom-modal-teacher_create-edit " open={openModal} onCancel={handleCancel} footer={null}>

@@ -148,14 +148,14 @@ class SubjectService {
     }
     async activeSubject(id, subjectName, departmentId, credit) {
         try {
-            const dateNow = FormatUtils.formatDateNow();
+            //const dateNow = FormatUtils.formatDateNow();
             const isActive = await Subject.update({
                 subject_name: subjectName,
                 department_id: departmentId,
                 credit: credit,
                 status: EnumServerDefinitions.STATUS.ACTIVE,
-                created_at: dateNow,
-                updated_at: dateNow
+                // created_at: dateNow,
+                // updated_at: dateNow
             }, {
                 where: {
                     id: id,

@@ -26,7 +26,13 @@ const HomeScreenStudent: React.FC = () => {
     const [screenClass, setScreenClass] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
-        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log(123);
+            
+            window.location.replace('/');
+        } else {
+            setIsLoading(true);
         axios
             .get('https://20.39.197.125:3443/api/classrooms', config)
             .then((response) => {
@@ -49,6 +55,7 @@ const HomeScreenStudent: React.FC = () => {
             .finally(() => {
                 setIsLoading(false);
             });
+        }
     }, []);
     return (
         <>
@@ -58,25 +65,27 @@ const HomeScreenStudent: React.FC = () => {
                     <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
                         {screenClass.map((item) => (
                             <div
-                                className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300 w-auto max-h-80 h-[25rem]"
+                                className="border bg-slate-50 drop-shadow-lg hover:shadow-xl shawdow- rounded-lg  cursor-pointer ease-in duration-300  w-auto max-h-80 h-[25rem] relative"
                                 key={item['id']}
                             >
-                                <div className="p-5 bg-gray-400 rounded-t-md">
+                                <div className="p-5 h-[6.5rem] bg-gray-400 rounded-t-md overflow-hidden truncate ...">
                                     <Link
                                         className="text-xl font-semibold hover:underline underline-offset-[5px]"
                                         to={`class/${item['id']}`}
                                     >
-                                        {item['class_name']}
+                                        <span className="">{item['class_name']}</span>
                                         <br />
-                                        {item['title']}
+                                        <span className="text-base truncate">
+                                            Học kỳ {item['semester']} <span> - Năm học {item['school_year']}</span>
+                                        </span>
                                     </Link>
-
-                                    <div className="w-14 h-14 float-right">
-                                        <MdAccountCircle size={40} />
-                                    </div>
                                 </div>
 
-                                <div className="mt-8 p-5 flex justify-between items-center"></div>
+                                <div className=" absolute right-6 top-[4.33rem]">
+                                    <MdAccountCircle size={52} />
+                                </div>
+
+                                {/* <div className="mt-8 p-5 flex justify-between items-center"></div> */}
                             </div>
                         ))}
                     </section>
@@ -85,7 +94,6 @@ const HomeScreenStudent: React.FC = () => {
                     <Spin size="large" className="" spinning={isLoading} />
                 </div>
             </div>
-            )
         </>
     );
 };
