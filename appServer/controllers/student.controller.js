@@ -280,13 +280,6 @@ class StudentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
                 }
-            const listFilesRemove = req.body.list_files_remove;
-            if (listFilesRemove && listFilesRemove.length > EnumServerDefinitions.EMPTY) {
-                const isDelete =  await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove);
-                if (!isDelete) {
-                    throw new Error(EnumMessage.DEFAULT_ERROR);
-                }
-            }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
@@ -294,12 +287,15 @@ class StudentController {
                     EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+                const listFilesRemove = JSON.parse(req.body.list_files_remove) || [];
                 const files = req.files;
-                if (!files || files.length === EnumServerDefinitions.EMPTY) {
+                const fileSubmission = await StudentFileSubmissionService.checkFileSubmissionByStudentExam(studentExamId);
+                if (files.length !== EnumServerDefinitions.EMPTY || listFilesRemove.length !== fileSubmission || (fileSubmission && listFilesRemove.length !== fileSubmission)) {
+                    await StudentController.prototype.submissionExercise(studentExamId, files, accountId, listFilesRemove);   
+                } else {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.EXERCISE_NOT_FILE);
                 }
-                await StudentController.prototype.submissionExercise(studentExamId, files, accountId);
             } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
                 await StudentController.prototype.submissionExam(post.id, studentExamId);
@@ -317,14 +313,22 @@ class StudentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async submissionExercise(studentExamId, files, accountId) {
+    async submissionExercise(studentExamId, files, accountId, listFilesRemove) {
         const transaction = await sequelize.transaction();
         try {
+            if (listFilesRemove && listFilesRemove.length > EnumServerDefinitions.EMPTY) {
+                const isDelete =  await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove, transaction);
+                if (!isDelete) {
+                    throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
+                }
+            }
             const submissionDate = FormatUtils.dateTimeNow();
-            const listFiles = FormatUtils.formatFileRequest(files, accountId);
+            if (files.length > EnumServerDefinitions.EMPTY) {
+                const listFiles = FormatUtils.formatFileRequest(files, accountId);
             const newFile = await FileService.createFiles(listFiles, transaction);
             const listFileIds = newFile.map(item => item.id);
             await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
+            }
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
                 throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);

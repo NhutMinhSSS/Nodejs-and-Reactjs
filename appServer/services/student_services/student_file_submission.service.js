@@ -4,6 +4,20 @@ const StudentFileSubmission = require("../../models/student_file_submission.mode
 const File = require("../../models/file.model");
 
 class StudentFileSubmissionService {
+    async checkFileSubmissionByStudentExam(studentExamId) {
+        try {
+            const fileStudentExam = await StudentFileSubmission.count({
+                where: {
+                    student_exam_id: studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return fileStudentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
     async createStudentFileSubmission(studentExamId, listFileId, transaction) {
         try {
             const listStudentFile = listFileId.map(fileId => ({
@@ -16,21 +30,20 @@ class StudentFileSubmissionService {
             throw error;
         }
     }
-    async deleteStudentFileSubmission(listFileIds) {
-        const transaction = await StudentFileSubmission.sequelize.transaction()
+    async deleteStudentFileSubmission(listFileIds, transaction) {
         try {
             const studentFileSubmissionIds = await StudentFileSubmission.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include: {
+                include: [{
                     model: File,
                     where: {
                         id: {[Op.in]: listFileIds},
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
-                },
+                }],
                 attributes: ['id']
             });
             const isDelete = await StudentFileSubmission.update({
@@ -39,10 +52,8 @@ class StudentFileSubmissionService {
                 id: {[Op.in]: studentFileSubmissionIds.map(item => item.id)},
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, transaction });
-            await transaction.commit();
             return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
-            await transaction.rollback();
             throw error;
         }
     }
