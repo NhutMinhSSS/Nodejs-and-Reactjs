@@ -11,9 +11,11 @@ const DetailAll = () => {
             <div>
                 <div className="w-screen">
                     <Tabs className=" items-center " defaultActiveKey="1">
-                        <TabPane tab="Bài tập của học viên" key="1">
-                            <DetailTest />
-                        </TabPane>
+                        {
+                            <TabPane tab="Bài tập của học viên" key="1">
+                                <DetailTest />
+                            </TabPane>
+                        }
                         <TabPane tab="Hướng Dẫn" key="2">
                             <DetailExcerciseTeacher />
                         </TabPane>

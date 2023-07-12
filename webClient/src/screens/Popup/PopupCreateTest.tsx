@@ -13,8 +13,12 @@ import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
 import HeaderToken from '../../common/utils/headerToken';
 import { useParams } from 'react-router-dom';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+
 const { TextArea } = Input;
 dayjs.locale('en');
+dayjs.extend(utc);
 interface Option {
     id: number;
     answer: string;
@@ -28,7 +32,7 @@ interface Question {
     inputType: 'checkbox' | 'radio' | 'text'; // Added 'text' as an option
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
+const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible }) => {
     const [title, setTitle] = useState<string>('');
     const [instruction, setInstruction] = useState<string>('');
     const [point, setPoint] = useState<number | string>(100);
@@ -201,9 +205,9 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
         setPoint(value);
     };
 
-    const handleStartDateChange = (date: Dayjs | null, dateString: string) => {
-        const formattedDate = date ? date.format('DD-MM-YYYY HH:mm') : '';
-        console.log('Giờ bắt đầu:', formattedDate);
+    const handleStartDateChange = (date: any) => {
+        const formattedDate = dayjs.utc(date).format('DD-MM-YYYY HH:mm');
+        console.log('Giờ bắt đầu (UTC):', formattedDate);
         setStartDate(date);
     };
 
@@ -250,8 +254,8 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
             };
         });
         console.log(questionsWithoutId);
-        const formattedEndDate = endDate ? endDate.format('YYYY-MM-DD HH:mm') : null;
-        const formattedStartDate = startDate ? startDate.format('YYYY-MM-DD HH:mm') : null;
+        const formattedEndDate = endDate ? dayjs.utc(endDate).format('YYYY-MM-DD HH:mm') : null;
+        const formattedStartDate = startDate ? dayjs.utc(startDate).format('YYYY-MM-DD HH:mm') : null;
         const config = HeaderToken.getTokenConfig();
         // Tiếp tục xử lý dữ liệu đã format ở đây, ví dụ: gửi lên server
         const formData = {
@@ -267,7 +271,9 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
             post_category_id: 4,
         };
         console.log('Submit: ', formData);
-        axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {});
+        axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {
+            visible();
+        });
     };
     return (
         <div className=" shadow-xl h-16 fixed w-full ">
@@ -275,7 +281,7 @@ const PopupCreateTest: React.FC<{ data: any }> = ({ data }) => {
                 <Header className="flex justify-between items-center bg-blue-400 ">
                     <div className="text-lg font-bold">Tạo bài kiểm tra</div>
                     <div className="  grid iphone 12:grid-flow-col ">
-                        <Button htmlType="submit" className="bg-blue-500" type="primary">
+                        <Button disabled={!title} htmlType="submit" className="bg-blue-500" type="primary">
                             Gửi
                         </Button>
                     </div>

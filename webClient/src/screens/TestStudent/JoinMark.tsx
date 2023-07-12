@@ -64,22 +64,29 @@ const JoinMark = () => {
     const onChange = (checkedValues: CheckboxValueType[]) => {
         console.log('checked = ', checkedValues);
     };
-    const handleUpdateAnswers = (questionId: number, answerIds: number[], studentExamId: number, essayAnswer: string| null) => {
+    const handleUpdateAnswers = (
+        questionId: number,
+        answerIds: number[],
+        studentExamId: number,
+        essayAnswer: string | null,
+    ) => {
         const config = HeaderToken.getTokenConfig();
         const data = {
             question_id: questionId,
             answer_ids: answerIds,
             essay_answer: essayAnswer,
-            student_exam_id: studentExamId
-        }
-        axios.patch(`${BASE_URL}/students/update-answer`, data, config).then((response)=> {
-            console.log(response);
-        }).catch((error) => {
-            console.log(error);
-            //hiện form lỗi ở đây
-            
-        });
-    }
+            student_exam_id: studentExamId,
+        };
+        axios
+            .patch(`${BASE_URL}/students/update-answer`, data, config)
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                console.log(error);
+                //hiện form lỗi ở đây
+            });
+    };
     //const handleAnswerChange = (examId: number, questionIndex: number, answerId: any) => {};
     let questionRadio: number[];
     const handleAnswerChange = (questionId: number, answerIds: any, StudentExamId: number) => {
@@ -92,7 +99,6 @@ const JoinMark = () => {
             questionRadio = newQuestion;
         }
         handleUpdateAnswers(questionId, questionRadio, StudentExamId, null);
-        
     };
     const selectAnswers: Record<number, number[]> = {};
     const checkStudentExam: Record<number, boolean> = {};
@@ -119,7 +125,7 @@ const JoinMark = () => {
                 // Nếu không được chọn, loại bỏ câu trả lời khỏi danh sách
                 selectAnswers[questionId] = selectAnswers[questionId].filter((id) => id !== answerIds);
             }
-        }        
+        }
         handleUpdateAnswers(questionId, selectAnswers[questionId], studentExamId, null);
     };
     const [send, setSend] = useState(false);
@@ -128,12 +134,26 @@ const JoinMark = () => {
         // Gửi dữ liệu đã được lưu trong selectedAnswers về server
         // Sử dụng axios hoặc phương thức gửi dữ liệu tương tự
         setSend(true);
-        clearTimeout(timer)
+        clearTimeout(timer);
         if (isData?.student_exam_id && isData.submission === 0) {
-            timer =  setTimeout(() => {
+            timer = setTimeout(() => {
                 const config = HeaderToken.getTokenConfig();
                 const data = {
                     student_exam_id: isData.student_exam_id,
+<<<<<<< HEAD
+                    post_id: post_id,
+                };
+                axios
+                    .patch(`${BASE_URL}/students/submission`, data, config)
+                    .then((response) => {
+                        setSend(false);
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        setSend(false);
+                        console.log(error);
+                    });
+=======
                     post_id: post_id
                 }
                 axios.post(`${BASE_URL}/students/submission`,data, config).then((response) => {
@@ -144,6 +164,7 @@ const JoinMark = () => {
                     console.log(error);
                     
                 })
+>>>>>>> main
             }, 1500);
         }
         //handleFetchData();
@@ -160,7 +181,7 @@ const JoinMark = () => {
         if (shouldCallAPI) {
             timer = setTimeout(() => {
                 if (isData?.submission === 0 && isData.student_exam_id) {
-                    handleUpdateAnswers(questionId, [], isData.student_exam_id, textValue)
+                    handleUpdateAnswers(questionId, [], isData.student_exam_id, textValue);
                 }
             }, 800);
         }
@@ -201,16 +222,22 @@ const JoinMark = () => {
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
-                                                                disabled = {isData.submission ? true : false}
+                                                                disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 type="radio"
                                                                 name={`asw${index}`}
                                                                 onChange={() => {
-                                                                    if (isData.student_exam_id && isData.submission === 0) {
-                                                                            handleAnswerChange(asw.id, answer.id, isData.student_exam_id);
-                                                                        
+                                                                    if (
+                                                                        isData.student_exam_id &&
+                                                                        isData.submission === 0
+                                                                    ) {
+                                                                        handleAnswerChange(
+                                                                            asw.id,
+                                                                            answer.id,
+                                                                            isData.student_exam_id,
+                                                                        );
                                                                     }
                                                                 }}
                                                             />
@@ -219,18 +246,21 @@ const JoinMark = () => {
                                                             <input
                                                                 type="checkbox"
                                                                 className="focus:border-blue-300"
-                                                                disabled= {isData.submission ? true : false}
+                                                                disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
                                                                     .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
-                                                                    if (isData.student_exam_id && isData.submission === 0) {
+                                                                    if (
+                                                                        isData.student_exam_id &&
+                                                                        isData.submission === 0
+                                                                    ) {
                                                                         handleAnswerCheckBox(
                                                                             asw.id,
                                                                             answer.id,
                                                                             e.target.checked,
-                                                                            isData.student_exam_id
+                                                                            isData.student_exam_id,
                                                                         );
                                                                     }
                                                                 }}
@@ -264,14 +294,16 @@ const JoinMark = () => {
                                     ))}
                                 </div>
                             </div>
-                            {isData?.submission === 0 && <div className=" gap-x-3 flex flex-row justify-end">
-                                <Button onClick={handleSubmit} disabled= {send} className="" type="primary">
-                                    Gửi
-                                </Button>
-                                <Button onClick={handleExitHome} type="primary" danger>
-                                    Hủy
-                                </Button>
-                            </div>}
+                            {isData?.submission === 0 && (
+                                <div className=" gap-x-3 flex flex-row justify-end">
+                                    <Button onClick={handleSubmit} disabled={send} className="" type="primary">
+                                        Gửi
+                                    </Button>
+                                    <Button onClick={handleExitHome} type="primary" danger>
+                                        Hủy
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
