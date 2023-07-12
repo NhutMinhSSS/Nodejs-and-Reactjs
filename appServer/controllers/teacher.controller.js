@@ -54,6 +54,10 @@ class TeacherController {
         const post = req.post;
         const studentExamId = req.body.student_exam_id;
         const score = req.body.score || 0;
+        if (score < 0 && score > 100) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.INVALID_SCORE);
+        }
         if (!studentExamId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
@@ -64,13 +68,16 @@ class TeacherController {
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
             const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId, studentId);
-            if (!isStudentExam || (isStudentExam.submission === EnumServerDefinitions.SUBMISSION.NOT_SCORED || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED)) {
+            if (!isStudentExam || (isStudentExam.submission === EnumServerDefinitions.SUBMISSION.UNSENT || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED)) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+                await TeacherController.prototype.scoreForStudentExercise(studentExamId, score);
+            } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
 
             }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
@@ -82,11 +89,22 @@ class TeacherController {
         try {
             const isUpdate = await StudentExamService.updateStudentExam(studentExamId,null,score, EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
             if (!isUpdate) {
-                throw new Error("");
+                throw new Error("Don't update score");
             }
             await transaction.commit();
         } catch (error) {
             await transaction.rollback(); 
+            throw error;
+        }
+    }
+    async scoreForStudentExam(studentExamId, score) {
+        const transaction = await sequelize.transaction();
+        try {
+            const studentExam = await StudentExamService.findStudentExamById(studentExamId);
+
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, score, EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+        } catch (error) {
+            await transaction.rollback();
             throw error;
         }
     }
