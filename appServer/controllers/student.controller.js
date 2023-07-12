@@ -389,8 +389,6 @@ class StudentController {
                 }
             });
             finalScore = ((finalScore / totalScore) * 100).toFixed(0); // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
-            //chấm tự luận
-            //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
             const submission = flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED;
             await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, submission, transaction);
             await transaction.commit();
