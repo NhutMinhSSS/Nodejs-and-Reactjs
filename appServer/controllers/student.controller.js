@@ -280,6 +280,13 @@ class StudentController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
                 }
+            const listFilesRemove = req.body.list_files_remove;
+            if (listFilesRemove && listFilesRemove.length > EnumServerDefinitions.EMPTY) {
+                const isDelete =  await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove);
+                if (!isDelete) {
+                    throw new Error(EnumMessage.DEFAULT_ERROR);
+                }
+            }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {

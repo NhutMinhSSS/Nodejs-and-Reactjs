@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 const StudentFileSubmission = require("../../models/student_file_submission.model");
 
@@ -14,12 +15,12 @@ class StudentFileSubmissionService {
             throw error;
         }
     }
-    async deleteStudentFileSubmission(id) {
+    async deleteStudentFileSubmission(listFileIds) {
         try {
             const isDelete = await StudentFileSubmission.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, { where: {
-                id: id,
+                id: {[Op.in]: listFileIds},
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, transaction });
             return isDelete > EnumServerDefinitions.EMPTY;
