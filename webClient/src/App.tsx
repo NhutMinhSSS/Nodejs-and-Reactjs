@@ -5,7 +5,7 @@ import JoinClassedTeacher from './page/JoinClassed/JoinClassedTeacher';
 
 import Login from './page/Login/Login';
 import HomeScreen from './page/Main/HomeScreen';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 import Dashboard from './page/Dashboard/Dashboard';
 import AppClass from './page/Dashboard/AppClass';
 import AppClassSection from './page/Dashboard/AppClassSection';
@@ -25,7 +25,7 @@ import DetailTest from './screens/Detail/DetailTest';
 import DetailTestStudent from './screens/Detail/DetailTestStudent';
 import DetailExcercise from './screens/Detail/DetailExercise/DetailExcercise';
 import DetailAll from './screens/Detail/DetailAll';
-import DetailAllStudent from './screens/Detail/DetailAllStudent';
+import DetailDocument from './screens/Detail/DetailDocument';
 
 function App() {
     return (
@@ -152,6 +152,10 @@ function App() {
                         </div>
                     }
                 />
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
+                <Route path="/giang-vien/class/:classroom_id/:post_id/document" element={<DetailDocument />}></Route>
+                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
+
                 <Route
                     path="/sinh-vien/class/:classroom_id/:post_id/detail-student"
                     element={<DetailExcercise />}
@@ -160,15 +164,9 @@ function App() {
                     path="/sinh-vien/class/:classroom_id/:post_id/detail-student/test"
                     element={<JoinMark />}
                 ></Route>
-                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
-                <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
-                <Route
-                    path="/sinh-vien/class/:classroom_id/:post_id/detail-student"
-                    element={<DetailAllStudent />}
-                ></Route>
-
+                {/* 
                 <Route path="/test-mark" element={<JoinMark />} />
-                <Route path="/test-ngu" element={<JoinTest />} />
+                <Route path="/test-ngu" element={<JoinTest />} /> */}
             </Routes>
         </>
     );

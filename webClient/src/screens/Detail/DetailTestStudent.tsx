@@ -17,6 +17,7 @@ const DetailTestStudent = ({ params, id }: { params: any; id: number | undefined
         const temp = params?.student_exams.find((x: any) => x.id === id);
         setIsStudent(temp);
     }, [id]);
+
     return (
         <div className=" flex justify-between">
             <div className="text-lg font-medium">{isStudent?.first_name} </div>
