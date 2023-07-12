@@ -19,7 +19,7 @@ class StudentFileSubmissionService {
     async deleteStudentFileSubmission(listFileIds) {
         const transaction = await StudentFileSubmission.sequelize.transaction()
         try {
-            const studentFileSubmissionIds = StudentFileSubmission.findAll({
+            const studentFileSubmissionIds = await StudentFileSubmission.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
@@ -36,7 +36,7 @@ class StudentFileSubmissionService {
             const isDelete = await StudentFileSubmission.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, { where: {
-                id: {[Op.in]: studentFileSubmissionIds.id},
+                id: {[Op.in]: studentFileSubmissionIds.map(item => item.id)},
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, transaction });
             await transaction.commit();
