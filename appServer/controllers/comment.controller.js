@@ -41,7 +41,21 @@ class CommentController {
         const accountId = req.user.account_id;
         const commentId = req.params.comment_id;
         try {
-            const isDelete = await CommentService.deleteComment(commentId, )
+            const comment = await CommentService.findCommentById(commentId);
+            if (!comment) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.NOT_EXIST);
+            }
+            if (comment.account_id !== accountId) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR);
+            }
+            const isDelete = await CommentService.deleteComment(commentId, accountId);
+            if (!isDelete) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

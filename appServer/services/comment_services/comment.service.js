@@ -2,6 +2,19 @@ const EnumServerDefinitions = require("../../common/enums/enum_server_definition
 const Comment = require("../../models/comment.model");
 
 class CommentService {
+    async findCommentById(commentId) {
+        try {
+            const comment = await Comment.findOne({
+                where: {
+                    id: commentId,
+                    status:EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
+            return comment;
+        } catch (error) {
+            throw error;
+        }
+    }
     async createComment(postId, content, accountId, transaction) {
         try {
             const newComment = await Comment.create({

@@ -201,7 +201,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     };
     const handleFileUpload = (file: any) => {
         setSelectedFile((prevSelectedFiles) => [...prevSelectedFiles, file]);
-        console.log(file);
     };
     const handleRemoveFile = (file: any) => {
         setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f.uid !== file.uid));

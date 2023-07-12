@@ -140,20 +140,6 @@ const JoinMark = () => {
                 const config = HeaderToken.getTokenConfig();
                 const data = {
                     student_exam_id: isData.student_exam_id,
-<<<<<<< HEAD
-                    post_id: post_id,
-                };
-                axios
-                    .patch(`${BASE_URL}/students/submission`, data, config)
-                    .then((response) => {
-                        setSend(false);
-                        console.log(response);
-                    })
-                    .catch((error) => {
-                        setSend(false);
-                        console.log(error);
-                    });
-=======
                     post_id: post_id
                 }
                 axios.post(`${BASE_URL}/students/submission`,data, config).then((response) => {
@@ -164,7 +150,6 @@ const JoinMark = () => {
                     console.log(error);
                     
                 })
->>>>>>> main
             }, 1500);
         }
         //handleFetchData();
