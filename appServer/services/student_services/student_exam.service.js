@@ -134,13 +134,15 @@ class StudentExamService {
     async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
         try {
             const updateData = {
-                finish_date: finishDate,
-                total_score: totalScore
+                total_score: totalScore,
+                submission: submission
               };
-          
-              if (submission) {
-                updateData.submission = submission;
+              if (finishDate) {
+                updateData.finish_date = finishDate;
               }
+            //   if (submission) {
+            //     updateData.submission = submission;
+            //   }
             const studentExam = await StudentExam.update(updateData, {
                 where: {
                     id: id,

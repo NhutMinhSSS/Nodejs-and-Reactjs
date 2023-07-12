@@ -260,12 +260,18 @@ class StudentController {
             const studentExamId = req.body.student_exam_id;
             //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
             const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
-            if (!isStudentExam || isStudentExam.submission !== EnumServerDefinitions.SUBMISSION.UNSENT) {
+            if (!isStudentExam || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
                 if (req.directoryPath) {
                     fs.removeSync(req.directoryPath);
                 }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
+            } else if (isStudentExam.submission === EnumServerDefinitions.SUBMISSION.NOT_SCORED) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
+                await StudentController.prototype.unSubmissionExercise(studentExamId);
+                return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 if (req.directoryPath) {
@@ -314,6 +320,20 @@ class StudentController {
             await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
+                throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
+            }
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
+    async unSubmissionExercise(studentExamId, ) {
+        const transaction = await sequelize.transaction();
+        try {
+            //const submissionDate = FormatUtils.dateTimeNow();
+            const unSubmission = await StudentExamService.updateStudentExam(studentExamId, null, 0, EnumServerDefinitions.SUBMISSION.UNSENT, transaction);
+            if (!unSubmission) {
                 throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
             }
             await transaction.commit();

@@ -53,10 +53,14 @@ class PostController {
     //get post detail
     async getPostDetail(req, res) {
         try {
-            const postId = req.params.post_id;
+            const post = req.post;
             const role = req.user.role;
             const studentId = req.student_id || null;
-            const postDetail = await PostService.getDetailPost(postId, studentId);
+            if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR);
+            }
+            const postDetail = await PostService.getDetailPost(post.id, studentId);
             if (role === EnumServerDefinitions.ROLE.TEACHER) {
                 const { delivered, submitted } = postDetail.student_exams.reduce((counts, exam) => {
                     if (exam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
