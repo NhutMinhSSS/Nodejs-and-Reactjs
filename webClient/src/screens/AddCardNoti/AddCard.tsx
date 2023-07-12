@@ -37,7 +37,7 @@ interface File {
     file_id: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
+const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
@@ -48,23 +48,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
     const [downloadComplete, setDownloadComplete] = useState(false);
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
-    const handlePopupDownloadFile = (file_id: number, id: number) => {
-        setProgressbar('block');
-        setDownloadComplete(false);
-        handleDownPost(id, file_id);
 
-        // let progress = 0;
-        // const interval = setInterval(async () => {
-        //     progress += 25;
-        //     if (progress > 100) {
-        //         clearInterval(interval);
-        //     } else {
-        //         setPercent(progress);
-        //     }
-        // }, 1500);
-
-        // console.log(file_id, id);
-    };
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -112,7 +96,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-
+                    setModalDownloadFile(false);
                     Notification('success', 'Thông báo', 'Bạn đã tải 1 file thành công');
                 })
                 .catch((error) => {
@@ -193,14 +177,12 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
         setMessage('');
         setShowForm(false);
     };
-
     const handleOpenForm = () => {
         setShowForm(true);
     };
 
     const handleSubmitNotification = (e: { preventDefault: () => void }) => {
         // Xử lý dữ liệu đã nhập từ ReactQuill
-
         e.preventDefault();
         setShowForm(false);
         handleFetchUploadFile();
@@ -208,12 +190,21 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
         setSelectedFile([]);
         // Gửi dữ liệu lên server hoặc thực hiện các hành động khác
     };
+    const [fileId, setFileId] = useState(0);
+    const [idFile, setIdFile] = useState(0);
+    const handleShowPopupDownload = (file_id: number, id: number) => {
+        setProgressbar('block');
+        setDownloadComplete(false);
+        setModalDownloadFile(true);
+        setFileId(file_id);
+        setIdFile(id);
+    };
     const handleFileUpload = (file: any) => {
         setSelectedFile((prevSelectedFiles) => [...prevSelectedFiles, file]);
         console.log(file);
     };
     const handleRemoveFile = (file: any) => {
-        setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f !== file));
+        setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f.uid !== file.uid));
     };
     const [modalDownloadFile, setModalDownloadFile] = useState(false);
 
@@ -226,8 +217,10 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
     const navigate = useNavigate();
 
     const handleClick = (item: any) => {
-        if (item.post_category_id !== 1) {
+        if (item.post_category_id === 3 || item.post_category_id === 4) {
             navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+        } else if (item.post_category_id == 2) {
+            navigate(`/giang-vien/class/${classroom_id}/${item.id}/document`);
         }
     };
     return (
@@ -280,7 +273,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
                                             multiple
                                             showUploadList={{ showRemoveIcon: true }}
                                             accept=".png,.jpeg,.jpg,.pdf,.docx,.doc,.pptx,.xlsx,.rar,.zip "
-                                            action={'http://localhost:3000/'}
                                             beforeUpload={(file) => {
                                                 handleFileUpload(file);
                                                 return false;
@@ -333,17 +325,21 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
                                     <div className="flex text-base font-medium">
                                         <div className="">
                                             {item.last_name} {item.first_name}{' '}
-                                            {item.post_category_id === 4 ? `đã đăng ${item.title}` : ''}
+                                            {item.post_category_id === 4 ? `đã đăng kiểm tra ${item.title}` : ''}
+                                            {item.post_category_id === 3 ? `đã đăng bài tập ${item.title}` : ''}
+                                            {item.post_category_id === 2 ? `đã đăng tài liệu ${item.title}` : ''}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="">
-                                    <p className="break-words w-[35rem] text-start">{item.content}</p>
+                                    <p className="break-words w-[35rem] text-start">
+                                        {item.post_category_id === 1 ? item.content : ''}
+                                    </p>
                                 </div>
                                 {item.files.length > 0 ? (
                                     <div className="grid grid-cols-2 ">
                                         {item.files.map((file: any) => (
-                                            <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
+                                            <button onClick={() => handleShowPopupDownload(file.file_id, item.id)}>
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">
                                                         <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
@@ -381,26 +377,30 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
                     ))}
                 </div>
             </Spin>
-            {/* <Modal
-                visible={modalDownloadFile}
-                open={modalDownloadFile}
-                title="Thông báo"
-                onCancel={handleVisibleDownloadFile}
-                className="custom-modal-download-file"
-                footer={null}
-            >
-                <div>
-                    <p>Bạn có muốn tải file này ?</p>
-                </div>
-                <div className="flex justify-end h-full mt-20">
-                    <Button type="primary" onClick={() => handlePopupDownloadFile} className="mr-5">
-                        Tải File
-                    </Button>
-                    <Button onClick={handleVisibleDownloadFile} type="default" className="mr-5">
-                        Hủy
-                    </Button>
-                </div>
-            </Modal> */}
+            {idFile ? (
+                <Modal
+                    visible={modalDownloadFile}
+                    open={modalDownloadFile}
+                    title="Thông báo"
+                    onCancel={handleVisibleDownloadFile}
+                    className="custom-modal-download-file"
+                    footer={null}
+                >
+                    <div>
+                        <p>Bạn có muốn tải file này ?</p>
+                    </div>
+                    <div className="flex justify-end h-full mt-20">
+                        <Button type="primary" onClick={() => handleDownPost(idFile, fileId)} className="mr-5">
+                            Tải File
+                        </Button>
+                        <Button onClick={handleVisibleDownloadFile} type="default" className="mr-5">
+                            Hủy
+                        </Button>
+                    </div>
+                </Modal>
+            ) : (
+                ''
+            )}
         </>
     );
 };

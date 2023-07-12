@@ -17,6 +17,7 @@ const DetailTestStudent = ({ pagrams, id }: { pagrams: any; id: number | undefin
         const temp = pagrams?.student_exams.find((x: any) => x.id === id);
         setIsStudent(temp);
     }, [id]);
+
     return (
         <div className=" flex justify-between">
             <div className="text-lg font-medium">{isStudent?.first_name} </div>

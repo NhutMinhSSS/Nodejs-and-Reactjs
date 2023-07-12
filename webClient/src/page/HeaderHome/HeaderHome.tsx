@@ -2,45 +2,53 @@ import React, { useState } from 'react';
 import logoTruong from '../../img/Logotruong.png';
 import { MenuOutlined } from '@ant-design/icons';
 import iconUser from '../../img/iconUser.svg';
-import { Dropdown, Space } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Button, Drawer, Dropdown, Space } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.scss';
 import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import HeaderToken from '../../common/utils/headerToken';
+import { MdAccountCircle, MdNotificationsNone } from 'react-icons/md';
 
 const HeaderHome: React.FC = () => {
     const navigate = useNavigate();
     const [isPopupVisibleCreateClass, setIsPopupVisibleCreateClass] = useState(false);
-    const [subjects, setSubjects] = useState([]);
+    const [isData, setIsData] = useState([]);
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const handleOnchangFlusCreateRoom = () => {
-        const config = HeaderToken.getTokenConfig();
-        setLoading(true);
-        axios
-            .get('http://20.39.197.125:3000/api/classrooms/init', config)
-            .then((response) => {
-                setClasses(response.data.response_data.regular_class);
-                setSubjects(response.data.response_data.subjects);
-            })
-            .catch((error) => {
-                const isError = UnauthorizedError.checkError(error);
-                if (!isError) {
-                    const content = 'Lỗi máy chủ';
-                    const title = 'Lỗi';
-                    ErrorCommon(title, content);
-                }
-                // Xử lý UnauthorizedError ở đây
-            })
-
-            .finally(() => {
-                setLoading(false);
-            });
+    const handleFetchData = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.replace('/');
+        } else {
+            const config = HeaderToken.getTokenConfig();
+            setLoading(true);
+            axios
+                .get('https://20.39.197.125:3443/api/classrooms', config)
+                .then((response) => {
+                    // Xử lý dữ liệu từ response
+                    const data = response.data.response_data;
+                    console.log('data nè', data);
+                    setIsData(data);
+                    //Chuyển dữ liệu khi tạo mới phòng
+                })
+                .catch((error) => {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const content = 'Lỗi máy chủ';
+                        const title = 'Lỗi';
+                        ErrorCommon(title, content);
+                    }
+                    // Xử lý lỗi nếu có
+                    console.error(error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
     };
-
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
@@ -66,13 +74,21 @@ const HeaderHome: React.FC = () => {
             key: 1,
         },
     ];
-
+    const [visbleDrawer, setVisibleDrawer] = useState(false);
+    const [visbleNotification, setVisibleNotification] = useState(false);
+    const handleDrawer = () => {
+        setVisibleDrawer(true);
+        handleFetchData();
+    };
+    const handleNavHome = () => {
+        navigate('/giang-vien');
+    };
     return (
         <>
             <div className="bg-blue-300 shadow-md h-16 p-5 flex items-center justify-between">
                 <div className="flex items-center">
-                    <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out cursor-pointer">
-                        <MenuOutlined></MenuOutlined>
+                    <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
+                        <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}
                     </button>
                     <div>
                         <img className="h-12 cursor-pointer" src={logoTruong} alt="" />
@@ -99,8 +115,68 @@ const HeaderHome: React.FC = () => {
                     </Dropdown>
                 </div>
             </div>
+            <Drawer
+                visible={visbleDrawer}
+                maskClosable={true}
+                onClose={() => setVisibleDrawer(false)}
+                title={
+                    <Space>
+                        <button onClick={handleNavHome}>Danh sách lớp học phầm</button>
+                    </Space>
+                }
+                closable={true}
+                placement="left"
+                extra={
+                    <Space>
+                        <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
+                            <MdNotificationsNone size={20} />
+                        </button>
+                    </Space>
+                }
+                footer={
+                    <Space>
+                        <button>Lưu lớp học phần</button>
+                    </Space>
+                }
+            >
+                <div>
+                    <div>Giảng dạy</div>
+                    <div className="mt-2">
+                        <div className="flex flex-col gap-y-5 h-auto overflow-auto ">
+                            {isData.map((item: any) => (
+                                <Link
+                                    to={`class/${item['id']}`}
+                                    className="hover:text-black hover:bg-slate-200 transition duration-500   w-full h-auto py-2 px-2 border-2 rounded-md flex items-center gap-x-2"
+                                >
+                                    <span>
+                                        <MdAccountCircle size={30} />
+                                    </span>
+                                    <span className="flex flex-col">
+                                        <span className="font-medium">{item.class_name}</span>
+                                        <span>
+                                            Học kỳ {item.semester} - {item.school_year}
+                                        </span>
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </Drawer>
         </>
     );
 };
 
 export default HeaderHome;
+{
+    /* <Link
+className="text-xl font-semibold hover:underline underline-offset-[5px]"
+to={`class/${item['id']}`}
+>
+<span className="">{item['class_name']}</span>
+<br />
+<span className="text-base truncate">
+    Học kỳ {item['semester']} <span> - Năm học {item['school_year']}</span>
+</span>
+</Link> */
+}

@@ -5,7 +5,11 @@ import AddCard from '../AddCardNoti/AddCard';
 import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 
-const ClassBulletin: React.FC<{ onFetchData: any ,data: any }> = ({ onFetchData ,data }) => {
+const ClassBulletin: React.FC<{ onFetchData: any; data: any; onClick: (key: string) => void }> = ({
+    onFetchData,
+    data,
+    onClick,
+}) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
@@ -13,6 +17,11 @@ const ClassBulletin: React.FC<{ onFetchData: any ,data: any }> = ({ onFetchData 
     };
     const dataPost = data.list_post;
     console.log(dataPost);
+    const handleViewExercises = () => {
+        console.log('hello');
+        onFetchData(); // Gọi hàm onFetchData để cập nhật dữ liệu trước khi chuyển tab
+        onClick('2'); // Gọi hàm handleTabChange để chuyển đổi tab
+    };
 
     return (
         <div className="py-5">
@@ -63,13 +72,13 @@ const ClassBulletin: React.FC<{ onFetchData: any ,data: any }> = ({ onFetchData 
                                 <p>Bài tập 3</p>
                                 <p>Bài tập 4</p>
                             </div>
-                            <Link className="flex justify-end" to="/AllExercises">
+                            <button onClick={() => onClick} className="flex justify-end">
                                 Xem bài tập
-                            </Link>
+                            </button>
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCard onFetchData = {onFetchData} data={dataPost} />
+                        <AddCard onFetchData={onFetchData} data={dataPost} />
                     </div>
                 </div>
             </div>

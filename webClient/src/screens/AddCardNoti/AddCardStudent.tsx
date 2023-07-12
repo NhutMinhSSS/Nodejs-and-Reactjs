@@ -18,7 +18,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Notification from '../../components/Notification';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorAlert from '../../common/Screens/ErrorAlert';
-import '../scss/style.scss';
+import './scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
@@ -47,7 +47,7 @@ interface File {
     file_id: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) => {
+const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [showForm, setShowForm] = useState(false);
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
@@ -114,21 +114,30 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) 
     // };
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
-    const handlePopupDownloadFile = (file_id: number, id: number) => {
+    // const handlePopupDownloadFile = (file_id: number, id: number) => {
+    //     setProgressbar('block');
+    //     setDownloadComplete(false);
+    //     handleDownPost(id, file_id);
+    //     // let progress = 0;
+    //     // const interval = setInterval(async () => {
+    //     //     progress += 25;
+    //     //     if (progress > 100) {
+    //     //         clearInterval(interval);
+    //     //     } else {
+    //     //         setPercent(progress);
+    //     //     }
+    //     // }, 1500);
+
+    //     // console.log(file_id, id);
+    // };
+    const [fileId, setFileId] = useState(0);
+    const [idFile, setIdFile] = useState(0);
+    const handleShowPopupDownload = (file_id: number, id: number) => {
         setProgressbar('block');
         setDownloadComplete(false);
-        handleDownPost(id, file_id);
-        // let progress = 0;
-        // const interval = setInterval(async () => {
-        //     progress += 25;
-        //     if (progress > 100) {
-        //         clearInterval(interval);
-        //     } else {
-        //         setPercent(progress);
-        //     }
-        // }, 1500);
-
-        // console.log(file_id, id);
+        setModalDownloadFile(true);
+        setFileId(file_id);
+        setIdFile(id);
     };
 
     const handleDownPost = async (id: number, fileId: number) => {
@@ -178,6 +187,7 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) 
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    setModalDownloadFile(false);
                     Notification('success', 'Thông báo', 'Bạn đã tải 1 file thành công');
                 })
                 .catch((error) => {
@@ -407,7 +417,7 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) 
                                 {item.files.length > 0 ? (
                                     <div className="grid grid-cols-2 ">
                                         {item.files.map((file: any) => (
-                                            <button onClick={() => handlePopupDownloadFile(file.file_id, item.id)}>
+                                            <button onClick={() => handleShowPopupDownload(file.file_id, item.id)}>
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">
                                                         <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
@@ -422,7 +432,6 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) 
                                                                     <MdOutlineFilePresent size={32} />
                                                                 </div>
                                                             )}
-
                                                             <div className="text-ellipsis overflow-hidden ...  max-w-xs w-[15rem]">
                                                                 {file.file_name}
                                                             </div>
@@ -445,26 +454,30 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any ,data: any }) 
                     ))}
                 </div>
             </Spin>
-            {/* <Modal
-                visible={modalDownloadFile}
-                open={modalDownloadFile}
-                title="Thông báo"
-                onCancel={handleVisibleDownloadFile}
-                className="custom-modal-download-file"
-                footer={null}
-            >
-                <div>
-                    <p>Bạn có muốn tải file này ?</p>
-                </div>
-                <div className="flex justify-end h-full mt-20">
-                    <Button type="primary" onClick={() => handlePopupDownloadFile} className="mr-5">
-                        Tải File
-                    </Button>
-                    <Button onClick={handleVisibleDownloadFile} type="default" className="mr-5">
-                        Hủy
-                    </Button>
-                </div>
-            </Modal> */}
+            {idFile ? (
+                <Modal
+                    visible={modalDownloadFile}
+                    open={modalDownloadFile}
+                    title="Thông báo"
+                    onCancel={handleVisibleDownloadFile}
+                    className="custom-modal-download"
+                    footer={null}
+                >
+                    <div>
+                        <p>Bạn có muốn tải file này ?</p>
+                    </div>
+                    <div className="flex justify-end h-full mt-20">
+                        <Button type="primary" onClick={() => handleDownPost(idFile, fileId)} className="mr-5">
+                            Tải File
+                        </Button>
+                        <Button onClick={handleVisibleDownloadFile} type="default" className="mr-5">
+                            Hủy
+                        </Button>
+                    </div>
+                </Modal>
+            ) : (
+                ''
+            )}
         </>
     );
 };

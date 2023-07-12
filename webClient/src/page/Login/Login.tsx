@@ -48,9 +48,18 @@ const Login: React.FC = () => {
                 })
                 .then((response) => {
                     if (response.status === 200) {
-                        const { token, role } = response.data;
+                        const { token, role, account_id, first_name, last_name } = response.data;
                         localStorage.setItem('token', token);
                         localStorage.setItem('role', role);
+                        localStorage.setItem(
+                            'user',
+                            JSON.stringify({
+                                accoutId: account_id,
+                                first_name: first_name,
+                                last_name: last_name,
+                            }),
+                        );
+
                         setIsToken(token);
 
                         if (role === 1) {

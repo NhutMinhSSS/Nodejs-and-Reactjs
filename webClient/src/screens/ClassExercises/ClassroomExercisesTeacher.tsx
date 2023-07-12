@@ -6,6 +6,7 @@ import { MdAccountCircle, MdOutlineAdd, MdOutlineAssignment } from 'react-icons/
 import PopupCreateExercise from '../Popup/PopupCreateExercise';
 import PopupCreateTest from '../Popup/PopupCreateTest';
 import CardExercise from '../../components/CardExercise';
+import PopupCreateDocument from '../Popup/PopupCreateDocument';
 
 const dataExersise = [
     {
@@ -43,6 +44,7 @@ const dataExersise = [
 const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
     const navigate = useNavigate();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [isPopupVisibleDocument, setIsPopupVisibleDocument] = useState(false);
     const [isPopupVisibleCreateTest, setIsPopupVisibleCreateTest] = useState(false);
 
     const dataList = data.list_post;
@@ -66,19 +68,22 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
         {
             key: '3',
             label: <span className="text-lg">Tài Liệu</span>,
-            onClick: () => navigate('/createExcersice'),
+            onClick: () => setIsPopupVisibleDocument(true),
         },
-        {
-            key: '4',
-            label: <span className="text-lg">Câu Hỏi</span>,
-            onClick: () => navigate('/createExcersice'),
-        },
+        // {
+        //     key: '4',
+        //     label: <span className="text-lg">Câu Hỏi</span>,
+        //     onClick: () => navigate('/createExcersice'),
+        // },
     ];
     const handlePopupCancel = () => {
         setIsPopupVisible(false);
     };
     const handlePopupCancelPopupCreateTest = () => {
         setIsPopupVisibleCreateTest(false);
+    };
+    const handlePopupCancelDocument = () => {
+        setIsPopupVisibleDocument(false);
     };
     const {} = useParams();
     const handleClick = (item: any) => {
@@ -123,7 +128,7 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                 </div>
                 <div>
                     <Modal visible={isPopupVisible} onCancel={handlePopupCancel} width="100%" footer={null}>
-                        <PopupCreateExercise />
+                        <PopupCreateExercise visible={handlePopupCancel} />
                     </Modal>
                 </div>
                 <div>
@@ -133,7 +138,17 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                         width="100%"
                         footer={null}
                     >
-                        <PopupCreateTest data={classroom_id} />
+                        <PopupCreateTest visible={handlePopupCancelPopupCreateTest} data={classroom_id} />
+                    </Modal>
+                </div>
+                <div>
+                    <Modal
+                        visible={isPopupVisibleDocument}
+                        onCancel={handlePopupCancelDocument}
+                        width="100%"
+                        footer={null}
+                    >
+                        <PopupCreateDocument visible={handlePopupCancelDocument} />
                     </Modal>
                 </div>
             </div>
