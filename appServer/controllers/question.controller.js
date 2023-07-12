@@ -28,7 +28,8 @@ class QuestionController {
       let submission;
       let listQuestionsAndAnswers = [];
       if (role === EnumServerDefinitions.ROLE.TEACHER) {
-        listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id);
+        studentExamId = req.body.student_exam_id;
+        listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, false, studentExamId);
       } else {
         const postDetail = await PostDetailService.findDetailByPostId(post.id);
         const studentId = req.student_id;
@@ -86,7 +87,7 @@ class QuestionController {
       }
       if (studentExamId) {
         result.student_exam_id = studentExamId,
-          result.submission = submission
+        result.submission = submission
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
