@@ -239,6 +239,7 @@ class QuestionsAndAnswersService {
                 },
                 include: {
                     model: StudentAnswerOption,
+                    required: false,
                     where: {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
