@@ -3,7 +3,6 @@ const EnumMessage = require("../common/enums/enum_message");
 const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
 const logger = require("../config/logger.config");
 const ServerResponse = require("../common/utils/server_response");
-const PostService = require("../services/post_services/post.service");
 const QuestionsAndAnswersService = require("../services/questions_and_answers_service/questions_and_answers.service");
 const PostDetailService = require("../services/post_services/post_detail.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
@@ -28,7 +27,6 @@ class QuestionController {
       let submission;
       let listQuestionsAndAnswers = [];
       if (role === EnumServerDefinitions.ROLE.TEACHER) {
-        studentExamId = req.body.student_exam_id;
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, false, studentExamId);
       } else {
         const postDetail = await PostDetailService.findDetailByPostId(post.id);
@@ -87,12 +85,27 @@ class QuestionController {
       }
       if (studentExamId) {
         result.student_exam_id = studentExamId,
-        result.submission = submission
+          result.submission = submission
       }
       //await transaction.commit();
       return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
     } catch (error) {
       //await transaction.rollback();
+      logger.error(error);
+      return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER, EnumMessage.DEFAULT_ERROR);
+    }
+  }
+  async getListEssayQuestion(req, res) {
+    try {
+      const studentExamId = req.params.student_exam_id;
+      const post = req.post;
+      if (!studentExamId) {
+        return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+          EnumMessage.REQUIRED_INFORMATION);
+      }
+      const listEssayQuestionAndAnswer = await QuestionsAndAnswersService.findAllEssayQuestions(post.id, studentExamId);
+      return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, listEssayQuestionAndAnswer);
+    } catch (error) {
       logger.error(error);
       return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER, EnumMessage.DEFAULT_ERROR);
     }
