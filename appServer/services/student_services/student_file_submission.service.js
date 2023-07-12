@@ -29,7 +29,7 @@ class StudentFileSubmissionService {
                         id: {[Op.in]: listFileIds},
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['']
+                    attributes: []
                 },
                 attributes: ['id']
             });
