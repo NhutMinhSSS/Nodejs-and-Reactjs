@@ -283,6 +283,9 @@ class StudentController {
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
             }
@@ -290,9 +293,12 @@ class StudentController {
                 const listFilesRemove = JSON.parse(req.body.list_files_remove) || [];
                 const files = req.files;
                 const fileSubmission = await StudentFileSubmissionService.checkFileSubmissionByStudentExam(studentExamId);
-                if (files.length !== EnumServerDefinitions.EMPTY || listFilesRemove.length !== fileSubmission || (fileSubmission && listFilesRemove.length !== fileSubmission)) {
+                if (files.length !== EnumServerDefinitions.EMPTY || listFilesRemove.length > fileSubmission || (fileSubmission && listFilesRemove.length !== fileSubmission)) {
                     await StudentController.prototype.submissionExercise(studentExamId, files, accountId, listFilesRemove);   
                 } else {
+                    if (req.directoryPath) {
+                        fs.removeSync(req.directoryPath);
+                    }
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.EXERCISE_NOT_FILE);
                 }
