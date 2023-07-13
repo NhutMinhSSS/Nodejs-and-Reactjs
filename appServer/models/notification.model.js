@@ -42,7 +42,7 @@ Notification.init({
     read: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 1
+        defaultValue: 0
     },
     status: {
         type: DataTypes.SMALLINT,
