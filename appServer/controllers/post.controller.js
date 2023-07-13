@@ -186,15 +186,15 @@ class PostController {
                 studentIds = listStudents.map(item => item.student_id);
             }
             if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.NEWS) {
-                notification = "Thông báo";
+                notification = "thông báo";
             } else if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.DOCUMENT) {
-                notification = "Tài liệu";
+                notification = "tài liệu";
             } else if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
-                notification = "Bài tập";
+                notification = "bài tập";
             } else {
-                notification = "Bài kiểm tra";
+                notification = "bài kiểm tra";
             }
-            message = `${fullName} đã đăng một ${notification} mới!`;
+            message = `${fullName} đã đăng một ${notification}!`;
             await NotificationService.createNotifications(studentIds, newPost.id, message, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
