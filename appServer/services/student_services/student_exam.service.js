@@ -4,6 +4,20 @@ const StudentExam = require("../../models/student_exam.model");
 const Student = require("../../models/student.model");
 
 class StudentExamService {
+    async findStudentExamById(studentExamId) {
+        try {
+            const studentExam = await StudentExam.findOne({
+                where: {
+                    id: studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'total_score', 'submission']
+            });
+            return studentExam;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findStudentByStudentExamId(studentExamId) {
         try {
             const studentExam = await StudentExam.findOne({
@@ -40,12 +54,12 @@ class StudentExamService {
             throw error;
         }
     }
-    async checkStudentExamByIdAndStudentId(id, studentId) {
+    async checkStudentExamByIdAndStudentId(id) {
         try {
             const studentExam = await StudentExam.findOne({
                 where: {
                     id: id,
-                    student_id: studentId,
+                    //student_id: studentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 attributes: ['id', 'submission']
@@ -134,13 +148,15 @@ class StudentExamService {
     async updateStudentExam(id, finishDate, totalScore, submission, transaction) {
         try {
             const updateData = {
-                finish_date: finishDate,
-                total_score: totalScore
+                total_score: totalScore,
+                submission: submission
               };
-          
-              if (submission) {
-                updateData.submission = submission;
+              if (finishDate) {
+                updateData.finish_date = finishDate;
               }
+            //   if (submission) {
+            //     updateData.submission = submission;
+            //   }
             const studentExam = await StudentExam.update(updateData, {
                 where: {
                     id: id,

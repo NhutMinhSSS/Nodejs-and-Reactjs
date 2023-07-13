@@ -254,18 +254,27 @@ class StudentController {
     }
     async studentSubmissionExam(req, res) {
         try {
-            const studentId = req.student_id;
             const accountId = req.user.account_id;
             const post = req.post;
             const studentExamId = req.body.student_exam_id;
+            if (!studentExamId) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.REQUIRED_INFORMATION);
+            }
             //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
-            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
-            if (!isStudentExam || isStudentExam.submission !== EnumServerDefinitions.SUBMISSION.UNSENT) {
+            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId);
+            if (!isStudentExam || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
                 if (req.directoryPath) {
                     fs.removeSync(req.directoryPath);
                 }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
+            } else if (isStudentExam.submission === EnumServerDefinitions.SUBMISSION.NOT_SCORED) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
+                await StudentController.prototype.unSubmissionExercise(studentExamId);
+                return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 if (req.directoryPath) {
@@ -277,16 +286,25 @@ class StudentController {
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+                const listFilesRemove = JSON.parse(req.body.list_files_remove) || [];
                 const files = req.files;
-                if (!files || files.length === EnumServerDefinitions.EMPTY) {
+                const fileSubmission = await StudentFileSubmissionService.checkFileSubmissionByStudentExam(studentExamId);
+                if (files.length !== EnumServerDefinitions.EMPTY || listFilesRemove.length > fileSubmission || (fileSubmission && listFilesRemove.length !== fileSubmission)) {
+                    await StudentController.prototype.submissionExercise(studentExamId, files, accountId, listFilesRemove);   
+                } else {
+                    if (req.directoryPath) {
+                        fs.removeSync(req.directoryPath);
+                    }
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_POST.EXERCISE_NOT_FILE);
                 }
-                await StudentController.prototype.submissionExercise(studentExamId, files, accountId);
             } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 ///
                 await StudentController.prototype.submissionExam(post.id, studentExamId);
@@ -304,16 +322,38 @@ class StudentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    async submissionExercise(studentExamId, files, accountId) {
+    async submissionExercise(studentExamId, files, accountId, listFilesRemove) {
         const transaction = await sequelize.transaction();
         try {
+            if (listFilesRemove && listFilesRemove.length > EnumServerDefinitions.EMPTY) {
+                const isDelete =  await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove, transaction);
+                if (!isDelete) {
+                    throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
+                }
+            }
             const submissionDate = FormatUtils.dateTimeNow();
-            const listFiles = FormatUtils.formatFileRequest(files, accountId);
+            if (files.length > EnumServerDefinitions.EMPTY) {
+                const listFiles = FormatUtils.formatFileRequest(files, accountId);
             const newFile = await FileService.createFiles(listFiles, transaction);
             const listFileIds = newFile.map(item => item.id);
             await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
+            }
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
+                throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
+            }
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
+        }
+    }
+    async unSubmissionExercise(studentExamId, ) {
+        const transaction = await sequelize.transaction();
+        try {
+            //const submissionDate = FormatUtils.dateTimeNow();
+            const unSubmission = await StudentExamService.updateStudentExam(studentExamId, null, 0, EnumServerDefinitions.SUBMISSION.UNSENT, transaction);
+            if (!unSubmission) {
                 throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
             }
             await transaction.commit();
@@ -352,8 +392,6 @@ class StudentController {
                 }
             });
             finalScore = ((finalScore / totalScore) * 100).toFixed(0); // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
-            //chấm tự luận
-            //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
             const submission = flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED;
             await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, submission, transaction);
             await transaction.commit();

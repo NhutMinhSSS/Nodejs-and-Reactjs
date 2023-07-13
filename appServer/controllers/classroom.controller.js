@@ -13,6 +13,7 @@ const SubjectService = require("../services/subject.service");
 const RegularClassService = require("../services/regular_class.service");
 const sequelize = db.getPool();
 const CheckStringUtils = require('../common/utils/check_string.utils');
+const NotificationService = require("../services/notification_services/notification.service");
 
 class ClassroomController {
     async getAllClassroomsInit(req, res) {
@@ -83,7 +84,7 @@ class ClassroomController {
                     id,
                     first_name,
                     last_name,
-                    regular_class_name: RegularClass.class_name
+                    class_name: RegularClass.class_name
                 }))
             };
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result)
@@ -116,6 +117,7 @@ class ClassroomController {
             const accountId = req.user.account_id;
             let user;
             let listClassroom;
+            let listNotification = [];
             if (role === EnumServerDefinitions.ROLE.STUDENT) {
                 user = await StudentService.findStudentByAccountId(accountId);
                 // if (!user) {
@@ -123,6 +125,7 @@ class ClassroomController {
                 //         EnumMessage.STUDENT_NOT_EXISTS);
                 // }
                 listClassroom = await ClassroomStudentService.findClassroomsByStudentId(user.id);
+                listNotification = await NotificationService.findNotificationByStudentId(user.id);
             } else {
                 user = await TeacherService.findTeacherByAccountId(accountId);
                 // if (!user) {
@@ -131,7 +134,11 @@ class ClassroomController {
                 // }
                 listClassroom = await ClassroomTeacherService.findClassroomsByTeacherId(user.id);
             }
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, listClassroom);
+            const result = {
+                list_classrooms: listClassroom,
+                list_notifications: listNotification
+            };
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

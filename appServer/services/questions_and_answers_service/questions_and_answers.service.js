@@ -229,6 +229,31 @@ class QuestionsAndAnswersService {
             throw error;
         }
     }
+    async findAllEssayQuestions(postId, studentExamId) {
+        try {
+            const listEssayQuestionAndAnswer = Question.findAll({
+                where: {
+                    exam_id: postId,
+                question_category_id: 3,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                include: {
+                    model: StudentAnswerOption,
+                    required: false,
+                    where: {
+                        student_exam_id: studentExamId,
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    attributes: ['id', 'essay_answer'],
+                    as: 'student_answer_options'
+                },
+                attributes: ['id', 'content', 'question_category_id', 'score']
+            });
+            return listEssayQuestionAndAnswer;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = new QuestionsAndAnswersService;

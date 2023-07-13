@@ -82,6 +82,8 @@ class EnumMessage{
         POST_NOT_CATEGORY: 'Post not category Exam',
         EXERCISE_NOT_FILE: 'Not files submission'
     }
+    //Invalid score
+    static INVALID_SCORE = 'Invalid score';
     //Error submission by student
     static ERROR_SUBMISSION = {
         NOT_SUBMISSION: 'Not submission',

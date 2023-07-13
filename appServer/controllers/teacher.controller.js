@@ -10,6 +10,9 @@ const CommonService = require('../common/utils/common_service');
 const db = require('../config/connect_database.config');
 const ClassroomService = require('../services/classroom_services/classroom.service');
 const ClassroomTeacherService = require('../services/classroom_services/classroom_teacher.service');
+const StudentExamService = require('../services/student_services/student_exam.service');
+const QuestionService = require('../services/question_services/question.service');
+const StudentAnswerOptionService = require('../services/student_services/student_answer_option.service');
 const sequelize = db.getPool();
 
 class TeacherController {
@@ -47,6 +50,98 @@ class TeacherController {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async teacherUpdateScoreStudent(req, res) {
+        const post = req.post;
+        const studentExamId = req.body.student_exam_id;
+        if (!studentExamId) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION);
+        }
+        try {
+            if ([EnumServerDefinitions.POST_CATEGORY.DOCUMENT, EnumServerDefinitions.POST_CATEGORY.NEWS].includes(post.post_category_id)) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR);
+            }
+            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId);
+            if (!isStudentExam || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR);
+            }
+            if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+                const score = req.body.score || 0;
+            if (score < 0 && score > 100) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.INVALID_SCORE);
+            }
+                await TeacherController.prototype.scoreForStudentExercise(studentExamId, score);
+            } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
+                const listQuestionsAndScores = req.body.list_questions_and_score;
+                if (!listQuestionsAndScores || listQuestionsAndScores.length === EnumServerDefinitions.EMPTY) {
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.INVALID_SCORE);
+                }
+                await TeacherController.prototype.scoreForStudentExam(studentExamId, listQuestionsAndScores, post.id);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async scoreForStudentExercise(studentExamId, score) {
+        const transaction = await sequelize.transaction();
+        try {
+            //chấm tự luận
+            //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId,null,score, EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+            if (!isUpdate) {
+                throw new Error("Don't update score");
+            }
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback(); 
+            throw error;
+        }
+    }
+    async scoreForStudentExam(studentExamId, listQuestionsAndScore, postId) {
+        const transaction = await sequelize.transaction();
+        try {
+            const questionIds = listQuestionsAndScore.map(item => item.question_id);
+            const listQuestion = await QuestionService.findQuestionsById(postId);
+            const studentExam = await StudentExamService.findStudentExamById(studentExamId);
+            let totalScore=0;
+            let finalScore =0;
+            listQuestion.forEach(({score}) => {
+                totalScore += score;
+            });
+            let preEssayScore = 0;
+            if (studentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+                const listEssayQuestions = await StudentAnswerOptionService.findAllEssayQuestionByQuestionId(questionIds, studentExamId);
+                listEssayQuestions.forEach(item => {
+                    preEssayScore += item.score;
+                });
+            }
+            let essayScore = 0;
+        for (const itemQS of listQuestionsAndScore) {
+        const itemQ = listQuestion.find(q => q.id === itemQS.question_id);
+        if (itemQ) {
+            const score = (itemQS.score / totalScore) * 100;
+            await StudentAnswerOptionService.updateEssayQuestionScore(itemQ.id, itemQS.score, transaction);
+            essayScore += score;
+        }
+    }
+            finalScore = studentExam.total_score - ((preEssayScore/totalScore) *100) + essayScore;
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, finalScore.toFixed(0), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+            if (!isUpdate) {
+                throw new Error("Don't update score");
+            }
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw error;
         }
     }
     async addTeacher(req, res) {
