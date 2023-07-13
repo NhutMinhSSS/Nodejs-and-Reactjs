@@ -49,6 +49,7 @@ const JoinMark = () => {
     const [studentExamId, setStudentExamId] = useState(0);
     const [submission, setSubmission] = useState(0);
     const [essayAnswers, setEssayAnswers] = useState<EssayAnswer>({});
+    const [checkTextValue, setCheckTextValue] = useState<EssayAnswer>({});
     useEffect(() => {
         handleFetchData();
     }, []);
@@ -84,7 +85,8 @@ const JoinMark = () => {
         axios
             .patch(`${BASE_URL}/students/update-answer`, data, config)
             .then((response) => {
-                console.log(response);
+                console.log(response, 'minh');
+                setSend(false);
             })
             .catch((error) => {
                 console.log(error);
@@ -132,7 +134,7 @@ const JoinMark = () => {
         }
         handleUpdateAnswers(questionId, selectAnswers[questionId], studentExamId, null);
     };
-    const [send, setSend] = useState(false);
+    const [send, setSend] = useState<boolean>(false);
     let timer: any;
     const { classroom_id } = useParams();
     const navigate = useNavigate();
@@ -163,38 +165,38 @@ const JoinMark = () => {
         //handleFetchData();
         navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student`);
     };
-    console.log(classroom_id);
+    //console.log(classroom_id);
 
     const handleExitHome = () => {
         window.location.replace('/');
     };
-    const [textValue, setTextValue] = useState('');
     const [shouldCallAPI, setShouldCallAPI] = useState(false);
-    const [questionId, setQuestionId] = useState(Number);
-    const [checkChangeTextArea, setCheckChangeArea] = useState(false);
+    const [questionId, setQuestionId] = useState<number | null>(null);
     useEffect(() => {
         let timer: any;
         if (shouldCallAPI) {
             timer = setTimeout(() => {
-                if (isData?.submission === 0 && isData.student_exam_id) {
-                    handleUpdateAnswers(questionId, [], isData.student_exam_id, textValue);
+                if (isData?.submission === 0 && isData.student_exam_id && questionId) {
+                    handleUpdateAnswers(questionId, [], isData.student_exam_id, essayAnswers[questionId]);
                 }
-            }, 800);
+            }, 500);
         }
 
         return () => clearTimeout(timer);
-    }, [textValue, shouldCallAPI]);
+    }, [shouldCallAPI, essayAnswers, send]);
 
-    const handleTextAreaChange = (e: any, questionId: number) => {
-        setEssayAnswers((prevAnswers) => ({
-            ...prevAnswers,
-            [questionId]: e,
-          }));
-        //setTextValue(e);
+    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>, questionId: number) => {
+        setSend(true);
+        const { value } = e.target;
         setQuestionId(questionId);
+        setEssayAnswers((prevAnswers) => ({
+          ...prevAnswers,
+          [questionId]: value,
+        }));
         setShouldCallAPI(true);
-    };
-    console.log(isData?.list_questions_answers);
+      };
+      
+    //console.log(isData?.list_questions_answers);
 
     return (
         <>
@@ -202,6 +204,7 @@ const JoinMark = () => {
                 <div>
                     <div className="h-screen grid grid-cols-1 grid-rows-[auto,1fr,auto] ">
                         <Header className="bg-blue-400 text-xl grid items-center">Bài Kiểm Tra</Header>
+                        <div>{send ? "Đang lưu ..." : ''}</div>
                         <div className="p-5 grid justify-center ">
                             <div className="justify-center flex">
                                 <div className="w-[50rem]">
@@ -285,14 +288,17 @@ const JoinMark = () => {
                                                         maxLength={2000}
                                                         showCount
                                                         value={
-                                                            !checkChangeTextArea
-                                                                ? essayAnswers[asw.id]?.toString()
-                                                                : textValue
+                                                            !checkTextValue[asw.id]
+                                                                ? asw.student_answer_options[0]?.essay_answer?.toString()
+                                                                : essayAnswers[asw.id]?.toString()
                                                         }
                                                         placeholder="Nhập câu trả lời"
                                                         onChange={(e) => {
-                                                            setCheckChangeArea(true);
-                                                            handleTextAreaChange(e.target.value, asw.id);
+                                                            setCheckTextValue((prevAnswers) => ({
+                                                                ...prevAnswers,
+                                                                [asw.id]: true,
+                                                              }));
+                                                            handleTextAreaChange(e, asw.id);
                                                         }}
                                                     ></TextArea>
                                                 )}

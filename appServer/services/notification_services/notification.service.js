@@ -9,48 +9,66 @@ class NotificationService {
         try {
             const listNotification = await Notification.findAll({
                 where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                  status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 include: [{
                     model: Student,
                     required: true,
                     where: {
-                        status: EnumServerDefinitions.STATUS.ACTIVE
-                    },
-                    include: [{
-                        model: Classroom,
-                        require: true,
-                        where: {
-                            status: EnumServerDefinitions.STATUS.ACTIVE
-                        },
-                        through: {
-                            where: {
-                                student_id: studentId,
-                                status: EnumServerDefinitions.STATUS.ACTIVE
-                            },
-                            attributes: [],
-                        },
-                        attributes: ['id', 'class_name']
-                    }],
-                    attributes: ['id']
-                }, {
-                    model: Post,
-                    required: true,
-                    where: {
+                        id: studentId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
-                }],
+                },
+                  {
+                    model: Post,
+                    required: true,
+                    where: {
+                      status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
+                    include: [
+                      {
+                        model: Classroom,
+                        required: true,
+                        where: {
+                          status: EnumServerDefinitions.STATUS.ACTIVE
+                        },
+                        include: [
+                          {
+                            model: Student,
+                            required: true,
+                            where: {
+                              status: EnumServerDefinitions.STATUS.ACTIVE
+                            },
+                            through: {
+                                where: {
+                                  student_id: studentId,
+                                  status: EnumServerDefinitions.STATUS.ACTIVE
+                                },
+                                attributes: []
+                              },
+                              attributes: ['id']
+                          }
+                        ],
+                        as: 'classrooms',
+                        attributes: ['id', 'class_name']
+                      }
+                    ],
+                    attributes: ['id']
+                  }
+                ],
                 attributes: ['id', 'post_id', 'message', 'create_date', 'read']
-            });
+              });
+              
+              
             const result = listNotification.map(item => ({
                 id: item.id,
                 post_id: item.post_id,
                 message: item.message,
                 create_date: item.create_date,
                 read: item.read,
-                class_name: item.Student.Classroom.class_name,
-                classroom_id: item.Student.Classroom.id
+                class_name: item.Post.classrooms.class_name,
+                classroom_id: item.Post.classrooms.id
             }));
             return result;
         } catch (error) {
