@@ -30,16 +30,20 @@ class QuestionController {
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, false, studentExamId);
       } else {
         const postDetail = await PostDetailService.findDetailByPostId(post.id);
-        const studentId = req.student_id;
-        const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
-        if (!studentExam) {
-          //await transaction.rollback();
-          return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.ACCESS_DENIED_ERROR);
-        }
         const isBeforeStartTime = FormatUtils.checkBeforeStartTime(postDetail.start_date);
         if (isBeforeStartTime) {
           return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
             EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
+        }const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
+        if (isDeadLineExceeded) {
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
+        }
+        const studentId = req.student_id;
+        const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
+        if (!studentExam || studentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+          //await transaction.rollback();
+          return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST, EnumMessage.ACCESS_DENIED_ERROR);
         }
         listQuestionsAndAnswers = await QuestionsAndAnswersService.findQuestionsAndAnswersByExamId(post.id, postDetail.inverted_question, studentExam.id);
         if (postDetail.inverted_question || postDetail.inverted_answer) {

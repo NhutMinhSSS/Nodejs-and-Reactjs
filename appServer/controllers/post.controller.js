@@ -14,6 +14,7 @@ const StudentService = require("../services/student_services/student.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
 const FormatUtils = require("../common/utils/format.utils");
 const QuestionService = require("../services/question_services/question.service");
+const NotificationService = require("../services/notification_services/notification.service");
 const sequelize = db.getPool();
 
 class PostController {
@@ -126,6 +127,7 @@ class PostController {
         const files = req.files;
         const transaction = await sequelize.transaction();
         try {
+            let studentIds
             const newPost = await PostService.createPost(title, content, postCategoryIdParseInt, accountId, classroomId, topicId, transaction);
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
@@ -137,7 +139,6 @@ class PostController {
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
                 //student exam
-                let studentIds
                 if (newPostDetail.is_public) {
                     const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
                     studentIds = listStudents.map(item => item.student_id);
@@ -162,12 +163,18 @@ class PostController {
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
+            
             if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
                 await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
             }
+            if (!studentIds) {
+                const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
+                studentIds = listStudents.map(item => item.student_id);
+            }
+            await NotificationService.createNotifications(studentIds, newPost.id, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {

@@ -2,6 +2,8 @@ const { DataTypes, Model } = require('sequelize');
 
 const db = require('../config/connect_database.config');
 const sequelize = db.getPool();
+const Post = require('./post.model');
+const Student = require('./student.model');
 
 class Notification extends Model{}
 
@@ -55,5 +57,8 @@ Notification.init({
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+
+Notification.belongsTo(Post, { foreignKey: 'post_id'});
+Notification.belongsTo(Student, {foreignKey: 'student_id'});
 
 module.exports = Notification;
