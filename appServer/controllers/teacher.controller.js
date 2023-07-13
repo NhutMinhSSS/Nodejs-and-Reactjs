@@ -54,6 +54,7 @@ class TeacherController {
     async teacherUpdateScoreStudent(req, res) {
         const post = req.post;
         const studentExamId = req.body.student_exam_id;
+        const studentId = req.body.student_id;
         if (!studentExamId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
