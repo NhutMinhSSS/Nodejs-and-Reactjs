@@ -54,7 +54,6 @@ class TeacherController {
     async teacherUpdateScoreStudent(req, res) {
         const post = req.post;
         const studentExamId = req.body.student_exam_id;
-        const studentId = req.body.student_id;
         if (!studentExamId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
@@ -64,7 +63,7 @@ class TeacherController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
-            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId, studentId);
+            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId);
             if (!isStudentExam || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.UNSENT) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);

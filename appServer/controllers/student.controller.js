@@ -254,12 +254,15 @@ class StudentController {
     }
     async studentSubmissionExam(req, res) {
         try {
-            const studentId = req.student_id;
             const accountId = req.user.account_id;
             const post = req.post;
             const studentExamId = req.body.student_exam_id;
+            if (!studentExamId) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.REQUIRED_INFORMATION);
+            }
             //const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
-            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId ? studentExamId : null, studentId);
+            const isStudentExam = await StudentExamService.checkStudentExamByIdAndStudentId(studentExamId);
             if (!isStudentExam || isStudentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
                 if (req.directoryPath) {
                     fs.removeSync(req.directoryPath);

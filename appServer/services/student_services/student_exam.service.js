@@ -53,12 +53,12 @@ class StudentExamService {
             throw error;
         }
     }
-    async checkStudentExamByIdAndStudentId(id, studentId) {
+    async checkStudentExamByIdAndStudentId(id) {
         try {
             const studentExam = await StudentExam.findOne({
                 where: {
                     id: id,
-                    student_id: studentId,
+                    //student_id: studentId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 attributes: ['id', 'submission']
