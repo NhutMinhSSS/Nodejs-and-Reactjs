@@ -247,7 +247,7 @@ class QuestionsAndAnswersService {
                     attributes: ['id', 'essay_answer'],
                     as: 'student_answer_options'
                 },
-                attributes: ['id', 'content', 'question_category_id']
+                attributes: ['id', 'content', 'question_category_id', 'score']
             });
             return listEssayQuestionAndAnswer;
         } catch (error) {
