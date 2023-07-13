@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 
 const db = require('../config/connect_database.config');
+const sequelize = db.getPool();
 
 class Notification extends Model{}
 
