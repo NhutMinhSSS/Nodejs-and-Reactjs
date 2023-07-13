@@ -38,14 +38,14 @@ class TeacherController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             }
-           const teacherList = await TeacherService.findTeachersNotInClassroom(classroomId);
-           const result = teacherList.map(({ id, first_name, last_name, Department }) => ({
-            id,
-            first_name,
-            last_name,
-            department_name: Department.department_name,
-          }))
-           return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+            const teacherList = await TeacherService.findTeachersNotInClassroom(classroomId);
+            const result = teacherList.map(({ id, first_name, last_name, Department }) => ({
+                id,
+                first_name,
+                last_name,
+                department_name: Department.department_name,
+            }))
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
@@ -71,10 +71,10 @@ class TeacherController {
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
                 const score = req.body.score || 0;
-            if (score < 0 && score > 100) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.INVALID_SCORE);
-            }
+                if (score < 0 && score > 100) {
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.INVALID_SCORE);
+                }
                 await TeacherController.prototype.scoreForStudentExercise(studentExamId, score);
             } else if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXAM) {
                 const listQuestionsAndScores = req.body.list_questions_and_score;
@@ -96,13 +96,13 @@ class TeacherController {
         try {
             //chấm tự luận
             //finalScore = (8 + (finalScore * totalScore) /100) / totalScore * 100
-            const isUpdate = await StudentExamService.updateStudentExam(studentExamId,null,score, EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, score, EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
             if (!isUpdate) {
                 throw new Error("Don't update score");
             }
             await transaction.commit();
         } catch (error) {
-            await transaction.rollback(); 
+            await transaction.rollback();
             throw error;
         }
     }
@@ -112,9 +112,9 @@ class TeacherController {
             const questionIds = listQuestionsAndScore.map(item => item.question_id);
             const listQuestion = await QuestionService.findQuestionsById(postId);
             const studentExam = await StudentExamService.findStudentExamById(studentExamId);
-            let totalScore=0;
-            let finalScore =0;
-            listQuestion.forEach(({score}) => {
+            let totalScore = 0;
+            let finalScore = 0;
+            listQuestion.forEach(({ score }) => {
                 totalScore += score;
             });
             let preEssayScore = 0;
@@ -125,15 +125,15 @@ class TeacherController {
                 });
             }
             let essayScore = 0;
-        for (const itemQS of listQuestionsAndScore) {
-        const itemQ = listQuestion.find(q => q.id === itemQS.question_id);
-        if (itemQ) {
-            const score = (itemQS.score / totalScore) * 100;
-            await StudentAnswerOptionService.updateEssayQuestionScore(itemQ.id, itemQS.score, transaction);
-            essayScore += score;
-        }
-    }
-            finalScore = studentExam.total_score - ((preEssayScore/totalScore) *100) + essayScore;
+            for (const itemQS of listQuestionsAndScore) {
+                const itemQ = listQuestion.find(q => q.id === itemQS.question_id);
+                if (itemQ) {
+                    const score = (itemQS.score / totalScore) * 100;
+                    await StudentAnswerOptionService.updateEssayQuestionScore(itemQ.id, itemQS.score, transaction);
+                    essayScore += score;
+                }
+            }
+            finalScore = studentExam.total_score - ((preEssayScore / totalScore) * 100) + essayScore;
             const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, finalScore.toFixed(0), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
             if (!isUpdate) {
                 throw new Error("Don't update score");
@@ -240,7 +240,7 @@ class TeacherController {
         }
         const transaction = await sequelize.transaction();
         try {
-             const isDelete = await TeacherService.deleteTeacher(teacherId, transaction);
+            const isDelete = await TeacherService.deleteTeacher(teacherId, transaction);
             if (!isDelete) {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
@@ -268,7 +268,7 @@ class TeacherController {
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
-            } 
+            }
             const newTeacherToClassroom = await ClassroomTeacherService.addTeachersToClassroom(teacherIds, classroomId, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, newTeacherToClassroom);

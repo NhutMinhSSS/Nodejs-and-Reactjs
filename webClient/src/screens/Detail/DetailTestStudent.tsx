@@ -258,7 +258,6 @@ const DetailTestStudent = ({
                 const DataList = response.data.response_data;
                 setDataQuestion(DataList.question_id);
                 setDataAnswer(DataList);
-                console.log('Đây nè', response.data);
             });
     };
     return (

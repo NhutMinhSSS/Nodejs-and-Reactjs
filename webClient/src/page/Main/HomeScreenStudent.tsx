@@ -28,8 +28,6 @@ const HomeScreenStudent: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            console.log(123);
-            
             window.location.replace('/');
         } else {
             setIsLoading(true);
@@ -39,7 +37,7 @@ const HomeScreenStudent: React.FC = () => {
                 // Xử lý dữ liệu từ response
                 const data = response.data.response_data;
                 console.log('data', data);
-                setScreenClass(data);
+                setScreenClass(data.list_classrooms);
                 //Chuyển dữ liệu khi tạo mới phòng
             })
             .catch((error) => {

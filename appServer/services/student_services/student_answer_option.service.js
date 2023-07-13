@@ -133,7 +133,8 @@ class StudentAnswerOptionService {
     async updateEssayQuestionScore(questionId, score, transaction) {
         try {
             const isUpdate = await StudentAnswerOption.update({
-                score: score
+                score: score,
+                status: 2
             }, {
                where: {
                 question_id: questionId,

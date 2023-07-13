@@ -244,7 +244,7 @@ class QuestionsAndAnswersService {
                         student_exam_id: studentExamId,
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['id', 'essay_answer'],
+                    attributes: ['id', 'essay_answer', 'score', 'status'],
                     as: 'student_answer_options'
                 },
                 attributes: ['id', 'content', 'question_category_id', 'score']
