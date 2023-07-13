@@ -70,7 +70,7 @@ class TeacherController {
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
                 const score = req.body.score || 0;
-            if (score < 0 && score > 100) {
+            if (score < 0 || score > 100) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.INVALID_SCORE);
             }
