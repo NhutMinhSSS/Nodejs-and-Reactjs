@@ -63,7 +63,7 @@ const AllPeople = () => {
                 setGetStudent(data_Student);
                 setGetTeacher(data_Teacher);
                 console.log(data_Teacher);
-                console.log(data_Teacher);
+                console.log(data_Student);
             })
             .catch((error) => {});
     };
@@ -94,7 +94,13 @@ const AllPeople = () => {
                             {getStudent.map((student) => (
                                 <tr key={student['id']}>
                                     <td>
-                                        {student['last_name']} {student['first_name']}
+                                        <div className="flex justify-between items-center">
+                                            <span>
+                                                {' '}
+                                                {student['last_name']} {student['first_name']}
+                                            </span>{' '}
+                                            <span className="text-base"> {student['class_name']}</span>
+                                        </div>
                                         <hr className="w-[40rem] mt-6 border-slate-300" />
                                     </td>
                                 </tr>

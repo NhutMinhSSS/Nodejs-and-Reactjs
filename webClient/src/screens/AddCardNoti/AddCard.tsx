@@ -5,7 +5,9 @@ import ReactQuill from 'react-quill';
 import {
     MdAccountCircle,
     MdMoreVert,
+    MdNoteAlt,
     MdOutlineAssignment,
+    MdOutlineBook,
     MdOutlineFilePresent,
     MdOutlineFileUpload,
     MdOutlineImage,
@@ -222,6 +224,18 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             navigate(`/giang-vien/class/${classroom_id}/${item.id}/document`);
         }
     };
+    const handleChangeIcon = (post_category_id: any) => {
+        if (post_category_id === 2) {
+            return <MdOutlineBook className="bg-blue-400 text-white rounded-full  w-8 h-8" size={20} />;
+        } else if (post_category_id === 3) {
+            return <MdOutlineAssignment className="bg-blue-400 rounded-full text-white w-8 h-8" size={20} />;
+        } else if (post_category_id === 4) {
+            return <MdNoteAlt className="bg-blue-400 rounded-full text-white  w-8 h-8" size={20} />;
+        } else if (post_category_id === 1) {
+            return <MdAccountCircle className="bg-blue-400 rounded-full text-white  w-8 h-8" size={20} />;
+        }
+        return '';
+    };
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -319,7 +333,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                             <div className="flex gap-y-4 flex-col justify-start">
                                 <div className="flex flex-row items-center gap-x-2">
                                     <div className="bg-blue-400 text-white text-xl p-2 rounded-full">
-                                        <MdOutlineAssignment />
+                                        {handleChangeIcon(item.post_category_id)}
                                     </div>
                                     <div className="flex text-base font-medium">
                                         <div className="">

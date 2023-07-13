@@ -4,6 +4,9 @@ import {
     MdBook,
     MdLink,
     MdMoreVert,
+    MdNoteAlt,
+    MdOutlineAssignment,
+    MdOutlineBook,
     MdOutlineFilePresent,
     MdOutlineFileUpload,
     MdOutlineGroup,
@@ -36,7 +39,7 @@ interface Comment {
     comment_date: string;
 }
 interface File {
-    file_id: string;
+    file_id: number;
     file_name: string;
     file_type: string;
 }
@@ -58,10 +61,12 @@ interface StudentExam {
     submission: number;
     id: number;
     file: File[];
+    total_score: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const DetailExcercise = () => {
     const [valueStudentExam, setValueStudentExam] = useState<StudentExam>();
+    const [valueStudentExamTemp, setValueStudentExamTemp] = useState<StudentExam>();
     const [textValue, setTextValue] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
     const [showForm, setShowForm] = useState(false);
@@ -109,6 +114,8 @@ const DetailExcercise = () => {
             console.log(dataFetch);
             setComments(dataFetch.comments);
             setValueStudentExam(dataFetch.student_exams[0]);
+            setValueStudentExamTemp(dataFetch.student_exams[0]);
+
             console.log(dataFetch);
         });
     };
@@ -204,7 +211,7 @@ const DetailExcercise = () => {
         const formatFinshDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
         const currentDay = dayjs().format('DD/MM/YYYY HH:mm:ss');
         if (currentDay < formatStartDate) {
-            Notification('info', 'Thông báo', `Chưa tới giờ cook ! giờ bắt đầu ${formatStartDate}`);
+            Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài ! giờ bắt đầu ${formatStartDate}`);
         } else {
             navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student/test`);
         }
@@ -214,20 +221,34 @@ const DetailExcercise = () => {
         const config = HeaderToken.getTokenConfig();
         const formData = new FormData();
         if (post_id && valueStudentExam?.id) {
-            const parsedPostId = parseInt(post_id, 10);
             formData.append('post_id', post_id?.toString());
             formData.append('student_exam_id', valueStudentExam.id.toString());
-            selectedFile.forEach((files) => {
-                formData.append(`files`, files);
-            });
+
+            if (valueStudentExam.submission === 0 && valueStudentExamTemp) {
+                if (
+                    selectedFile.length !== 0 ||
+                    removeFile.length > valueStudentExamTemp.file.length ||
+                    (valueStudentExamTemp.file && removeFile.length !== valueStudentExamTemp.file.length)
+                ) {
+                    console.log(valueStudentExamTemp.file && removeFile.length !== valueStudentExamTemp.file.length);
+                    selectedFile.forEach((files) => {
+                        formData.append(`files`, files);
+                    });
+                    formData.append('list_files_remove', JSON.stringify(removeFile));
+                } else {
+                    return Notification('warning', 'Thông báo', 'Vui lòng chọn file');
+                }
+            }
         }
         setSelectedFile([]);
+
         axios
             .post(`${BASE_URL}/students/submission/`, formData, config)
             .then((response) => {
                 setSend(false);
                 handleFetchData();
                 console.log(response);
+                setRemoveFile([]);
             })
             .catch((error) => {
                 setSend(false);
@@ -261,13 +282,46 @@ const DetailExcercise = () => {
     const handleRemoveFile = (file: any) => {
         setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f !== file));
     };
+    const handleChangeIcon = (post_category_id: any) => {
+        if (post_category_id === 2) {
+            return <MdOutlineBook className="bg-blue-400 text-white rounded-full p-1  w-10 h-10" size={32} />;
+        } else if (post_category_id === 3) {
+            return <MdOutlineAssignment className="bg-blue-400 rounded-full text-white p-1  w-10 h-10" size={32} />;
+        } else if (post_category_id === 4) {
+            return <MdNoteAlt className="bg-blue-400 rounded-full text-white p-1   w-10 h-10" size={32} />;
+        }
+        return '';
+    };
+
+    const [submissionStatus, setSubmissionStatus] = useState<number>(valueStudentExam?.submission || 0);
+    const handleButtonCancelEx = () => {
+        if (submissionStatus === 0) {
+            handleSubmitFile();
+            // Nếu trạng thái hiện tại là "Nộp bài", thực hiện hành động nộp bài
+            setSubmissionStatus(1); // Cập nhật trạng thái thành "Đã nộp"
+        } else if (submissionStatus === 1) {
+            // Nếu trạng thái hiện tại là "Đã nộp", thực hiện hành động hủy nộp
+            handleSubmitFile();
+            setSubmissionStatus(0); // Cập nhật trạng thái thành "Nộp bài"
+        }
+    };
+    const [removeFile, setRemoveFile] = useState<number[]>([]);
+    const handleRemoveFileInSnubmit = (idFile: number) => {
+        setRemoveFile((prevRemoveFile) => [...prevRemoveFile, idFile]);
+        if (valueStudentExam) {
+            const studentExam = {
+                ...valueStudentExam,
+                file: valueStudentExam?.file.filter((file) => file.file_id !== idFile) ?? [],
+            };
+            setValueStudentExam(studentExam);
+        }
+    };
+    console.log(removeFile);
 
     return (
         <>
             <div className="flex justify-center mt-20">
-                <div className="mr-5">
-                    <MdBook className="bg-blue-400 rounded-full p-1.5 w-10 h-10" size={32} />
-                </div>
+                <div className="mr-5">{handleChangeIcon(isData?.post_category_id)}</div>
 
                 <div className="w-[45rem] gap-y-3 flex flex-col">
                     <div className="flex justify-between items-center ">
@@ -288,11 +342,17 @@ const DetailExcercise = () => {
                     </div>
                     <hr className="my-2 border-blue-500" />
                     {isData?.post_category_id === 4 ? (
-                        <div onClick={handleTest} className="border-2 flex gap-x-2 items-center p-4 rounded-md">
-                            <button>
-                                <MdLink size={30} />
-                            </button>
-                            <button>Đây là link làm bài</button>
+                        <div>
+                            {isData.student_exams[0].submission === 0 ? (
+                                <div onClick={handleTest} className="border-2 flex gap-x-2 items-center p-4 rounded-md">
+                                    <button>
+                                        <MdLink size={30} />
+                                    </button>
+                                    <button>Đây là link làm bài</button>
+                                </div>
+                            ) : (
+                                'Đã nộp bài '
+                            )}
                         </div>
                     ) : (
                         <div>
@@ -397,14 +457,57 @@ const DetailExcercise = () => {
                 </div>
                 {isData?.post_category_id === 3 ? (
                     <div>
-                        <div className="shadow-lg bg-zinc-100 rounded-md px-5 py-5 ml-10 grid gap-y-5 w-72 ">
+                        <div className="shadow-lg bg-zinc-100 rounded-md px-5 py-5 ml-10 grid gap-y-5 ">
                             <div className="flex justify-between">
                                 <div>Bài tập của bạn</div>
+                                <div>
+                                    {isData.student_exams[0].submission === 2
+                                        ? isData?.student_exams[0]?.total_score
+                                        : 0}
+                                    /100
+                                </div>
                                 {/* <div className="text-red-500 font-medium">Thiếu</div> */}
                             </div>
-                            <div className="flex flex-col max-h-72 overflow-auto truncate ... gap-y-3">
-                                {valueStudentExam?.submission === 0 ? (
-                                    <div className="overflow-auto max-h-40 p-4 border-[2px] border-slate-300 py-2 hover:border-blue-400 duration-200 rounded-md text-center text-blue-400">
+                            <div className="flex flex-col max-w-[15rem]">
+                                <div className=" overflow-auto max-h-40 mb-2">
+                                    {valueStudentExam?.file &&
+                                        valueStudentExam?.file.map((item: any) => (
+                                            <div className="border-2 p-2 flex flex-row max-h-40  gap-y-3 items-center">
+                                                <div>
+                                                    {['image/jpg', 'image/jpeg', 'image/png'].includes(
+                                                        item.file_type,
+                                                    ) ? (
+                                                        <div className="w-10 h-10">
+                                                            <MdOutlineImage size={32} />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="w-10 h-10">
+                                                            <MdOutlineFilePresent size={32} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="truncate">{item.file_name}</div>
+                                                <Button
+                                                    disabled={
+                                                        valueStudentExam.submission === 1 ||
+                                                        valueStudentExam.submission === 2
+                                                            ? true
+                                                            : false
+                                                    }
+                                                    type="default"
+                                                    onClick={() => {
+                                                        handleRemoveFileInSnubmit(item.file_id);
+                                                    }}
+                                                    danger
+                                                    shape="circle"
+                                                >
+                                                    X
+                                                </Button>
+                                            </div>
+                                        ))}
+                                </div>
+                                {valueStudentExam?.submission === 0 && (
+                                    <div className="overflow-auto max-h-40 p-4 border-[2px] border-slate-300 py-2 hover:border-blue-400 duration-200 rounded-md text-center text-blue-400 mb-2">
                                         <Upload
                                             listType="picture"
                                             multiple
@@ -423,39 +526,30 @@ const DetailExcercise = () => {
                                             </button>
                                         </Upload>
                                     </div>
-                                ) : (
-                                    valueStudentExam?.file.map((item: any) => (
-                                        <div className="border-2 p-2 flex ">
-                                            <div>
-                                                {' '}
-                                                {['image/jpg', 'image/jpeg', 'image/png'].includes(item.file_type) ? (
-                                                    <div className="w-10 h-10">
-                                                        <MdOutlineImage size={32} />
-                                                    </div>
-                                                ) : (
-                                                    <div className="w-10 h-10">
-                                                        <MdOutlineFilePresent size={32} />
-                                                    </div>
-                                                )}{' '}
-                                            </div>
-                                            <div> {item.file_name}</div>
-                                        </div>
-                                    ))
                                 )}
 
-                                {valueStudentExam?.submission === 0 ? (
+                                {valueStudentExam?.submission === 0 && (
                                     <button
-                                        onClick={handleSubmitFile}
                                         className="bg-blue-400 py-2  hover:bg-blue-500 rounded-md duration-200 font-medium text-white"
+                                        onClick={handleButtonCancelEx}
                                     >
-                                        Nộp Bài
+                                        Nộp bài
                                     </button>
-                                ) : (
+                                )}
+                                {valueStudentExam?.submission === 1 && (
+                                    <button
+                                        className="bg-gray-400 py-2  rounded-md duration-200 font-medium text-white"
+                                        onClick={handleButtonCancelEx}
+                                    >
+                                        Hủy nộp
+                                    </button>
+                                )}
+                                {valueStudentExam?.submission === 2 && (
                                     <button
                                         disabled
                                         className="bg-gray-400 py-2  rounded-md duration-200 font-medium text-white"
                                     >
-                                        Đã nộp
+                                        Đã chấm điểm
                                     </button>
                                 )}
                             </div>

@@ -87,8 +87,10 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
     };
     const {} = useParams();
     const handleClick = (item: any) => {
-        if (item.post_category_id !== 1) {
+        if (item.post_category_id === 3 || item.post_category_id === 4) {
             navigate(`/giang-vien/class/${classroom_id}/${item.id}/detail-test`);
+        } else if (item.post_category_id == 2) {
+            navigate(`/giang-vien/class/${classroom_id}/${item.id}/document`);
         }
     };
     return (
@@ -127,7 +129,13 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                     <div></div>
                 </div>
                 <div>
-                    <Modal visible={isPopupVisible} onCancel={handlePopupCancel} width="100%" footer={null}>
+                    <Modal
+                        visible={isPopupVisible}
+                        onCancel={handlePopupCancel}
+                        footer={null}
+                        closable={false}
+                        width="100%"
+                    >
                         <PopupCreateExercise visible={handlePopupCancel} />
                     </Modal>
                 </div>
@@ -137,6 +145,7 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                         onCancel={handlePopupCancelPopupCreateTest}
                         width="100%"
                         footer={null}
+                        closable={false}
                     >
                         <PopupCreateTest visible={handlePopupCancelPopupCreateTest} data={classroom_id} />
                     </Modal>
@@ -147,6 +156,7 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                         onCancel={handlePopupCancelDocument}
                         width="100%"
                         footer={null}
+                        closable={false}
                     >
                         <PopupCreateDocument visible={handlePopupCancelDocument} />
                     </Modal>

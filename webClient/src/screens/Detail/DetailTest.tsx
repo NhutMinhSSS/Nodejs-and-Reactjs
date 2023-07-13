@@ -24,28 +24,48 @@ interface Data {
     student_exams: Student[];
     submitted: number;
     title: string;
+    post_category_id: number;
+    files: File[];
+}
+interface File {
+    file_id: number;
+    file_name: string;
+    file_type: string;
 }
 
 const DetailTest = () => {
     const [isData, setIsData] = useState<Data>();
     const location = useLocation();
-    const [isDataStudent, setIsDataStudent] = useState<number>();
     const [isHome, setIsHome] = useState(true);
+    const [isDataStudent, setIsDataStudent] = useState<number>();
+    const [isDataStudentExam, setIsDataStudentExam] = useState<Data>();
     useEffect(() => {
         handleFetchData();
-        console.log('data nè: ', isData?.delivered);
+        // handleFetchDataListQuestionEssay();
     }, []);
-    const { post_id } = useParams();
 
     const handleFetchData = () => {
         const config = HeaderToken.getTokenConfig();
         axios.get(`${BASE_URL}/posts/${post_id}/post-detail`, config).then((response) => {
             const data_detail = response.data.response_data;
+            const data_student_exam = response.data.response_data;
             console.log('data: ', data_detail);
             setIsData(data_detail);
+            setIsDataStudentExam(data_student_exam);
         });
     };
-    const { classroom_id } = useParams();
+    const { post_id } = useParams();
+
+    // console.log(isDataStudentExam.map((item: any) => item.id));
+
+    const handleFetchDataListQuestionEssay = () => {
+        const config = HeaderToken.getTokenConfig();
+        const student_exam_id = isDataStudentExam;
+        axios.get(`${BASE_URL}/teachers/${student_exam_id}/${post_id}/get-list-essay-question`).then((response) => {
+            const data_List = response.data.response_data;
+            console.log('Đây là data', data_List);
+        });
+    };
     const navigate = useNavigate();
     const handleHome = () => {
         setIsHome(true);
@@ -61,6 +81,8 @@ const DetailTest = () => {
         setIsDataStudent(id);
         setIsHome(false);
     };
+    // console.log(isDataStudentExam?.post_category_id);
+
     return (
         <>
             <Space direction="vertical" style={{ width: '100%' }} size={[0, 48]}>
@@ -97,7 +119,12 @@ const DetailTest = () => {
                             {isHome ? (
                                 <DetailHome params={isData} />
                             ) : (
-                                <DetailTestStudent params={isData} id={isDataStudent} />
+                                <DetailTestStudent
+                                    params={isData}
+                                    id={isDataStudent}
+                                    post_category_id={isDataStudentExam?.post_category_id}
+                                    isStudentExam={isDataStudentExam}
+                                />
                             )}
                         </Content>
                     </Layout>

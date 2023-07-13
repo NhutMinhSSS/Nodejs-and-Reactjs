@@ -5,7 +5,7 @@ import SystemConst from '../../common/consts/system_const';
 import { Button, Checkbox, Input, Layout, Radio } from 'antd';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './style.scss';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 const { TextArea } = Input;
 
 interface Question {
@@ -130,6 +130,8 @@ const JoinMark = () => {
     };
     const [send, setSend] = useState(false);
     let timer: any;
+    const { classroom_id } = useParams();
+    const navigate = useNavigate();
     const handleSubmit = () => {
         // Gửi dữ liệu đã được lưu trong selectedAnswers về server
         // Sử dụng axios hoặc phương thức gửi dữ liệu tương tự
@@ -140,20 +142,25 @@ const JoinMark = () => {
                 const config = HeaderToken.getTokenConfig();
                 const data = {
                     student_exam_id: isData.student_exam_id,
-                    post_id: post_id
-                }
-                axios.post(`${BASE_URL}/students/submission`,data, config).then((response) => {
-                    setSend(false);
-                    console.log(response);
-                }).catch((error) => {
-                    setSend(false);
-                    console.log(error);
-                    
-                })
+                    post_id: post_id,
+                };
+                axios
+                    .post(`${BASE_URL}/students/submission`, data, config)
+                    .then((response) => {
+                        setSend(false);
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        setSend(false);
+                        console.log(error);
+                    });
             }, 1500);
         }
         //handleFetchData();
+        navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student`);
     };
+    console.log(classroom_id);
+
     const handleExitHome = () => {
         window.location.replace('/');
     };
@@ -180,7 +187,7 @@ const JoinMark = () => {
         setShouldCallAPI(true);
     };
     console.log(isData?.list_questions_answers);
-    
+
     return (
         <>
             <div>
@@ -202,14 +209,20 @@ const JoinMark = () => {
                                                             asw.question_category_id === 1
                                                                 ? 'radio-answer'
                                                                 : 'checkbox-answer'
-                                                        } ${answer.correct_answer && !isData.student_exam_id && isData.submission !==0 && 'bg-green-300 rounded-md'}`}
+                                                        } ${
+                                                            answer.correct_answer &&
+                                                            !isData.student_exam_id &&
+                                                            isData.submission !== 0 &&
+                                                            'bg-green-300 rounded-md'
+                                                        }`}
                                                         key={answer.id}
                                                     >
                                                         {asw.question_category_id === 1 && (
                                                             <input
                                                                 disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
+                                                                    .map((e) => parseInt(e.answer_id?.toString()))
+                                                                    .filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 type="radio"
                                                                 name={`asw${index}`}
@@ -233,7 +246,8 @@ const JoinMark = () => {
                                                                 className="focus:border-blue-300"
                                                                 disabled={isData.submission ? true : false}
                                                                 defaultChecked={asw.student_answer_options
-                                                                    .map((e) => parseInt(e.answer_id?.toString())).filter((id) => id !== null)
+                                                                    .map((e) => parseInt(e.answer_id?.toString()))
+                                                                    .filter((id) => id !== null)
                                                                     .includes(answer.id)}
                                                                 value={answer.id}
                                                                 onChange={(e) => {
