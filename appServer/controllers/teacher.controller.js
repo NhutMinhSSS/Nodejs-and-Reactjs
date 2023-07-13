@@ -12,6 +12,7 @@ const ClassroomService = require('../services/classroom_services/classroom.servi
 const ClassroomTeacherService = require('../services/classroom_services/classroom_teacher.service');
 const StudentExamService = require('../services/student_services/student_exam.service');
 const QuestionService = require('../services/question_services/question.service');
+const StudentAnswerOptionService = require('../services/student_services/student_answer_option.service');
 const sequelize = db.getPool();
 
 class TeacherController {
@@ -70,7 +71,7 @@ class TeacherController {
             }
             if (post.post_category_id === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
                 const score = req.body.score || 0;
-            if (score < 0 || score > 100) {
+            if (score < 0 && score > 100) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.INVALID_SCORE);
             }
@@ -81,7 +82,7 @@ class TeacherController {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.INVALID_SCORE);
                 }
-                await TeacherController.prototype.scoreForStudentExam(studentExamId, listQuestionsAndScores);
+                await TeacherController.prototype.scoreForStudentExam(studentExamId, listQuestionsAndScores, post.id);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
@@ -105,23 +106,39 @@ class TeacherController {
             throw error;
         }
     }
-    async scoreForStudentExam(studentExamId, listQuestionsAndScore) {
+    async scoreForStudentExam(studentExamId, listQuestionsAndScore, postId) {
         const transaction = await sequelize.transaction();
         try {
             const questionIds = listQuestionsAndScore.map(item => item.question_id);
-            const listQuestion = await QuestionService.findQuestionsById(questionIds);
+            const listQuestion = await QuestionService.findQuestionsById(postId);
             const studentExam = await StudentExamService.findStudentExamById(studentExamId);
-            const totalScore = listQuestionsAndScore.reduce((accumulator, itemQS) => {
-                const itemQ = listQuestion.find((q) => q.id === itemQS.question_id);
-                if (itemQ) {
-                    return accumulator + (itemQS.score / itemQ.score) * 100;
-                }
-                return accumulator;
-            }, studentExam.total_score);
-            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, totalScore.toFixed(0), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+            let totalScore=0;
+            let finalScore =0;
+            listQuestion.forEach(({score}) => {
+                totalScore += score;
+            });
+            let preEssayScore = 0;
+            if (studentExam.submission === EnumServerDefinitions.SUBMISSION.SUBMITTED) {
+                const listEssayQuestions = await StudentAnswerOptionService.findAllEssayQuestionByQuestionId(questionIds, studentExamId);
+                listEssayQuestions.forEach(item => {
+                    preEssayScore += item.score;
+                });
+            }
+            let essayScore = 0;
+        for (const itemQS of listQuestionsAndScore) {
+        const itemQ = listQuestion.find(q => q.id === itemQS.question_id);
+        if (itemQ) {
+            const score = (itemQS.score / totalScore) * 100;
+            await StudentAnswerOptionService.updateEssayQuestionScore(itemQ.id, itemQS.score, transaction);
+            essayScore += score;
+        }
+    }
+            finalScore = studentExam.total_score - ((preEssayScore/totalScore) *100) + essayScore;
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, finalScore.toFixed(0), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
             if (!isUpdate) {
                 throw new Error("Don't update score");
             }
+            await transaction.commit();
         } catch (error) {
             await transaction.rollback();
             throw error;

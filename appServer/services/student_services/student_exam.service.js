@@ -10,7 +10,8 @@ class StudentExamService {
                 where: {
                     id: studentExamId,
                     status: EnumServerDefinitions.STATUS.ACTIVE
-                }
+                },
+                attributes: ['id', 'total_score', 'submission']
             });
             return studentExam;
         } catch (error) {

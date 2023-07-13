@@ -5,6 +5,21 @@ const Question = require("../../models/question.model");
 const StudentAnswerOption = require("../../models/student_answer_option.model");
 
 class StudentAnswerOptionService {
+    async findAllEssayQuestionByQuestionId(ids, studentExamId) {
+        try {
+            const listQuestion = await StudentAnswerOption.findAll({
+                where: {
+                    question_id: {[Op.in]: ids},
+                    student_exam_id:studentExamId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id', 'score']
+            });
+            return listQuestion;
+        } catch (error) {
+            throw error;
+        }
+    }
     async findAllAnswersByStudentExamId(studentExamId, examId) {
         try {
             const listQuestionsAndAnswersByStudentExam = await Question.findAll({
@@ -111,6 +126,21 @@ class StudentAnswerOptionService {
             }));
             const newStudentAnswerOption = await StudentAnswerOption.bulkCreate(listStudentAnswerOption, { transaction });
             return newStudentAnswerOption;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async updateEssayQuestionScore(questionId, score, transaction) {
+        try {
+            const isUpdate = await StudentAnswerOption.update({
+                score: score
+            }, {
+               where: {
+                question_id: questionId,
+                status: EnumServerDefinitions.STATUS.ACTIVE
+               }, transaction
+            });
+            return isUpdate > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }

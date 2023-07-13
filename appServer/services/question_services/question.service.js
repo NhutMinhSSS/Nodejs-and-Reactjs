@@ -4,14 +4,15 @@ const Question = require("../../models/question.model");
 const EnumServerDefinitions = require("../../common/enums/enum_server_definitions");
 
 class QuestionService {
-  async findQuestionsById(questionIds) {
+  async findQuestionsById(postId) {
     try {
       const listQuestions = await Question.findAll({
         where: {
-          id: {[Op.in]: questionIds},
+          //id: {[Op.in]: questionIds},
+          exam_id: postId,
           status: EnumServerDefinitions.STATUS.ACTIVE
         },
-        attributes: ['id', 'score']
+        attributes: ['id', 'score', 'question_category_id']
       });
       return listQuestions;
     } catch (error) {
