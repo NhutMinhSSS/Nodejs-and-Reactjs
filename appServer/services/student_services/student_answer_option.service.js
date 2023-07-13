@@ -11,7 +11,7 @@ class StudentAnswerOptionService {
                 where: {
                     question_id: {[Op.in]: ids},
                     student_exam_id:studentExamId,
-                    status: EnumServerDefinitions.STATUS.ACTIVE
+                    status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, 2]}
                 },
                 attributes: ['id', 'score']
             });

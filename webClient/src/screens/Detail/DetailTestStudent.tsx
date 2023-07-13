@@ -225,6 +225,9 @@ const DetailTestStudent = ({
                 question_id: parseInt(question_id),
                 score,
             }));
+            if (questionsWithoutId.length === 0) {
+                return Notification('error', 'Thông báo', 'Chưa sửa điểm')
+            }
             console.log(questionsWithoutId);
             data = {
                 student_exam_id: isStudent?.id,
@@ -263,6 +266,14 @@ const DetailTestStudent = ({
                 console.log('Đây nè', response.data);
             });
     };
+    const handleCheckStatusEssay = (item: Question) => {
+        if (item.student_answer_options[0]?.status === 2 ) {
+            return "Đã chấm"; 
+        } else if (item.student_answer_options[0]?.status === 1) {
+            return "Chưa chấm";
+        }
+        return "Không làm";
+    }
     return (
         <>
             <div className=" flex justify-between flex-row">
@@ -335,6 +346,7 @@ const DetailTestStudent = ({
                                                     onChange={(e) =>
                                                         handleQuestionPointChange(item.id, Number(e.target.value))
                                                     }
+                                                    disabled = {item.student_answer_options.length === 0  ? true : false}
                                                     value={pointsEssay[item.id]?.toString() || item.student_answer_options[0]?.score}
                                                     type="number"
                                                     min={0}
@@ -342,7 +354,7 @@ const DetailTestStudent = ({
                                                 ></Input>
                                             </div>
                                             <div>
-                                                {/* {item.student_answer_options[0]?.status === 2 ? "Đã chấm" : "Chưa chấm"} */}
+                                                {handleCheckStatusEssay(item)}
                                             </div>
                                         </div>
                                     </div>
