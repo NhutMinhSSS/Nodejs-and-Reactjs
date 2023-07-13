@@ -242,7 +242,7 @@ class QuestionsAndAnswersService {
                     required: false,
                     where: {
                         student_exam_id: studentExamId,
-                        status: EnumServerDefinitions.STATUS.ACTIVE
+                        status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, 2]}
                     },
                     attributes: ['id', 'essay_answer', 'score', 'status'],
                     as: 'student_answer_options'

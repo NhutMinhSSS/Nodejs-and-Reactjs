@@ -40,6 +40,8 @@ interface Question {
 interface Answer {
     id: number;
     essay_answer: string;
+    score: number;
+    status: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const DetailTestStudent = ({
@@ -258,6 +260,7 @@ const DetailTestStudent = ({
                 const DataList = response.data.response_data;
                 setDataQuestion(DataList.question_id);
                 setDataAnswer(DataList);
+                console.log('Đây nè', response.data);
             });
     };
     return (
@@ -332,11 +335,14 @@ const DetailTestStudent = ({
                                                     onChange={(e) =>
                                                         handleQuestionPointChange(item.id, Number(e.target.value))
                                                     }
-                                                    value={pointsEssay[item.id]?.toString() || ''}
+                                                    value={pointsEssay[item.id]?.toString() || item.student_answer_options[0]?.score}
                                                     type="number"
                                                     min={0}
                                                     max={item.score}
                                                 ></Input>
+                                            </div>
+                                            <div>
+                                                {/* {item.student_answer_options[0]?.status === 2 ? "Đã chấm" : "Chưa chấm"} */}
                                             </div>
                                         </div>
                                     </div>
