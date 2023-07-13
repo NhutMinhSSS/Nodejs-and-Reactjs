@@ -87,6 +87,21 @@ class NotificationService {
             throw error;
         }
     }
+    async updateReadNotifiCation(notificationId) {
+      try {
+        const isUpdate = await Notification.update({
+          read: true
+        }, {
+          where: {
+            id: notificationId,
+            status: EnumServerDefinitions.STATUS.ACTIVE
+          }
+        });
+        return isUpdate > EnumServerDefinitions.EMPTY;
+      } catch (error) {
+        throw error;
+      }
+    }
 }
 
 module.exports = new NotificationService;

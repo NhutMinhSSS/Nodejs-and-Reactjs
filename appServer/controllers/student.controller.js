@@ -19,6 +19,7 @@ const PostDetailService = require("../services/post_services/post_detail.service
 const ClassroomService = require("../services/classroom_services/classroom.service");
 const QuestionsAndAnswersService = require("../services/questions_and_answers_service/questions_and_answers.service");
 const StudentAnswerOptionService = require("../services/student_services/student_answer_option.service");
+const NotificationService = require('../services/notification_services/notification.service');
 const sequelize = db.getPool();
 
 
@@ -435,6 +436,25 @@ class StudentController {
             student = await StudentExamService.findStudentByStudentExamId(studentExamId);
             logger.error(`- Lỗi ở sinh viên có mã sinh viên là: ${student.Student.student_code} có tên là ${student.Student.last_name} ${student.Student.first_name}`);
             await transaction.rollback();
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
+    async studentReadNotification(req, res) {
+        try {
+            const notificationId = req.params.notification_id;
+            if (!notificationId) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.REQUIRED_INFORMATION);
+            }
+            const isUpdate = await NotificationService.updateReadNotifiCation(notificationId);
+            if (!isUpdate) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
+            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
+        } catch (error) {
+            logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);
         }
