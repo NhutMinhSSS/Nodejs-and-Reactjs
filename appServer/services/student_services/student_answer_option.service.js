@@ -138,7 +138,7 @@ class StudentAnswerOptionService {
             }, {
                where: {
                 question_id: questionId,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, 2]}
                }, transaction
             });
             return isUpdate > EnumServerDefinitions.EMPTY;
