@@ -44,12 +44,13 @@ interface Answer {
     status: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const DetailTestStudent = ({
+const DetailTestStudent = ({ onfetchData,
     params,
     id,
     post_category_id,
     isStudentExam,
 }: {
+    onfetchData: any,
     params: any;
     id: number | undefined;
     post_category_id: any;
@@ -69,12 +70,10 @@ const DetailTestStudent = ({
         setIsStudent(temp);
         setIsStudentExamFile(isStudentExam);
         setPointsValue(isStudent?.total_score);
-        console.log(isStudent?.total_score);
-
         if ((isStudent?.submission === 1 || isStudent?.submission === 2) && post_category_id === 4) {
             handleListQuestion();
         }
-    }, [id, isStudent?.total_score, isStudent?.submission]);
+    }, [id, isStudent?.total_score, isStudent?.submission, onfetchData]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -249,6 +248,7 @@ const DetailTestStudent = ({
                     ? Notification('success', 'Thông báo', 'Lưu thành công ')
                     : Notification('success', 'Thông báo', 'Sửa thành công ');
             }
+            onfetchData();
         });
     };
 

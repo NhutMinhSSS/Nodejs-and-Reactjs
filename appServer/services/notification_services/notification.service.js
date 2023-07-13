@@ -30,9 +30,9 @@ class NotificationService {
                             },
                             attributes: [],
                         },
-                        attributes: ['id']
+                        attributes: ['id', 'class_name']
                     }],
-                    attributes: ['id', 'class_name']
+                    attributes: ['id']
                 }, {
                     model: Post,
                     required: true,

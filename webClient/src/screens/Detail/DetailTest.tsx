@@ -120,6 +120,7 @@ const DetailTest = () => {
                                 <DetailHome params={isData} />
                             ) : (
                                 <DetailTestStudent
+                                    onfetchData={handleFetchData}
                                     params={isData}
                                     id={isDataStudent}
                                     post_category_id={isDataStudentExam?.post_category_id}

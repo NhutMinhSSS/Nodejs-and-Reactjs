@@ -35,6 +35,9 @@ interface Data {
     student_exam_id: number;
     submission: number;
 }
+interface EssayAnswer  {
+    [key: string]: any;
+}
 const { Header, Footer, Content } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const JoinMark = () => {
@@ -45,6 +48,7 @@ const JoinMark = () => {
     const [isReadOnly, setIsReadOnly] = useState(false);
     const [studentExamId, setStudentExamId] = useState(0);
     const [submission, setSubmission] = useState(0);
+    const [essayAnswers, setEssayAnswers] = useState<EssayAnswer>({});
     useEffect(() => {
         handleFetchData();
     }, []);
@@ -182,7 +186,11 @@ const JoinMark = () => {
     }, [textValue, shouldCallAPI]);
 
     const handleTextAreaChange = (e: any, questionId: number) => {
-        setTextValue(e);
+        setEssayAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [questionId]: e,
+          }));
+        //setTextValue(e);
         setQuestionId(questionId);
         setShouldCallAPI(true);
     };
@@ -278,7 +286,7 @@ const JoinMark = () => {
                                                         showCount
                                                         value={
                                                             !checkChangeTextArea
-                                                                ? asw.student_answer_options[0]?.essay_answer?.toString()
+                                                                ? essayAnswers[asw.id]?.toString()
                                                                 : textValue
                                                         }
                                                         placeholder="Nhập câu trả lời"
