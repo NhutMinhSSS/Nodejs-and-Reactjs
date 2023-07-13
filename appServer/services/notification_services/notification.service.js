@@ -54,7 +54,7 @@ class NotificationService {
                         attributes: ['id', 'class_name']
                       }
                     ],
-                    attributes: ['id']
+                    attributes: ['id', 'post_category_id']
                   }
                 ],
                 attributes: ['id', 'post_id', 'message', 'create_date', 'read']
@@ -67,6 +67,7 @@ class NotificationService {
                 message: item.message,
                 create_date: item.create_date,
                 read: item.read,
+                post_category_id: item.Post.post_category_id,
                 class_name: item.Post.classrooms.class_name,
                 classroom_id: item.Post.classrooms.id
             }));
@@ -75,11 +76,12 @@ class NotificationService {
             throw error;
         }
     }
-    async createNotifications(studentIds, postId, transaction) {
+    async createNotifications(studentIds, postId, message, transaction) {
         try {
             const listNotifications = studentIds.map(item => ({
                 student_id: item,
-                post_id: postId
+                post_id: postId,
+                message: message
             }));
             const newNotifications = Notification.bulkCreate(listNotifications, { transaction });
             return newNotifications;
