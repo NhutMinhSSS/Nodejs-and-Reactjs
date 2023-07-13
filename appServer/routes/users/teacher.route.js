@@ -7,6 +7,6 @@ const QuestionController = require('../../controllers/question.controller');
 const EnumServerDefinitions = require('../../common/enums/enum_server_definitions');
 
 TeacherRouter.get('/:student_exam_id/:post_id/get-list-essay-question', authorize([EnumServerDefinitions.ROLE.TEACHER]),checkPostBelongToClassroom, QuestionController.getListEssayQuestion);
-TeacherRouter.put('/score-for-student', authorize([EnumServerDefinitions.ROLE.TEACHER]), TeacherController.teacherUpdateScoreStudent);
+TeacherRouter.put('/score-for-student', authorize([EnumServerDefinitions.ROLE.TEACHER]), checkPostBelongToClassroom, TeacherController.teacherUpdateScoreStudent);
 
 module.exports = TeacherRouter;
