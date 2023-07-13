@@ -13,6 +13,7 @@ import { Spin } from 'antd';
 const HomeScreen: React.FC = () => {
     const [screenClass, setScreenClass] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState<string>('');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -39,6 +40,25 @@ const HomeScreen: React.FC = () => {
                     }
                     // Xử lý lỗi nếu có
                     console.error(error);
+                    // if (axios.isAxiosError(error)) {
+                    //     if (
+                    //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                    //         error.response.data.error_message === 'No exist email'
+                    //     ) {
+                    //         setMessage('Tài khoản không tồn tại');
+                    //     } else if (
+                    //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                    //         error.response.data.error_message === 'Invalid password'
+                    //     ) {
+                    //         setMessage('Sai mật khẩu');
+                    //     } else if (error.response?.status === SystemConst.STATUS_CODE.BAD_REQUEST) {
+                    //         setMessage('Cần Nhập tài khoản và mật khẩu');
+                    //     } else {
+                    //         setMessage('Không thể kết nối máy chủ');
+                    //     }
+                    // } else {
+                    //     console.error(error);
+                    // }
                 })
                 .finally(() => {
                     setIsLoading(false);

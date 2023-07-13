@@ -151,7 +151,8 @@ const JoinClassedTeacher: React.FC = () => {
         navigate('/giang-vien');
     };
     const handlePassPage = (item: any) => {
-        navigate(`/giang-vien/class/${item['id']}`);
+        // navigate(`/giang-vien/class/${item['id']}`);
+        window.location.replace(`/giang-vien/class/${item['id']}`);
         handleFetchData();
     };
     return (
@@ -193,9 +194,6 @@ const JoinClassedTeacher: React.FC = () => {
                             </TabPane>
                             <TabPane tab="Mọi người" key="3">
                                 <AllPeople />
-                            </TabPane>
-                            <TabPane tab="Điểm" key="4">
-                                <PointClass />
                             </TabPane>
                         </Tabs>
                     </div>
@@ -254,7 +252,7 @@ const JoinClassedTeacher: React.FC = () => {
                                 <div className="flex flex-col gap-y-5 h-auto overflow-auto ">
                                     {isDataDrawer.map((item: any) => (
                                         <button
-                                            onClick={() => handlePassPage(item)}
+                                            onDoubleClick={() => handlePassPage(item)}
                                             className="hover:text-black hover:bg-slate-200 transition duration-500  w-full h-auto py-2 px-2 border-2 rounded-md flex items-center gap-x-2"
                                         >
                                             <span>

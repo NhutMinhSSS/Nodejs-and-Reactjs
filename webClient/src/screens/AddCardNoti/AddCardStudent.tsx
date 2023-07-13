@@ -5,7 +5,9 @@ import ReactQuill from 'react-quill';
 import {
     MdAccountCircle,
     MdMoreVert,
+    MdNoteAlt,
     MdOutlineAssignment,
+    MdOutlineBook,
     MdOutlineFilePresent,
     MdOutlineFileUpload,
     MdOutlineImage,
@@ -304,6 +306,18 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
             navigate(`/sinh-vien/class/${classroom_id}/${item.id}/detail-student`);
         }
     };
+    const handleChangeIcon = (post_category_id: any) => {
+        if (post_category_id === 2) {
+            return <MdOutlineBook className="bg-blue-400 text-white rounded-full  w-8 h-8" size={18} />;
+        } else if (post_category_id === 3) {
+            return <MdOutlineAssignment className="bg-blue-400 rounded-full text-white w-8 h-8" size={18} />;
+        } else if (post_category_id === 4) {
+            return <MdNoteAlt className="bg-blue-400 rounded-full text-white  w-8 h-8" size={18} />;
+        } else if (post_category_id === 1) {
+            return <MdAccountCircle className="bg-blue-400 rounded-full text-white  w-8 h-8" size={18} />;
+        }
+        return '';
+    };
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -401,8 +415,8 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                         >
                             <div className="flex gap-y-4 flex-col justify-start">
                                 <div className="flex flex-row items-center gap-x-2">
-                                    <div className="bg-blue-400 text-white text-xl p-2 rounded-full">
-                                        <MdOutlineAssignment />
+                                    <div className="bg-blue-400 text-white p-1 rounded-full">
+                                        {handleChangeIcon(item.post_category_id)}
                                     </div>
                                     <div className="flex text-base font-medium">
                                         <div className="">
@@ -412,7 +426,7 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                                     </div>
                                 </div>
                                 <div className="">
-                                    <p className="break-words w-[35rem] text-start">{item.content}</p>
+                                    <p className=" w-[35rem] text-start">{item.content}</p>
                                 </div>
                                 {item.files.length > 0 ? (
                                     <div className="grid grid-cols-2 ">

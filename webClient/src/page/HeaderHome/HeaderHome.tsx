@@ -85,7 +85,7 @@ const HeaderHome: React.FC = () => {
     };
     return (
         <>
-            <div className="bg-blue-300 shadow-md h-16 p-5 flex items-center justify-between">
+            <div className="bg-blue-400 shadow-md h-16 p-5 flex items-center justify-between">
                 <div className="flex items-center">
                     <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
                         <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}

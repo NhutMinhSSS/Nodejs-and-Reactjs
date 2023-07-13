@@ -184,9 +184,7 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
     const handleRemoveQuestion = (questionId: number) => {
         setQuestions((prevQuestions) => prevQuestions.filter((question) => question.id !== questionId));
     };
-    const handleValuePointChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPoint(Number(e.target.value));
-    };
+
     const handleQuestionPointChange = (questionId: number, score: number) => {
         setQuestionPoints((prevQuestionPoints) => ({
             ...prevQuestionPoints,
@@ -275,16 +273,24 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             visible();
         });
     };
+
+    const handleButtonCancel = () => {
+        setTitle('');
+        setInstruction('');
+        setPoint('');
+        setStartDate(null);
+        setEndDate(null);
+        setIsReverseQuestion(false);
+        setIsReverseAnswer(false);
+        visible();
+        setQuestions([]);
+        setQuestionPoints([]);
+    };
     return (
         <div className=" shadow-xl h-16 fixed w-full ">
             <form onSubmit={handleSubmit}>
                 <Header className="flex justify-between items-center bg-blue-400 ">
                     <div className="text-lg font-bold">Tạo bài kiểm tra</div>
-                    <div className="  grid iphone 12:grid-flow-col ">
-                        <Button disabled={!title} htmlType="submit" className="bg-blue-500" type="primary">
-                            Gửi
-                        </Button>
-                    </div>
                 </Header>
                 <Content className="">
                     <div className="grid grid-rows-3 grid-flow-col gap-4 container justify-evenly">
@@ -503,6 +509,18 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
                                     <p className="text-sm ">Chọn đảo câu trả lời</p>
                                     <div className="p-1 w-[3.2rem] items-center flex rounded-2xl bg-slate-200">
                                         <Switch defaultChecked={isReverseAnswer} onChange={handleReverseAnswerChange} />
+                                    </div>
+                                </div>
+                                <div className="flex justify-end mt-10 gap-x-2">
+                                    <div className="  grid iphone 12:grid-flow-col ">
+                                        <Button disabled={!title} htmlType="submit" type="primary">
+                                            Gửi
+                                        </Button>
+                                    </div>
+                                    <div className="  grid iphone 12:grid-flow-col ">
+                                        <Button onClick={handleButtonCancel} type="primary" danger>
+                                            Hủy
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

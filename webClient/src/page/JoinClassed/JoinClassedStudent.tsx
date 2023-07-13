@@ -130,7 +130,8 @@ const JoinClassedStudent = () => {
         navigate('/giang-vien');
     };
     const handlePassPage = (item: any) => {
-        navigate(`/giang-vien/class/${item['id']}`);
+        navigate(`/sinh-vien/class/${item['id']}`);
+        // window.location.replace(`/sinh-vien/class/${item['id']}`);
         handleFetchData();
     };
     return (
@@ -141,7 +142,7 @@ const JoinClassedStudent = () => {
                 <div className="h-16 p-5  shadow-md flex flex-grow sm:grid-cols-2 max-w-full ">
                     <div className=" basis-1/6 flex items-center full">
                         <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
-                            <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}
+                            <MenuOutlined className="flex items-center" onDoubleClick={handleDrawer} size={40} />{' '}
                         </button>
                         <div className="h-auto w-auto ml-2">
                             <div className="block max-w-full overflow-hidden truncate ... w-44">

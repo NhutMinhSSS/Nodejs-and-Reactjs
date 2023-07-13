@@ -4,6 +4,9 @@ import {
     MdBook,
     MdLink,
     MdMoreVert,
+    MdNoteAlt,
+    MdOutlineAssignment,
+    MdOutlineBook,
     MdOutlineFilePresent,
     MdOutlineGroup,
     MdOutlineImage,
@@ -202,13 +205,22 @@ const DetailExcercise = () => {
     const handleShowMoreComments = () => {
         setVisibleCount(comments.length);
     };
+    const role = localStorage.getItem('role');
+    console.log(role);
+    const handleChange = (post_category_id: any) => {
+        if (post_category_id === 2) {
+            return <MdOutlineBook className="bg-blue-400 text-white rounded-full p-1.5 w-10 h-10" size={32} />;
+        } else if (post_category_id === 3) {
+            return <MdOutlineAssignment className="bg-blue-400 rounded-full text-white  p-1.5 w-10 h-10" size={32} />;
+        } else if (post_category_id === 4) {
+            return <MdNoteAlt className="bg-blue-400 rounded-full text-white  p-1.5 w-10 h-10" size={32} />;
+        }
+        return '';
+    };
     return (
         <>
             <div className="flex justify-center ">
-                <div className="mr-5">
-                    <MdBook className="bg-blue-400 rounded-full p-1.5 w-10 h-10" size={32} />
-                </div>
-
+                <div className="mr-5">{handleChange(isData?.post_category_id)} </div>
                 <div className="w-[45rem] gap-y-3 flex flex-col">
                     <div className="flex justify-between items-center ">
                         <span className="text-3xl text-blue-300">{isData?.title}</span>
@@ -323,7 +335,7 @@ const DetailExcercise = () => {
                         </div>
                     </div>
                 </div>
-                {isData?.post_category_id === 3 ? (
+                {isData?.post_category_id === 3 && role === '0' ? (
                     <div>
                         <div className="shadow-lg bg-zinc-100 rounded-md px-5 py-5 ml-10 grid gap-y-5 w-72">
                             <div className="flex justify-between">
