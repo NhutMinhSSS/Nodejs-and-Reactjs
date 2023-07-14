@@ -69,7 +69,6 @@ const HomeScreen: React.FC = () => {
     return (
         <div>
             <HeaderHome />
-
             {/* grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 container mx-auto gap-x-8 gap-y-12 m-auto mt-8 p-4 */}
             <div>
                 <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
