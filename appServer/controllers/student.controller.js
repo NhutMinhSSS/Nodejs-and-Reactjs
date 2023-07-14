@@ -392,7 +392,7 @@ class StudentController {
                     flag = false;
                 }
             });
-            finalScore = ((finalScore / totalScore) * 100).toFixed(0); // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
+            finalScore = ((finalScore / totalScore) * 100).toFixed(1); // Tính điểm cuối cùng bằng số điểm trả lời đúng nhân với 100 và chia cho tổng điểm của tất cả câu hỏi
             const submission = flag ? EnumServerDefinitions.SUBMISSION.SUBMITTED : EnumServerDefinitions.SUBMISSION.NOT_SCORED;
             await StudentExamService.updateStudentExam(studentExamId, submissionDate, finalScore, submission, transaction);
             await transaction.commit();

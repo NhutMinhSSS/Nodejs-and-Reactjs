@@ -134,7 +134,7 @@ class TeacherController {
                 }
             }
             finalScore = studentExam.total_score - ((preEssayScore / totalScore) * 100) + essayScore;
-            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, finalScore.toFixed(0), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
+            const isUpdate = await StudentExamService.updateStudentExam(studentExamId, null, finalScore.toFixed(1), EnumServerDefinitions.SUBMISSION.SUBMITTED, transaction);
             if (!isUpdate) {
                 throw new Error("Don't update score");
             }
