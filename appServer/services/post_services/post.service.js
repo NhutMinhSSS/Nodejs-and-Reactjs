@@ -136,7 +136,7 @@ class PostService {
                             attributes: ['id', 'role']
                         }],
                         as: 'comments',
-                        attributes: ['id', 'content', 'comment_date'],
+                        attributes: ['id', 'content', 'comment_date', 'account_id'],
                         order: [['comment_date', 'ASC']]
                     }, {
                         model: StudentExam,
@@ -258,7 +258,7 @@ class PostService {
                         attributes: ['id', 'role']
                     }],
                     as: 'comments',
-                    attributes: ['id', 'content', 'comment_date'],
+                    attributes: ['id', 'content', 'comment_date', 'account_id'],
                     order: [['comment_date', 'ASC']]
                 }, {
                     model: StudentExam,
