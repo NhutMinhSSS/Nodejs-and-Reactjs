@@ -11,6 +11,7 @@ const FileService = require("../services/file_service/file.service");
 const PostFileService = require("../services/post_services/post_file.service");
 const ClassroomStudentService = require("../services/classroom_services/classroom_student.service");
 const StudentService = require("../services/student_services/student.service");
+const TeacherService = require("../services/teacher_services/teacher.service");
 const StudentExamService = require("../services/student_services/student_exam.service");
 const FormatUtils = require("../common/utils/format.utils");
 const QuestionService = require("../services/question_services/question.service");
@@ -127,7 +128,17 @@ class PostController {
         const files = req.files;
         const transaction = await sequelize.transaction();
         try {
-            let studentIds
+            let studentIds;
+            let message;
+            let fullName;
+            let notification;
+            if (role === EnumServerDefinitions.ROLE.STUDENT) {
+                const student = await StudentService.findStudentByAccountId(accountId);
+                fullName = `${student.last_name} ${student.first_name}`;
+            } else {
+                const teacher = await TeacherService.findTeacherByAccountId(accountId);
+                fullName = `${teacher.last_name} ${teacher.first_name}`;
+            }
             const newPost = await PostService.createPost(title, content, postCategoryIdParseInt, accountId, classroomId, topicId, transaction);
             if (postCategoryIdParseInt !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const startDate = req.body.start_date;
@@ -174,7 +185,17 @@ class PostController {
                 const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
                 studentIds = listStudents.map(item => item.student_id);
             }
-            await NotificationService.createNotifications(studentIds, newPost.id, transaction);
+            if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.NEWS) {
+                notification = "thông báo";
+            } else if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.DOCUMENT) {
+                notification = "tài liệu";
+            } else if (postCategoryIdParseInt === EnumServerDefinitions.POST_CATEGORY.EXERCISE) {
+                notification = "bài tập";
+            } else {
+                notification = "bài kiểm tra";
+            }
+            message = `${fullName} đã đăng một ${notification}!`;
+            await NotificationService.createNotifications(studentIds, newPost.id, message, transaction);
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
