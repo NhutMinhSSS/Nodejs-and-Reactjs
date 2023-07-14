@@ -24,21 +24,21 @@ class FileService {
             throw error;
         }
     }
-    async removeFiles(listFileId , transaction) {
-        try {
-            const isRemove = await File.update({ 
-                status: EnumServerDefinitions.STATUS.NO_ACTIVE
-            }, {
-                where: {
-                    id: {[Op.in]: listFileId},
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                }, transaction
-            });
-            return isRemove > EnumServerDefinitions.EMPTY;
-        } catch (error) {
-            throw error;
-        }
-    }
+    // async removeFiles(listFileId , transaction) {
+    //     try {
+    //         const isRemove = await File.update({ 
+    //             status: EnumServerDefinitions.STATUS.NO_ACTIVE
+    //         }, {
+    //             where: {
+    //                 id: {[Op.in]: listFileId},
+    //                 status: EnumServerDefinitions.STATUS.ACTIVE
+    //             }, transaction
+    //         });
+    //         return isRemove > EnumServerDefinitions.EMPTY;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
 }
 
 module.exports = new FileService;

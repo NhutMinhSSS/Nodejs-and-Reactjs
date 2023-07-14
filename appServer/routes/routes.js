@@ -18,7 +18,13 @@ const SystemConst = require('../common/consts/system_const');
 router.use(express.json());
 router.use(responseMiddleware);
 router.get('/', (req, res) => {
-    res.send('Start');
+  const newPost = {
+    id: 1,
+    title: "Vip",
+    content: "Minh"
+  }
+    //_io.emit('new_post', newPost);
+    return res.send('Start');
 });
 
 router.post('/login', LoginController.login);

@@ -246,7 +246,8 @@ class PostController {
                 }
             }
             if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
-                const isRemove = await FileService.removeFiles(listFileRemove, transaction);
+                //
+                const isRemove = await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
                 if (!isRemove) {
                     await transaction.rollback();
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
