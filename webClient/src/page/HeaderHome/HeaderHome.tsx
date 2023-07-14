@@ -15,6 +15,7 @@ const HeaderHome: React.FC = () => {
     const navigate = useNavigate();
     const [isPopupVisibleCreateClass, setIsPopupVisibleCreateClass] = useState(false);
     const [isData, setIsData] = useState([]);
+    const [isDataNoti, setIsDataNoti] = useState([]);
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -29,9 +30,12 @@ const HeaderHome: React.FC = () => {
                 .get('https://20.39.197.125:3443/api/classrooms', config)
                 .then((response) => {
                     // Xử lý dữ liệu từ response
-                    const data = response.data.response_data;
+                    const data = response.data.response_data.list_classrooms;
+                    const dataNoti = response.data.response_data.list_notifications;
                     console.log('data nè', data);
+                    console.log('data nè', dataNoti);
                     setIsData(data);
+                    setIsDataNoti(dataNoti);
                     //Chuyển dữ liệu khi tạo mới phòng
                 })
                 .catch((error) => {
@@ -58,6 +62,7 @@ const HeaderHome: React.FC = () => {
     };
     //State Class Code
     const [isInputValueClassCode, setIsInputValueClassCode] = useState('');
+    const [notificationCount, setNotificationCount] = useState(0);
     const handleChangeClassCode = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsInputValueClassCode(e.target.value);
     };
@@ -130,6 +135,11 @@ const HeaderHome: React.FC = () => {
                     <Space>
                         <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
                             <MdNotificationsNone size={20} />
+                            {notificationCount > 0 && (
+                                <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center">
+                                    {notificationCount}
+                                </span>
+                            )}
                         </button>
                     </Space>
                 }

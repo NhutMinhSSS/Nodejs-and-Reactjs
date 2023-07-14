@@ -24,6 +24,7 @@ interface Item {
 const HomeScreenStudent: React.FC = () => {
     const config = HeaderToken.getTokenConfig();
     const [screenClass, setScreenClass] = useState([]);
+    const [dataNoti, setDataNoti] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -31,34 +32,35 @@ const HomeScreenStudent: React.FC = () => {
             window.location.replace('/');
         } else {
             setIsLoading(true);
-        axios
-            .get('https://20.39.197.125:3443/api/classrooms', config)
-            .then((response) => {
-                // Xử lý dữ liệu từ response
-                const data = response.data.response_data;
-                console.log('data', data);
-                setScreenClass(data.list_classrooms);
-                //Chuyển dữ liệu khi tạo mới phòng
-            })
-            .catch((error) => {
-                const isError = UnauthorizedError.checkError(error);
-                if (!isError) {
-                    const content = 'Lỗi máy chủ';
-                    const title = 'Lỗi';
-                    ErrorCommon(title, content);
-                }
-                // Xử lý lỗi nếu có
-                console.error(error);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+            axios
+                .get('https://20.39.197.125:3443/api/classrooms', config)
+                .then((response) => {
+                    // Xử lý dữ liệu từ response
+                    const data = response.data.response_data;
+                    console.log('data', data);
+                    setScreenClass(data.list_classrooms);
+                    setDataNoti(data.list_notifications);
+                    //Chuyển dữ liệu khi tạo mới phòng
+                })
+                .catch((error) => {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const content = 'Lỗi máy chủ';
+                        const title = 'Lỗi';
+                        ErrorCommon(title, content);
+                    }
+                    // Xử lý lỗi nếu có
+                    console.error(error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
         }
     }, []);
     return (
         <>
             <div>
-                <HeaderHomeStudent />
+                <HeaderHomeStudent list_notification={dataNoti} />
                 <div>
                     <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4  gap-x-8 gap-y-12  m-auto mt-12 px-12 ">
                         {screenClass.map((item) => (
