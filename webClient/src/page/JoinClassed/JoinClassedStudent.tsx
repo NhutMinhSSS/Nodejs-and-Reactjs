@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Drawer, Dropdown, Space, Spin, Tabs, Tooltip } from 'antd';
+import { Drawer, Dropdown, Menu, MenuProps, Modal, Space, Spin, Tabs, Tooltip } from 'antd';
 import TabPane from 'antd/es/tabs/TabPane';
 import { MenuOutlined } from '@ant-design/icons';
 import ClassBulletin from '../../screens/Classbulletin/ClassBulletin';
@@ -7,7 +7,7 @@ import ClassroomExercisesStudent from '../../screens/ClassExercises/ClassroomExe
 import '../../style/JoinClass.css';
 import iconUser from '../../img/iconUser.svg';
 import AllPeople from '../../screens/AllPeople';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ErrorAlert from '../../common/Screens/ErrorAlert';
 import SystemConst from '../../common/consts/system_const';
@@ -17,12 +17,32 @@ import ClassBulletinStudent from '../../screens/Classbulletin/ClassBulletinStude
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import HeaderToken from '../../common/utils/headerToken';
 import { MdNotificationsNone, MdAccountCircle } from 'react-icons/md';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
+dayjs.extend(utc);
+
+interface listNotification {
+    class_name: string;
+    classroom_id: number;
+    create_date: string;
+    id: number;
+    message: '';
+    post_id: number;
+    read: boolean;
+}
+const BASE_URL = `${SystemConst.DOMAIN}`;
 const JoinClassedStudent = () => {
     const navigate = useNavigate();
     const { classroom_id } = useParams();
     const [isData, setIsData] = useState();
+    const [isDataNoti, setIsDataNoti] = useState<listNotification[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [visbleDrawer, setVisibleDrawer] = useState(false);
+    const [notificationCount, setNotificationCount] = useState(0);
+    const [isDataDrawer, setIsDataDawer] = useState([]);
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -83,28 +103,36 @@ const JoinClassedStudent = () => {
     };
     const items = [
         {
-            label: <button onClick={handleLogout}>Logout</button>,
+            label: <button onClick={handleLogout}>Đăng xuất</button>,
             key: 1,
         },
     ];
-    const [visbleDrawer, setVisibleDrawer] = useState(false);
-    const [visbleNotification, setVisibleNotification] = useState(false);
-    const [isDataDrawer, setIsDataDawer] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const handleDrawer = () => {
+        setVisibleDrawer(true);
+        handleFetchDataDrawer();
+    };
+    useEffect(() => {
+        handleFetchDataDrawer();
+    }, []);
+    const config = HeaderToken.getTokenConfig();
     const handleFetchDataDrawer = () => {
         const token = localStorage.getItem('token');
         if (!token) {
             window.location.replace('/');
         } else {
-            const config = HeaderToken.getTokenConfig();
             setLoading(true);
             axios
-                .get('https://20.39.197.125:3443/api/classrooms', config)
+                .get(`${BASE_URL}/classrooms`, config)
                 .then((response) => {
                     // Xử lý dữ liệu từ response
-                    const data = response.data.response_data;
+                    const data = response.data.response_data.list_classrooms;
+                    const dataNoti = response.data.response_data.list_notifications;
                     console.log('data nè', data);
+                    console.log('data noti nè', dataNoti);
                     setIsDataDawer(data);
+                    setIsDataNoti(dataNoti);
+                    const unreadCount = isDataNoti.filter((notification) => !notification.read).length;
+                    setNotificationCount(unreadCount);
                     //Chuyển dữ liệu khi tạo mới phòng
                 })
                 .catch((error) => {
@@ -122,17 +150,27 @@ const JoinClassedStudent = () => {
                 });
         }
     };
-    const handleDrawer = () => {
-        setVisibleDrawer(true);
-        handleFetchDataDrawer();
-    };
+
     const handleNavHome = () => {
-        navigate('/giang-vien');
+        navigate('/sinh-vien');
     };
     const handlePassPage = (item: any) => {
         navigate(`/sinh-vien/class/${item['id']}`);
         // window.location.replace(`/sinh-vien/class/${item['id']}`);
         handleFetchData();
+    };
+    const handlePassPageNoti = (item: any) => {
+        // navigate(`/sinh-vien/class/${item['classroom_id']}`);
+        const data = {};
+        axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config);
+        window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+        handleFetchData();
+    };
+    const handleFormatDate = (formatDate: any) => {
+        return dayjs(formatDate).format('DD/MM/YYYY HH:mm');
+    };
+    const colorBg = (read: boolean) => {
+        return read ? 'bg-white' : 'bg-slate-200';
     };
     return (
         <>
@@ -142,7 +180,7 @@ const JoinClassedStudent = () => {
                 <div className="h-16 p-5  shadow-md flex flex-grow sm:grid-cols-2 max-w-full ">
                     <div className=" basis-1/6 flex items-center full">
                         <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
-                            <MenuOutlined className="flex items-center" onDoubleClick={handleDrawer} size={40} />{' '}
+                            <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}
                         </button>
                         <div className="h-auto w-auto ml-2">
                             <div className="block max-w-full overflow-hidden truncate ... w-44">
@@ -204,9 +242,42 @@ const JoinClassedStudent = () => {
                         placement="left"
                         extra={
                             <Space>
-                                <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
-                                    <MdNotificationsNone size={20} />
-                                </button>
+                                <Dropdown
+                                    overlay={
+                                        <Menu>
+                                            {isDataNoti.map((item: any) => (
+                                                <Menu.Item key={item.id}>
+                                                    <button
+                                                        onClick={() => handlePassPageNoti(item)}
+                                                        className={`${colorBg(
+                                                            item.read,
+                                                        )} hover:text-black  hover:bg-slate-400 transition duration-500 w-full h-auto py-2 px-2 border-2 rounded-md flex flex-col items-center gap-x-2`}
+                                                    >
+                                                        <span className="flex flex-col">
+                                                            <span className="font-medium">{item.class_name}</span>
+                                                        </span>
+                                                        <span className="flex gap-x-3">
+                                                            <span>{item.message}</span>
+                                                            <span>{handleFormatDate(item.create_date)}</span>
+                                                        </span>
+                                                    </button>
+                                                </Menu.Item>
+                                            ))}
+                                        </Menu>
+                                    }
+                                    trigger={['click']}
+                                >
+                                    <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full relative">
+                                        <div className="flex items-center justify-center">
+                                            {notificationCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs">
+                                                    {notificationCount}
+                                                </span>
+                                            )}
+                                            <MdNotificationsNone size={20} />
+                                        </div>
+                                    </button>
+                                </Dropdown>
                             </Space>
                         }
                         footer={
@@ -248,3 +319,19 @@ const JoinClassedStudent = () => {
 };
 
 export default JoinClassedStudent;
+
+{
+    /* <div>
+                                            {isDataNoti.map((item: any) => (
+                                                <Link to={`class/${item.id}`}>{item.class_name}</Link>
+                                            ))}
+                                        </div> */
+}
+{
+    /* <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+    <a onClick={(e) => e.preventDefault}></a>
+    <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
+        <MdNotificationsNone size={20} />
+    </button>
+</Dropdown>; */
+}
