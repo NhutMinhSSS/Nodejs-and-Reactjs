@@ -110,6 +110,7 @@ const JoinClassedTeacher: React.FC = () => {
     const [visbleDrawer, setVisibleDrawer] = useState(false);
     const [visbleNotification, setVisibleNotification] = useState(false);
     const [isDataDrawer, setIsDataDawer] = useState([]);
+    const [isDataNotification, setIsDataNotification] = useState([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const handleFetchDataDrawer = () => {
@@ -123,8 +124,10 @@ const JoinClassedTeacher: React.FC = () => {
                 .get('https://20.39.197.125:3443/api/classrooms', config)
                 .then((response) => {
                     // Xử lý dữ liệu từ response
-                    const data = response.data.response_data;
+                    const data = response.data.response_data.list_classrooms;
+                    const dataNoti = response.data.response_data.list_notifications;
                     console.log('data nè', data);
+                    console.log('data noti nè ', dataNoti);
                     setIsDataDawer(data);
                     //Chuyển dữ liệu khi tạo mới phòng
                 })

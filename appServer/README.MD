@@ -18,10 +18,7 @@
 <!-- use --> npm start
 
 <!--  https-->  
-- openssl genrsa -out key.pem
--openssl req -new -key key.pem -out csr.pem
--openssl req -new -key key.pem -out csr.epm
--openssl x509 -req -days 365 -in csr.pem -signkey key.pem -out cert.pem
+
 <!--https-->
 API Layout
 check token 
