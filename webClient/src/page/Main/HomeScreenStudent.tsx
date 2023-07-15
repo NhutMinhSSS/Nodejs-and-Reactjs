@@ -33,7 +33,7 @@ const HomeScreenStudent: React.FC = () => {
         } else {
             setIsLoading(true);
             axios
-                .get('https://20.39.197.125:3443/api/classrooms', config)
+                .get(`${SystemConst.DOMAIN}/classrooms`, config)
                 .then((response) => {
                     // Xử lý dữ liệu từ response
                     const data = response.data.response_data;
