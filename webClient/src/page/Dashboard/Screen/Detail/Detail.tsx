@@ -169,11 +169,11 @@ const Detail = () => {
                 const data = response.data.response_data.students;
                 console.log(data);
                 const newData: DataType[] = data.map(
-                    (item: { id: any; first_name: any; last_name: any; regular_class_name: any }) => ({
+                    (item: { id: any; first_name: any; last_name: any; class_name: any }) => ({
                         id: item.id,
                         first_name: item.first_name,
                         last_name: item.last_name,
-                        class_name: item.regular_class_name,
+                        class_name: item.class_name,
                     }),
                 );
                 setDataDetailStudent(newData);
