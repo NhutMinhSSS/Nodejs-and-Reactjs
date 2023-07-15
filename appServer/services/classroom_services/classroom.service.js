@@ -61,7 +61,7 @@ class ClassroomService {
                     attributes: ['class_name']
                 }
             ];
-    
+
             if (teacherId) {
                 includeOptions.push({
                     model: Teacher,
@@ -79,7 +79,7 @@ class ClassroomService {
                     attributes: []
                 });
             }
-    
+
             const classroomsList = await Classroom.findAll({
                 where: {
                     status: EnumServerDefinitions.STATUS.STORAGE
@@ -87,13 +87,13 @@ class ClassroomService {
                 include: includeOptions,
                 attributes: ['id', 'class_name', 'semester', 'school_year', 'status']
             });
-    
+
             return classroomsList;
         } catch (error) {
             throw error;
         }
     }
-    
+
     async findTeachersAndStudentsBelongToClassByClassroomId(classroomId) {
         try {
             const result = await Classroom.findOne({
@@ -240,7 +240,7 @@ class ClassroomService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;
@@ -283,12 +283,12 @@ class ClassroomService {
             throw error;
         }
     }
-   async checkClassroomExist(classroomId) {
+    async checkClassroomExist(classroomId) {
         try {
             const classroom = await Classroom.findOne({
                 where: {
                     id: classroomId,
-                status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]} 
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 },
                 attributes: ['id']
             });
@@ -296,7 +296,7 @@ class ClassroomService {
         } catch (error) {
             throw error;
         }
-   }
+    }
 }
 
 module.exports = new ClassroomService;

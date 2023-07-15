@@ -22,7 +22,7 @@ class CommentController {
         const transaction = await sequelize.transaction();
         try {
             const newComment = await CommentService.createComment(post.id, content, accountId, transaction);
-            const user = await (role === EnumServerDefinitions.ROLE.TEACHER ?  TeacherService.findTeacherByAccountId(accountId) : StudentService.findStudentByAccountId(accountId));
+            const user = await (role === EnumServerDefinitions.ROLE.TEACHER ? TeacherService.findTeacherByAccountId(accountId) : StudentService.findStudentByAccountId(accountId));
             const result = {
                 ...newComment.dataValues,
                 first_name: user.first_name,

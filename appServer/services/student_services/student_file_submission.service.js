@@ -24,7 +24,7 @@ class StudentFileSubmissionService {
                 student_exam_id: studentExamId,
                 file_id: fileId
             }));
-            const newStudentFile = await StudentFileSubmission.bulkCreate(listStudentFile, {transaction});
+            const newStudentFile = await StudentFileSubmission.bulkCreate(listStudentFile, { transaction });
             return newStudentFile;
         } catch (error) {
             throw error;
@@ -39,7 +39,7 @@ class StudentFileSubmissionService {
                 include: [{
                     model: File,
                     where: {
-                        id: {[Op.in]: listFileIds},
+                        id: { [Op.in]: listFileIds },
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
                     attributes: []
@@ -48,10 +48,12 @@ class StudentFileSubmissionService {
             });
             const isDelete = await StudentFileSubmission.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
-            }, { where: {
-                id: {[Op.in]: studentFileSubmissionIds.map(item => item.id)},
-                status: EnumServerDefinitions.STATUS.ACTIVE
-            }, transaction });
+            }, {
+                where: {
+                    id: { [Op.in]: studentFileSubmissionIds.map(item => item.id) },
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
             return isDelete > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;

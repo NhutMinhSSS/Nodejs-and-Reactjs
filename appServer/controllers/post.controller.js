@@ -77,12 +77,12 @@ class PostController {
             } else {
                 postDetail.student_exams = postDetail.student_exams.map(item => {
                     if (item.submission !== EnumServerDefinitions.SUBMISSION.SUBMITTED) {
-                      const { total_score, ...rest } = item; // Bỏ cột "total_score" khỏi đối tượng item
-                      return rest;
+                        const { total_score, ...rest } = item; // Bỏ cột "total_score" khỏi đối tượng item
+                        return rest;
                     } else {
                         return item;
                     }
-                  });
+                });
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, postDetail);
         } catch (error) {
@@ -174,7 +174,7 @@ class PostController {
                 }
                 //await StudentExamService.addStudentExams(newPost.id, studentIds, transaction);
             }
-            
+
             if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);

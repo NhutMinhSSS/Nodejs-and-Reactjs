@@ -27,7 +27,7 @@ class PostDetailService {
                 is_hidden: isHidden
             };
             if (startDate) {
-                createData.start_date =  startDate;
+                createData.start_date = startDate;
             }
             const newPostDetails = PostDetail.create(createData, { transaction: transaction });
             return newPostDetails;

@@ -19,13 +19,13 @@ class PostCategoryService {
                 category_name: categoryName
             });
             return newCategory;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     }
     async updatePostCategory(id, categoryName) {
         try {
-            const isUpdate =  await PostCategory.update({
+            const isUpdate = await PostCategory.update({
                 category_name: categoryName
             }, {
                 where: {
@@ -42,10 +42,12 @@ class PostCategoryService {
         try {
             await Post.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
-            }, { where: {
-                post_category_id: id,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-            }, transaction});
+            }, {
+                where: {
+                    post_category_id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }, transaction
+            });
             const isDelete = await PostCategory.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {

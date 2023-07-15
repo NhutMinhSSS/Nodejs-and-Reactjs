@@ -34,10 +34,10 @@ class QuestionController {
         if (isBeforeStartTime) {
           return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
             EnumMessage.ERROR_SUBMISSION.BEFORE_START_TIME);
-        }const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
+        } const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
         if (isDeadLineExceeded) {
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
+          return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+            EnumMessage.ERROR_SUBMISSION.DEADLINE_EXCEEDED);
         }
         const studentId = req.student_id;
         const studentExam = await StudentExamService.findStudentExam(post.id, studentId);
