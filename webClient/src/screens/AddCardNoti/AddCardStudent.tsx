@@ -22,6 +22,7 @@ import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorAlert from '../../common/Screens/ErrorAlert';
 import './scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
+import CustomButton from '../../components/CustomButton';
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
     { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={28} /> },
@@ -60,78 +61,10 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
     const [isData, setIsData] = useState<ListPost[]>([]);
     const [loading, setLoading] = useState(false);
     const [downloadComplete, setDownloadComplete] = useState(false);
-    // useEffect(() => {
-    //     handleGetPost();
-    // }, []);
-    // const handleGetPost = () => {
-    //     const token = localStorage.getItem('token');
-    //     if (!token) {
-    //         window.location.replace('/');
-    //     } else {
-    //         const config = HeaderToken.getTokenConfig();
-    //         setLoading(true);
-    //         axios
-    //             .get(`${SystemConst.DOMAIN}/classrooms/get-posts/${classroom_id}`, config)
-    //             .then((response) => {
-    //                 const data = response.data.response_data.list_post;
-    //                 console.log(data);
-    //                 setIsData(data);
-    //             })
-    //             .catch((error) => {
-    //                 if (error) {
-    //                     const isError = UnauthorizedError.checkError(error);
+    const [postList, setPostList] = useState([]);
 
-    //                     if (!isError) {
-    //                         let content = '';
-    //                         const {
-    //                             status,
-    //                             data: { error_message: errorMessage },
-    //                         } = error.response;
-    //                         if (status === 404 && errorMessage === 'Classroom no exist') {
-    //                             content = 'Lớp không tồn tại';
-    //                         } else if (status === 403 && errorMessage === 'No permission') {
-    //                             content = 'Bạn không có quyền truy cập vào lớp này';
-    //                         } else {
-    //                             content = 'Lỗi máy chủ';
-    //                         }
-    //                         const title = 'Lỗi';
-    //                         const path = '/giang-vien';
-
-    //                         ErrorAlert(title, content, path);
-    //                     }
-    //                 } else {
-    //                     const title = 'Lỗi';
-    //                     const content = 'Máy chủ không hoạt động';
-    //                     localStorage.clear();
-    //                     const path = '/';
-    //                     ErrorAlert(title, content, path);
-    //                 }
-    //                 // Xử lý lỗi nếu có
-    //                 console.error(error);
-    //             })
-    //             .finally(() => {
-    //                 setLoading(false);
-    //             });
-    //     }
-    // };
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
-    // const handlePopupDownloadFile = (file_id: number, id: number) => {
-    //     setProgressbar('block');
-    //     setDownloadComplete(false);
-    //     handleDownPost(id, file_id);
-    //     // let progress = 0;
-    //     // const interval = setInterval(async () => {
-    //     //     progress += 25;
-    //     //     if (progress > 100) {
-    //     //         clearInterval(interval);
-    //     //     } else {
-    //     //         setPercent(progress);
-    //     //     }
-    //     // }, 1500);
-
-    //     // console.log(file_id, id);
-    // };
     const [fileId, setFileId] = useState(0);
     const [idFile, setIdFile] = useState(0);
     const handleShowPopupDownload = (file_id: number, id: number) => {
@@ -141,7 +74,9 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
         setFileId(file_id);
         setIdFile(id);
     };
-
+    useEffect(() => {
+        setPostList(data);
+    }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -318,6 +253,25 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
         }
         return '';
     };
+    const handleDetele = (id: any) => {
+        console.log(id);
+        const post_id = id;
+        const config = HeaderToken.getTokenConfig();
+        axios.delete(`${BASE_URL}/posts/${post_id}/delete-post`, config).then(() => {
+            const updatePostList = postList.filter((item: any) => item.id !== id);
+            // data = data.filter((item: any) => item.id !== id);
+            setPostList(updatePostList);
+            Notification('success', 'Thông báo', 'Xóa thành công bảng tin');
+        });
+    };
+    const handleEdit = (id: any) => {
+        console.log(id);
+    };
+    const user = localStorage.getItem('user');
+    const role = localStorage.getItem('role');
+    const accountId = user ? JSON.parse(user).account_id : null;
+    console.log(postList);
+
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -406,8 +360,8 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                         )}
                     </div>
 
-                    {data.map((item: any) => (
-                        <button
+                    {postList.map((item: any) => (
+                        <div
                             onClick={() => handleClick(item)}
                             className={`flex justify-between bg-slate-200 ${
                                 item.post_category_id === 1 ? ' ' : 'hover:shadow-lg'
@@ -415,18 +369,22 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                         >
                             <div className="flex gap-y-4 flex-col justify-start">
                                 <div className="flex flex-row items-center gap-x-2">
-                                    <div className="bg-blue-400 text-white p-1 rounded-full">
+                                    <div className="bg-blue-400 text-white text-xl p-2 rounded-full">
                                         {handleChangeIcon(item.post_category_id)}
                                     </div>
                                     <div className="flex text-base font-medium">
                                         <div className="">
                                             {item.last_name} {item.first_name}{' '}
-                                            {item.post_category_id === 4 ? `đã đăng ${item.title}` : ''}
+                                            {item.post_category_id === 4 ? `đã đăng kiểm tra ${item.title}` : ''}
+                                            {item.post_category_id === 3 ? `đã đăng bài tập ${item.title}` : ''}
+                                            {item.post_category_id === 2 ? `đã đăng tài liệu ${item.title}` : ''}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="">
-                                    <p className=" w-[35rem] text-start">{item.content}</p>
+                                    <p className="break-words w-[35rem] text-start">
+                                        {item.post_category_id === 1 ? item.content : ''}
+                                    </p>
                                 </div>
                                 {item.files.length > 0 ? (
                                     <div className="grid grid-cols-2 ">
@@ -446,6 +404,7 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                                                                     <MdOutlineFilePresent size={32} />
                                                                 </div>
                                                             )}
+
                                                             <div className="text-ellipsis overflow-hidden ...  max-w-xs w-[15rem]">
                                                                 {file.file_name}
                                                             </div>
@@ -460,11 +419,13 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                                 )}
                             </div>
                             <div>
-                                <button className="m-auto p-1 hover:bg-slate-300 focus:bg-slate-400  rounded-full duration-300">
-                                    <MdMoreVert size={20} />
-                                </button>
+                                {item.account_id == accountId && role == '0' && (
+                                    <button className="">
+                                        <CustomButton item={item} onDelete={handleDetele} onEdit={handleEdit} />
+                                    </button>
+                                )}
                             </div>
-                        </button>
+                        </div>
                     ))}
                 </div>
             </Spin>

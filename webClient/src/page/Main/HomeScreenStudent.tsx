@@ -30,10 +30,10 @@ const HomeScreenStudent: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-          return  window.location.replace('/');
+            return window.location.replace('/');
         }
         handleFetchData();
-        // const socket = io('https://103.116.9.71:3443'); 
+        // const socket = io('https://103.116.9.71:3443');
         // socket.on('connect', () => {
         //     console.log('Connected to server');
         //   });
@@ -67,7 +67,7 @@ const HomeScreenStudent: React.FC = () => {
             .finally(() => {
                 setIsLoading(false);
             });
-    }
+    };
     return (
         <>
             <div>

@@ -19,10 +19,10 @@ const HomeScreen: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-           return window.location.replace('/');
+            return window.location.replace('/');
         }
         handleFetchData();
-        // const socket = io('https://103.116.9.71:3443'); 
+        // const socket = io('https://103.116.9.71:3443');
         // socket.on('connect', () => {
         //     console.log('Connected to server');
         //   });
@@ -33,49 +33,49 @@ const HomeScreen: React.FC = () => {
     }, []);
     const handleFetchData = () => {
         const config = HeaderToken.getTokenConfig();
-            setIsLoading(true);
-            axios
-                .get(`${SystemConst.DOMAIN}/classrooms`, config)
-                .then((response) => {
-                    // Xử lý dữ liệu từ response
-                    const data = response.data.response_data;
-                    console.log('data', data);
-                    setScreenClass(data.list_classrooms);
-                    //Chuyển dữ liệu khi tạo mới phòng
-                })
-                .catch((error) => {
-                    const isError = UnauthorizedError.checkError(error);
-                    if (!isError) {
-                        const content = 'Lỗi máy chủ';
-                        const title = 'Lỗi';
-                        ErrorCommon(title, content);
-                    }
-                    // Xử lý lỗi nếu có
-                    console.error(error);
-                    // if (axios.isAxiosError(error)) {
-                    //     if (
-                    //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
-                    //         error.response.data.error_message === 'No exist email'
-                    //     ) {
-                    //         setMessage('Tài khoản không tồn tại');
-                    //     } else if (
-                    //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
-                    //         error.response.data.error_message === 'Invalid password'
-                    //     ) {
-                    //         setMessage('Sai mật khẩu');
-                    //     } else if (error.response?.status === SystemConst.STATUS_CODE.BAD_REQUEST) {
-                    //         setMessage('Cần Nhập tài khoản và mật khẩu');
-                    //     } else {
-                    //         setMessage('Không thể kết nối máy chủ');
-                    //     }
-                    // } else {
-                    //     console.error(error);
-                    // }
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
-    }
+        setIsLoading(true);
+        axios
+            .get(`${SystemConst.DOMAIN}/classrooms`, config)
+            .then((response) => {
+                // Xử lý dữ liệu từ response
+                const data = response.data.response_data;
+                console.log('data', data);
+                setScreenClass(data.list_classrooms);
+                //Chuyển dữ liệu khi tạo mới phòng
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const content = 'Lỗi máy chủ';
+                    const title = 'Lỗi';
+                    ErrorCommon(title, content);
+                }
+                // Xử lý lỗi nếu có
+                console.error(error);
+                // if (axios.isAxiosError(error)) {
+                //     if (
+                //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                //         error.response.data.error_message === 'No exist email'
+                //     ) {
+                //         setMessage('Tài khoản không tồn tại');
+                //     } else if (
+                //         error.response?.status === SystemConst.STATUS_CODE.UNAUTHORIZED_REQUEST &&
+                //         error.response.data.error_message === 'Invalid password'
+                //     ) {
+                //         setMessage('Sai mật khẩu');
+                //     } else if (error.response?.status === SystemConst.STATUS_CODE.BAD_REQUEST) {
+                //         setMessage('Cần Nhập tài khoản và mật khẩu');
+                //     } else {
+                //         setMessage('Không thể kết nối máy chủ');
+                //     }
+                // } else {
+                //     console.error(error);
+                // }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
     return (
         <div>
             <HeaderHome />
