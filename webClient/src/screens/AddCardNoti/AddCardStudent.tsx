@@ -76,7 +76,7 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
     };
     useEffect(() => {
         setPostList(data);
-    }, []);
+    }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
