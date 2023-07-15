@@ -506,7 +506,7 @@ const AppClassSection: React.FC = () => {
     // };
     const fecthDataOption = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
+        axios.get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
             const Api_option_classsection = response.data.response_data;
             setSubjectRefresh(Api_option_classsection.subjects);
             setTeacherRefresh(Api_option_classsection.teachers);
@@ -571,7 +571,6 @@ const AppClassSection: React.FC = () => {
     const handleDetail = (id: number) => {
         setSelectedItemDetail(id);
         navigate(`/admin/app-class-section/detail/${id}`);
-        console.log('id: ', id);
         // handleClassSectionDetail();
     };
     const handleStorage = (item: { id: number }) => {
@@ -925,7 +924,10 @@ const AppClassSection: React.FC = () => {
                                 </div>
                                 <div>
                                     <label htmlFor="">Học kỳ</label>
-                                    <select className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 ">
+                                    <select
+                                        onChange={handleNameClassEditSemester}
+                                        className="bg-slate-200 h-10 rounded-md focus:outline-none focus:border-blue-600 w-full px-2 "
+                                    >
                                         <option value={selectedItemEditSemester?.id} disabled selected hidden>
                                             {selectedItemEditSemester?.semester}
                                         </option>

@@ -57,7 +57,8 @@ class NotificationService {
                     attributes: ['id', 'post_category_id']
                   }
                 ],
-                attributes: ['id', 'post_id', 'message', 'create_date', 'read']
+                attributes: ['id', 'post_id', 'message', 'create_date', 'read'],
+                order: [['create_date', 'DESC']]
               });
               
               

@@ -26,7 +26,8 @@ class CommentController {
             const result = {
                 ...newComment.dataValues,
                 first_name: user.first_name,
-                last_name: user.last_name
+                last_name: user.last_name,
+                account_id: accountId
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);

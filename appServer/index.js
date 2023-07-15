@@ -11,6 +11,7 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 //const socketIO = require('socket.io');
+//const SocketService = require('./services/socket_services/socket.service');
 
 // Cấu hình server HTTPS
 const portHttps = SystemConst.PORT_HTTPS;
@@ -38,6 +39,7 @@ const start = async (server, port) => {
             logger.error(`Failed to start server: ${error}`);
             console.log(error.message);
         });
+        //global._io.on('connection', SocketService.connection);
     }
     catch (error) {
         logger.error(error);

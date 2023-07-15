@@ -93,7 +93,8 @@ class FormatUtils {
                 content: comment.content,
                 comment_date: comment.comment_date,
                 first_name: account.first_name,
-                last_name: account.last_name
+                last_name: account.last_name,
+                account_id: comment.account_id
             }
         });
     }

@@ -34,7 +34,7 @@ class PostController {
             const data = {
                 class_name: classroom.class_name,
                 title: classroom.title,
-                class_code: role === EnumServerDefinitions.ROLE.STUDENT ? null : classroom.class_code,
+                //class_code: role === EnumServerDefinitions.ROLE.STUDENT ? null : classroom.class_code,
                 list_post: listPost
             }
             let postDeadlines; // Di chuyển khai báo biến ra khỏi khối if
@@ -246,7 +246,8 @@ class PostController {
                 }
             }
             if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
-                const isRemove = await FileService.removeFiles(listFileRemove, transaction);
+                //
+                const isRemove = await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
                 if (!isRemove) {
                     await transaction.rollback();
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,

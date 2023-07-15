@@ -44,13 +44,14 @@ interface Answer {
     status: number;
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const DetailTestStudent = ({ onfetchData,
+const DetailTestStudent = ({
+    onfetchData,
     params,
     id,
     post_category_id,
     isStudentExam,
 }: {
-    onfetchData: any,
+    onfetchData: any;
     params: any;
     id: number | undefined;
     post_category_id: any;
@@ -211,7 +212,6 @@ const DetailTestStudent = ({ onfetchData,
             [question_id]: score,
         }));
     };
-
     // const questionsWithoutId = {
     //     score: pointsEssay[id],
     //     question_id: dataAnswerstudent_answer_options[0].id,
@@ -225,7 +225,7 @@ const DetailTestStudent = ({ onfetchData,
                 score,
             }));
             if (questionsWithoutId.length === 0) {
-                return Notification('error', 'Thông báo', 'Chưa sửa điểm')
+                return Notification('error', 'Thông báo', 'Chưa sửa điểm');
             }
             console.log(questionsWithoutId);
             data = {
@@ -267,13 +267,13 @@ const DetailTestStudent = ({ onfetchData,
             });
     };
     const handleCheckStatusEssay = (item: Question) => {
-        if (item.student_answer_options[0]?.status === 2 ) {
-            return "Đã chấm"; 
+        if (item.student_answer_options[0]?.status === 2) {
+            return 'Đã chấm';
         } else if (item.student_answer_options[0]?.status === 1) {
-            return "Chưa chấm";
+            return 'Chưa chấm';
         }
-        return "Không làm";
-    }
+        return 'Không làm';
+    };
     return (
         <>
             <div className=" flex justify-between flex-row">
@@ -303,32 +303,31 @@ const DetailTestStudent = ({ onfetchData,
                 </div>
                 <div className="text-xl font-medium">{handleChange()}</div>
             </div>
-            {isStudent?.submission === 1 ||
-                (isStudent?.submission === 2 && (
-                    <div className="flex flex-col gap-y-2 p-5 w-80  ">
-                        {isStudentExamFile?.files.map((file: any) => {
-                            return (
-                                <button
-                                    onClick={() => handlePopupDownloadFile(file.file_id)}
-                                    className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center"
-                                >
-                                    {['image/jpg', 'image/jpeg', 'image/png'].includes(file.file_type) ? (
-                                        <div className="w-10 h-10">
-                                            <MdOutlineImage size={30} />
-                                        </div>
-                                    ) : (
-                                        <div className="w-10 h-10">
-                                            <MdOutlineFilePresent size={30} />
-                                        </div>
-                                    )}
-                                    <div className="text-ellipsis overflow-hidden ...  max-w-xs w-[15rem]">
-                                        {file.file_name}
+            {(isStudent?.submission === 1 || isStudent?.submission === 2) && post_category_id === 3 && (
+                <div className="flex flex-col gap-y-2 p-5 w-80  ">
+                    {isStudentExamFile?.files.map((file: any) => {
+                        return (
+                            <button
+                                onClick={() => handlePopupDownloadFile(file.file_id)}
+                                className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center"
+                            >
+                                {['image/jpg', 'image/jpeg', 'image/png'].includes(file.file_type) ? (
+                                    <div className="w-10 h-10">
+                                        <MdOutlineImage size={30} />
                                     </div>
-                                </button>
-                            );
-                        })}
-                    </div>
-                ))}
+                                ) : (
+                                    <div className="w-10 h-10">
+                                        <MdOutlineFilePresent size={30} />
+                                    </div>
+                                )}
+                                <div className="text-ellipsis overflow-hidden ...  max-w-xs w-[15rem]">
+                                    {file.file_name}
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
             {post_category_id === 4 ? (
                 <div>
                     {isStudent?.submission !== 0 && (
@@ -346,16 +345,17 @@ const DetailTestStudent = ({ onfetchData,
                                                     onChange={(e) =>
                                                         handleQuestionPointChange(item.id, Number(e.target.value))
                                                     }
-                                                    disabled = {item.student_answer_options.length === 0  ? true : false}
-                                                    value={pointsEssay[item.id]?.toString() || item.student_answer_options[0]?.score}
+                                                    disabled={item.student_answer_options.length === 0 ? true : false}
+                                                    value={
+                                                        pointsEssay[item.id]?.toString() ||
+                                                        item.student_answer_options[0]?.score
+                                                    }
                                                     type="number"
                                                     min={0}
                                                     max={item.score}
                                                 ></Input>
                                             </div>
-                                            <div>
-                                                {handleCheckStatusEssay(item)}
-                                            </div>
+                                            <div>{handleCheckStatusEssay(item)}</div>
                                         </div>
                                     </div>
                                     <div className="mt-2">
