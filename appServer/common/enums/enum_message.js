@@ -34,7 +34,6 @@ class EnumMessage{
     static ERROR_CLASSROOM = {
         REQUIRED_INFORMATION: 'Request more information ',
         CLASSROOM_NOT_EXISTS: 'Classroom no exist',
-        REQUIRED_CLASS_CODE: 'Request class code'
     };
     //Error post
     static REQUIRED_INFORMATION = 'Required more information';
