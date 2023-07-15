@@ -54,7 +54,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [postList, setPostList] = useState([]);
     useEffect(() => {
         setPostList(data);
-    }, []);
+    }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
