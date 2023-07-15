@@ -75,7 +75,7 @@ class AccountService {
                 email: email,
                 password: hashedPassword,
                 role: role
-            }, { transaction: transaction});
+            }, { transaction: transaction });
             return newAccount;
         } catch (error) {
             throw error;

@@ -42,8 +42,8 @@ class RegularClassService {
                     attributes: []
                 }],
                 attributes: ['id', 'class_name',
-                [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM students WHERE students.regular_class_id = Department.id and students.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
-                'student_quantity']]
+                    [RegularClass.sequelize.literal(`(SELECT COUNT(*) FROM students WHERE students.regular_class_id = Department.id and students.status = ${EnumServerDefinitions.STATUS.ACTIVE})`),
+                        'student_quantity']]
             });
             return regularClass;
         } catch (error) {
@@ -116,7 +116,7 @@ class RegularClassService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

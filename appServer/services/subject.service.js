@@ -37,7 +37,7 @@ class SubjectService {
                 where: {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
-                include:  [{
+                include: [{
                     model: Classroom,
                     required: false,
                     where: {
@@ -115,7 +115,7 @@ class SubjectService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

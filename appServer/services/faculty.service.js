@@ -88,7 +88,7 @@ class FacultyService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;

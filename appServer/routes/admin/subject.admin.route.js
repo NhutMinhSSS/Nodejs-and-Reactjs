@@ -1,6 +1,6 @@
 const express = require('express');
 const SubjectAdminRouter = express.Router();
-const SubjectController = require('../../controllers/subject.controller'); 
+const SubjectController = require('../../controllers/subject.controller');
 
 SubjectAdminRouter.get('/', SubjectController.getAllSubjectsInit);
 SubjectAdminRouter.get('/get-subjects', SubjectController.getListSubjects);

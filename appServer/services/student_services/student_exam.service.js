@@ -30,7 +30,7 @@ class StudentExamService {
                     where: {
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     },
-                    attributes: ['student_code','first_name', 'last_name']
+                    attributes: ['student_code', 'first_name', 'last_name']
                 }],
                 attributes: ['id']
             });
@@ -115,8 +115,8 @@ class StudentExamService {
         try {
             const existingStudentExams = await StudentExam.findAll({
                 where: {
-                    exam_id: {[Op.in]: studentExams.map(({ exam_id }) => exam_id)},
-                    student_id: {[Op.in]: studentExams.map(({ student_id }) => student_id)}
+                    exam_id: { [Op.in]: studentExams.map(({ exam_id }) => exam_id) },
+                    student_id: { [Op.in]: studentExams.map(({ student_id }) => student_id) }
                 },
                 attributes: ['exam_id', 'student_id']
             });
@@ -130,7 +130,7 @@ class StudentExamService {
             if (studentExamsToCreate.length !== EnumServerDefinitions.EMPTY) {
                 await StudentExam.bulkCreate(studentExamsToCreate, { transaction });
             }
-    
+
             // if (studentExamsToUpdate.length !== EnumServerDefinitions.EMPTY) {
             //     const updatePromises = studentExamsToUpdate.map(({ exam_id, student_id }) =>
             //         StudentExam.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
@@ -150,10 +150,10 @@ class StudentExamService {
             const updateData = {
                 total_score: totalScore,
                 submission: submission
-              };
-              if (finishDate) {
+            };
+            if (finishDate) {
                 updateData.finish_date = finishDate;
-              }
+            }
             //   if (submission) {
             //     updateData.submission = submission;
             //   }
@@ -173,10 +173,10 @@ class StudentExamService {
             const existingStudentExam = await StudentExam.findAll({
                 where: {
                     exam_id: postId,
-                    student_id: {[Op.in]: listStudentIds}
+                    student_id: { [Op.in]: listStudentIds }
                 }
             });
-            const studentsExamToUpdate = existingStudentExam.map(({student_id}) => student_id);
+            const studentsExamToUpdate = existingStudentExam.map(({ student_id }) => student_id);
             const studentsExamToAdd = listStudentIds.filter(studentId => !studentsExamToUpdate.includes(studentId));
             if (studentsExamToUpdate.length > EnumServerDefinitions.EMPTY) {
                 await StudentExam.update({
@@ -184,7 +184,7 @@ class StudentExamService {
                 }, {
                     where: {
                         exam_id: postId,
-                        student_id: {[Op.in]: studentsExamToUpdate},
+                        student_id: { [Op.in]: studentsExamToUpdate },
                         status: EnumServerDefinitions.STATUS.NO_ACTIVE
                     }, transaction
                 });
@@ -193,12 +193,12 @@ class StudentExamService {
                 const listStudentExam = studentsExamToAdd.map(item => ({
                     exam_id: postId,
                     student_id: item
-               }));
-                await StudentExam.bulkCreate(listStudentExam, {transaction});
+                }));
+                await StudentExam.bulkCreate(listStudentExam, { transaction });
             }
             const result = {
                 exam_to_add: studentsExamToAdd,
-                exam_to_update: studentsExamToUpdate 
+                exam_to_update: studentsExamToUpdate
             }
             return result;
         } catch (error) {
@@ -212,7 +212,7 @@ class StudentExamService {
             }, {
                 where: {
                     exam_id: postId,
-                    student_id: {[Op.in]: listStudentExam}
+                    student_id: { [Op.in]: listStudentExam }
                 }, transaction
             });
             return isDelete > EnumServerDefinitions.EMPTY;

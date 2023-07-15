@@ -39,12 +39,12 @@ class SubjectController {
         }
         try {
             const department = await DepartmentService.checkDepartmentExist(departmentId);
-            if(!department) {
+            if (!department) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.NOT_EXIST);
             }
             const subject = await SubjectService.findSubjectByName(subjectName);
-            if (subject){
+            if (subject) {
                 if (subject.status === EnumServerDefinitions.STATUS.ACTIVE) {
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.CONFLICT,
                         EnumMessage.ALREADY_EXIST);
@@ -80,7 +80,7 @@ class SubjectController {
             //         EnumMessage.NOT_EXIST);
             // }
             const subject = await SubjectService.findSubjectByName(subjectName);
-            if (subject && subject.id !== subjectId){
+            if (subject && subject.id !== subjectId) {
                 let message = EnumMessage.ALREADY_EXIST;
                 if (subject.status === EnumServerDefinitions.STATUS.NO_ACTIVE) {
                     message = EnumMessage.ALREADY_EXIST_NO_ACTIVE;

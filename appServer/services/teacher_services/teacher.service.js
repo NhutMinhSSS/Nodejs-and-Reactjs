@@ -22,7 +22,7 @@ class TeacherService {
         try {
             const teacher = await Teacher.findOne({
                 where: {
-                    id : id,
+                    id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 attributes: ['id', 'teacher_code', 'first_name', 'last_name', 'department_id']
@@ -98,11 +98,11 @@ class TeacherService {
         try {
             const teachersNotInClassroom = await Teacher.findAll({
                 include: [{
-                  model: Department,
-                  required: true,
-                  where: {
-                    status: EnumServerDefinitions.STATUS.ACTIVE
-                  },
+                    model: Department,
+                    required: true,
+                    where: {
+                        status: EnumServerDefinitions.STATUS.ACTIVE
+                    },
                     include: [{
                         model: RegularClass,
                         required: true,
@@ -113,7 +113,7 @@ class TeacherService {
                             model: Classroom,
                             where: {
                                 id: classroomId,
-                                status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                                status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                             },
                             attributes: []
                         }],
@@ -122,16 +122,16 @@ class TeacherService {
                     attributes: ['department_name']
                 }],
                 where: {
-                  id: {
-                    [Op.notIn]: Teacher.sequelize.literal(
-                      `(SELECT teacher_id FROM teacher_lists WHERE classroom_id = ${classroomId} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`
-                    )
-                  },
-                  status: EnumServerDefinitions.STATUS.ACTIVE
+                    id: {
+                        [Op.notIn]: Teacher.sequelize.literal(
+                            `(SELECT teacher_id FROM teacher_lists WHERE classroom_id = ${classroomId} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`
+                        )
+                    },
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 attributes: ['id', 'first_name', 'last_name']
-              });
-              return teachersNotInClassroom;
+            });
+            return teachersNotInClassroom;
         } catch (error) {
             throw error;
         }
@@ -180,17 +180,19 @@ class TeacherService {
                 CCCD: CCCD,
                 department_id: departmentId,
                 address: address
-            }, { where: {
-                id: id,
-                status: EnumServerDefinitions.STATUS.ACTIVE
-            }});
+            }, {
+                where: {
+                    id: id,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                }
+            });
             return !!newTeacher;
         } catch (error) {
             throw error;
         }
     }
     async activeTeacher(id, transaction) {
-        try  {
+        try {
             const isActive = await Teacher.update({
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
@@ -214,7 +216,7 @@ class TeacherService {
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
-            const isDelete =  await Teacher.update({
+            const isDelete = await Teacher.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {

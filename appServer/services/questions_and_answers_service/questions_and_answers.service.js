@@ -200,13 +200,13 @@ class QuestionsAndAnswersService {
             });
             const question = listQuestionAndAnswer.map(item => item.Question);
             const result = question.map(({ id, content, score, question_category_id, StudentRandomizedAnswerLists, student_answer_options }) => ({
-                    id,
+                id,
                 content,
                 score,
                 question_category_id,
                 answers: StudentRandomizedAnswerLists.map(item => item.Answer),
                 student_answer_options
-                }));
+            }));
             return result;
         } catch (error) {
             throw error;
@@ -234,15 +234,15 @@ class QuestionsAndAnswersService {
             const listEssayQuestionAndAnswer = Question.findAll({
                 where: {
                     exam_id: postId,
-                question_category_id: 3,
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                    question_category_id: 3,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 },
                 include: {
                     model: StudentAnswerOption,
                     required: false,
                     where: {
                         student_exam_id: studentExamId,
-                        status: {[Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, 2]}
+                        status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, 2] }
                     },
                     attributes: ['id', 'essay_answer', 'score', 'status'],
                     as: 'student_answer_options'

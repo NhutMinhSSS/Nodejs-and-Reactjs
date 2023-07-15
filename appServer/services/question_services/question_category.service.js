@@ -16,11 +16,11 @@ class QuestionCategoryService {
     }
     async addQuestionCategory(categoryName) {
         try {
-            const newCategory =  await QuestionCategory.create({
+            const newCategory = await QuestionCategory.create({
                 category_name: categoryName
             });
             return newCategory;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     }

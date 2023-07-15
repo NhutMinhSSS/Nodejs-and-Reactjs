@@ -10,7 +10,7 @@ class FormatUtils {
     }
     checkPostsDeadline(dateString) {
         const now = moment().utc();
-        const tomorrow = moment().utc().add(1,'day');
+        const tomorrow = moment().utc().add(1, 'day');
         const exam_deadline = moment(dateString);
         return exam_deadline <= tomorrow && now < exam_deadline;
     }
@@ -35,7 +35,7 @@ class FormatUtils {
     }
     // format file request
     formatFileRequest(files, accountId) {
-        const listFiles =  files.map(item => {
+        const listFiles = files.map(item => {
             // const data = fs.readFileSync(item.path);
             // const base64 = data.toString('base64');
             return {
@@ -155,7 +155,7 @@ class FormatUtils {
         // });
         const formatComments = this.formatComments(postDetail.comments);
         const account = this.formatAccount(postDetail.accounts);
-        const studentExams = postDetail.post_category_id !== EnumServerDefinitions.POST_CATEGORY.DOCUMENT ?postDetail.student_exams.map(item => ({
+        const studentExams = postDetail.post_category_id !== EnumServerDefinitions.POST_CATEGORY.DOCUMENT ? postDetail.student_exams.map(item => ({
             id: item.id,
             finish_date: item.finish_date,
             total_score: item.total_score,
@@ -163,7 +163,7 @@ class FormatUtils {
             first_name: item.Student.first_name,
             last_name: item.Student.last_name,
             file: this.formatFile(item.student_file_submissions)
-        })): [];
+        })) : [];
         const formattedPost = {
             id: postDetail.id,
             title: postDetail.title,
@@ -182,24 +182,24 @@ class FormatUtils {
         };
         return formattedPost;
     }
-    randomQuestions(listQuestions , studentExam) {
+    randomQuestions(listQuestions, studentExam) {
         const randomQuestions = listQuestions.map((item, index) => ({
             student_exam_id: studentExam.id,
             question_id: item.id,
             order: index + 1
-          }));
+        }));
         return randomQuestions;
     }
     randomAnswers(listAnswers, studentExam) {
-        const randomAnswers = listAnswers.flatMap(q => 
+        const randomAnswers = listAnswers.flatMap(q =>
             q.answers.sort(() => Math.random() - 0.5).flatMap((a, index) => ({
-              student_exam_id: studentExam.id,
-              question_id: q.id,
-              answer_id: a.id,
-              order: index + 1
+                student_exam_id: studentExam.id,
+                question_id: q.id,
+                answer_id: a.id,
+                order: index + 1
             }))
-          );
-          return randomAnswers;
+        );
+        return randomAnswers;
     }
 }
 

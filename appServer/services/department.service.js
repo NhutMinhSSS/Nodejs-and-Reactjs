@@ -66,7 +66,7 @@ class DepartmentService {
                         'subject_quantity'],
                     [Department.sequelize.literal(`(SELECT COUNT(*) FROM regular_class WHERE regular_class.department_id = Department.id and regular_class.status= ${EnumServerDefinitions.STATUS.ACTIVE})`),
                         'regular_class_quantity']
-                    ],
+                ],
                 order: [
                     ['created_at', 'ASC'],
                     ['updated_at', 'ASC']
@@ -84,7 +84,7 @@ class DepartmentService {
             }, {
                 where: {
                     id: id,
-                    status: {[Op.in] : [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE]}
+                    status: { [Op.in]: [EnumServerDefinitions.STATUS.ACTIVE, EnumServerDefinitions.STATUS.CLOSE] }
                 }
             });
             return isUpdate > EnumServerDefinitions.EMPTY;
@@ -116,7 +116,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }, {
                     where: {
-                        id: {[Op.in]: subjectIds},
+                        id: { [Op.in]: subjectIds },
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }, transaction
                 });
@@ -127,7 +127,7 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }, {
                     where: {
-                        id: {[Op.in]: regularClassIds},
+                        id: { [Op.in]: regularClassIds },
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }, transaction
                 });
@@ -146,11 +146,11 @@ class DepartmentService {
                     status: EnumServerDefinitions.STATUS.NO_ACTIVE
                 }, {
                     where: {
-                       [Op.or]: [{
-                        subject_id: {[Op.in]: subjectIds}
-                       }, {
-                        regular_class_id: {[Op.in]: regularClassIds}
-                       }],
+                        [Op.or]: [{
+                            subject_id: { [Op.in]: subjectIds }
+                        }, {
+                            regular_class_id: { [Op.in]: regularClassIds }
+                        }],
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }, transaction
                 });

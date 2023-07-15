@@ -56,7 +56,7 @@ class RegularClassController {
                 // regularClass.department_id = departmentId;
                 // newRegularClass =regularClass;
             } else {
-                await RegularClassService.createRegularClass(className, departmentId); 
+                await RegularClassService.createRegularClass(className, departmentId);
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {

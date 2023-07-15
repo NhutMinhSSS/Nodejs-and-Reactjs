@@ -15,41 +15,41 @@ class ClassroomTeacherService {
     }
     async isTeacherJoined(classroomId, teacherId) {
         try {
-        const isJoined = await TeacherList.findOne({
-           where: {
-            classroom_id: classroomId,
-            teacher_id: teacherId,
-            status: EnumServerDefinitions.STATUS.ACTIVE
-           },
-           attributes: ['id']
-        });
-        return !!isJoined; 
-        } catch(error) {
+            const isJoined = await TeacherList.findOne({
+                where: {
+                    classroom_id: classroomId,
+                    teacher_id: teacherId,
+                    status: EnumServerDefinitions.STATUS.ACTIVE
+                },
+                attributes: ['id']
+            });
+            return !!isJoined;
+        } catch (error) {
             throw error;
         }
     }
     async checkTeacherNoActive(classroomId, teacherId) {
         try {
             const teacher = await TeacherList.findOne({
-               where: {
-                classroom_id: classroomId,
-                teacher_id: teacherId,
-                status: EnumServerDefinitions.STATUS.NO_ACTIVE
-               }
+                where: {
+                    classroom_id: classroomId,
+                    teacher_id: teacherId,
+                    status: EnumServerDefinitions.STATUS.NO_ACTIVE
+                }
             });
-            return teacher; 
-            } catch(error) {
-                throw error;
-            }
+            return teacher;
+        } catch (error) {
+            throw error;
+        }
     }
     async addTeacherToClassroom(classroomId, teacherId, transaction) {
-        try{
+        try {
             const newTeacher = await TeacherList.create({
                 classroom_id: classroomId,
                 teacher_id: teacherId
             }, { transaction });
             return newTeacher;
-        } catch(error) {
+        } catch (error) {
             throw error;
         }
     }
@@ -57,7 +57,7 @@ class ClassroomTeacherService {
         try {
             const existingTeacherIds = await TeacherList.findAll({
                 where: {
-                    teacher_id: {[Op.in]: teacherIds},
+                    teacher_id: { [Op.in]: teacherIds },
                     classroom_id: classroomId
                 },
                 attributes: ['teacher_id'],
@@ -66,19 +66,19 @@ class ClassroomTeacherService {
             const teachersToUpdate = existingTeacherIds.map(({ teacher_id }) => teacher_id);
             const teachersToInsert = teacherIds.filter(teacherId => !teachersToUpdate.includes(teacherId));
             if (teachersToInsert.length !== EnumServerDefinitions.EMPTY) {
-                const teacherListInsert =  teachersToInsert.map(teacherId => ({
+                const teacherListInsert = teachersToInsert.map(teacherId => ({
                     classroom_id: classroomId,
                     teacher_id: teacherId,
-                  }));
-                await TeacherList.bulkCreate(teacherListInsert ,
+                }));
+                await TeacherList.bulkCreate(teacherListInsert,
                     { transaction, updateOnDuplicate: ['status'] }
-                  );
+                );
             }
             if (teachersToUpdate.length !== EnumServerDefinitions.EMPTY) {
-                await TeacherList.update({ status: EnumServerDefinitions.STATUS.ACTIVE}, {
+                await TeacherList.update({ status: EnumServerDefinitions.STATUS.ACTIVE }, {
                     where: {
                         classroom_id: classroomId,
-                        teacher_id: {[Op.in]: teachersToUpdate}
+                        teacher_id: { [Op.in]: teachersToUpdate }
                     }, transaction
                 });
             }
@@ -94,7 +94,7 @@ class ClassroomTeacherService {
             }, {
                 where: {
                     classroom_id: classroomId,
-                    teacher_id: {[Op.in]: teacherIds},
+                    teacher_id: { [Op.in]: teacherIds },
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });

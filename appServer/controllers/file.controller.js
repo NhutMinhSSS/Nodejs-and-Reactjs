@@ -12,7 +12,7 @@ class FileController {
         try {
             const fileId = req.params.file_id;
             const file = await FileService.findFileById(fileId);
-            if(!file) {
+            if (!file) {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
@@ -21,11 +21,11 @@ class FileController {
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.FILE_NOT_EXISTS);
             }
-          res.header('Access-Control-Expose-Headers', 'Content-Disposition');
-          const encodedFilename = encodeURIComponent(file.file_name);
-          res.set('Content-Disposition', `attachment; filename="${encodedFilename}"`)
-          res.set('Content-Type', file.file_type);
-          return res.sendFile(filePath);
+            res.header('Access-Control-Expose-Headers', 'Content-Disposition');
+            const encodedFilename = encodeURIComponent(file.file_name);
+            res.set('Content-Disposition', `attachment; filename="${encodedFilename}"`)
+            res.set('Content-Type', file.file_type);
+            return res.sendFile(filePath);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,

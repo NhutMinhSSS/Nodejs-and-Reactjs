@@ -20,7 +20,7 @@ class StudentRandomizedQuestionService {
             const newListQuestions = await StudentRandomizedQuestion.bulkCreate(listQuestions, { transaction });
             const newListAnswers = await StudentRandomizedAnswerList.bulkCreate(listAnswers, { transaction });
             await transaction.commit();
-            return {newListQuestions, newListAnswers};
+            return { newListQuestions, newListAnswers };
         } catch (error) {
             await transaction.rollback();
             throw error;
