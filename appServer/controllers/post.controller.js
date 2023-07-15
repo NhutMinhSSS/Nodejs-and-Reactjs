@@ -280,14 +280,17 @@ class PostController {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
+        const transaction = await sequelize.transaction();
         try {
             const post = await PostService.findPostById(postId);
             if (role === EnumServerDefinitions.ROLE.STUDENT && (accountId !== post.account_id || post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS)) {
+                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
                     EnumMessage.ACCESS_DENIED_ERROR);
             }
             const isDelete = await PostService.deletePost(postId, transaction);
             if (!isDelete) {
+                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_DELETE);
             }
