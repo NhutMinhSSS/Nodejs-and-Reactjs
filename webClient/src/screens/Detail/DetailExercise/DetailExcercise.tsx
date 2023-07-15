@@ -205,7 +205,7 @@ const DetailExcercise = () => {
     };
     const handleTest = () => {
         const formatStartDate = dayjs(isData?.start_date).format('DD/MM/YYYY HH:mm:ss');
-        const formatFinshDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
+        const formatFinishDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
         const currentDay = dayjs().format('DD/MM/YYYY HH:mm:ss');
         if (currentDay < formatStartDate) {
             Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài!!! Giờ bắt đầu ${formatStartDate}`);

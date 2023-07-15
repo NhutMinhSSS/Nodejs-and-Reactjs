@@ -54,7 +54,7 @@ const Login: React.FC = () => {
                         localStorage.setItem(
                             'user',
                             JSON.stringify({
-                                accoutId: account_id,
+                                account_id: account_id,
                                 first_name: first_name,
                                 last_name: last_name,
                             }),
@@ -104,6 +104,7 @@ const Login: React.FC = () => {
         } catch (error) {}
     };
 
+   if (localStorage.getItem('token')) {
     if (localStorage.getItem('role') == '1') {
         handleRouteTeacher();
     } else if (localStorage.getItem('role') == '0') {
@@ -111,6 +112,7 @@ const Login: React.FC = () => {
     } else if (localStorage.getItem('role') == '2') {
         handleRouteAdmin();
     }
+   }
 
     return (
         <>
