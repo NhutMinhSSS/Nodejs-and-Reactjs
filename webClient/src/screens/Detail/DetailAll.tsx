@@ -1,9 +1,6 @@
 import { Tabs } from 'antd';
-import React from 'react';
 import DetailExcerciseTeacher from './DetailExercise/DetailExcerciseTeacher';
 import DetailTest from './DetailTest';
-import { MenuOutlined } from '@ant-design/icons';
-import { MdArrowBack } from 'react-icons/md';
 const { TabPane } = Tabs;
 
 const DetailAll = () => {

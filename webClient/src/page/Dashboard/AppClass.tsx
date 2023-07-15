@@ -10,6 +10,8 @@ import axios from 'axios';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import Notification from '../../components/Notification';
+import ErrorAlert from '../../common/Screens/ErrorAlert';
+import { title } from 'process';
 interface DataType {
     nameclass: string;
     subject: string;
@@ -97,10 +99,20 @@ const AppClass = () => {
             })
             .catch((error) => {
                 setLoading(false);
-                const isError = UnauthorizedError.checkError(error);
-                if (!isError) {
-                    const content = 'Lỗi máy chủ';
+                if (error) {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const title = 'Lỗi';
+                        let content = '';
+                        {
+                            content = 'Lỗi máy chủ';
+                        }
+                        ErrorCommon(title, content);
+                    }
+                } else {
                     const title = 'Lỗi';
+                    const content = 'Máy chủ không hoạt động';
+                    localStorage.clear();
                     ErrorCommon(title, content);
                 }
             });
