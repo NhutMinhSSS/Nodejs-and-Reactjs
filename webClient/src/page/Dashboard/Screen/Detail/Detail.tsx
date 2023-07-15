@@ -17,6 +17,8 @@ import CheckBoxAllDetail from '../../../../components/CheckBoxAllDetail';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { TableProps } from 'react-table';
 import Notification from '../../../../components/Notification';
+import UnauthorizedError from '../../../../common/exception/unauthorized_error';
+import ErrorCommon from '../../../../common/Screens/ErrorCommon';
 const { Header, Footer, Content } = Layout;
 interface DataType {
     id: number;
@@ -201,12 +203,29 @@ const Detail = () => {
 
     const fecthOptionClass = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
-            const data_option_class = response.data.response_data.regular_class;
-            setSelectClasses(data_option_class);
+        axios
+            .get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config)
+            .then((response) => {
+                const data_option_class = response.data.response_data.regular_class;
+                setSelectClasses(data_option_class);
 
-            console.log('data_option:', data_option_class);
-        });
+                console.log('data_option:', data_option_class);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
     };
     const fetchOptionTeacher = () => {
         const config = HeaderToken.getTokenConfig();

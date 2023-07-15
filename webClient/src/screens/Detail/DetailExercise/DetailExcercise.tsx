@@ -24,9 +24,11 @@ import SystemConst from '../../../common/consts/system_const';
 import Notification from '../../../components/Notification';
 import UnauthorizedError from '../../../common/exception/unauthorized_error';
 import ErrorAlert from '../../../common/Screens/ErrorAlert';
-import { Button, Modal, Upload } from 'antd';
+import { Button, Modal, Popconfirm, Upload } from 'antd';
 import './scss/style.scss';
 import utc from 'dayjs/plugin/utc';
+import CustomButtonDelete from '../../../components/CustomButtonDelete';
+import ErrorCommon from '../../../common/Screens/ErrorCommon';
 dayjs.extend(utc);
 interface Comment {
     id: number;
@@ -34,6 +36,7 @@ interface Comment {
     last_name: string;
     first_name: string;
     comment_date: string;
+    account_id: number;
 }
 interface File {
     file_id: number;
@@ -74,6 +77,15 @@ const DetailExcercise = () => {
     const [fileId, setFileId] = useState(0);
     const handleTextField = (value: string) => {
         setTextValue(value);
+    };
+
+    const handleRemoveComment = (id: any) => {
+        // Xử lý logic xóa mục với id tương ứng
+        console.log(`Deleting comment with id: ${id}`);
+    };
+
+    const handleToggleDelete = (id: any) => {
+        console.log('id: ', id);
     };
     const handleButtonClick = () => {
         if (textValue) {
@@ -289,6 +301,9 @@ const DetailExcercise = () => {
         }
         return '';
     };
+    const user = localStorage.getItem('user');
+    const accountId = user ? JSON.parse(user).account_id : null;
+    console.log(accountId);
 
     const [submissionStatus, setSubmissionStatus] = useState<number>(valueStudentExam?.submission || 0);
     const handleButtonCancelEx = () => {
@@ -313,22 +328,46 @@ const DetailExcercise = () => {
             setValueStudentExam(studentExam);
         }
     };
-    console.log(removeFile);
+    const handleDelete = (id: number) => {
+        console.log(id);
+        const config = HeaderToken.getTokenConfig();
+        const comment_id = id;
 
+        axios
+            .delete(`${BASE_URL}/comments/${comment_id}/delete-comment`, config)
+            .then(() => {
+                handleFetchData();
+            })
+            .then((response) => {})
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+                    const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 404 && errorMessage === 'Not exist') {
+                        content = 'Không tồn tại';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Xóa không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+        // Logic xử lý xóa item với ID cụ thể
+    };
     return (
         <>
-            <div className="flex justify-center mt-20">
+            <div className="flex justify-center p-10">
                 <div className="mr-5">{handleChangeIcon(isData?.post_category_id)}</div>
 
                 <div className="w-[45rem] gap-y-3 flex flex-col">
                     <div className="flex justify-between items-center ">
                         <span className="text-3xl text-blue-300">{isData?.title}</span>
-                        <span>
-                            <MdMoreVert
-                                className="hover:bg-blue-200 rounded-full transition-all duration-300  cursor-pointer"
-                                size={24}
-                            />
-                        </span>
                     </div>
                     <div className="flex gap-x-2 items-center">
                         <p>
@@ -348,17 +387,26 @@ const DetailExcercise = () => {
                                     <button>Đây là link làm bài</button>
                                 </div>
                             ) : (
-                                'Đã nộp bài '
+                                <div>
+                                    Đã nộp bài
+                                    <div>
+                                        {isData?.student_exams[0]?.submission === 2
+                                            ? isData?.student_exams[0]?.total_score
+                                            : 0}
+                                        /100
+                                    </div>
+                                </div>
                             )}
                         </div>
                     ) : (
                         <div>
                             <div>{isData?.content}</div>
-                            <div className="grid grid-cols-2 gap-x-2">
+
+                            <div className="grid grid-cols-2 gap-x-2 gap-y-2 p-6 ">
                                 {isData?.files.map((item: any) => (
                                     <button
                                         onClick={() => handlePopupDownloadFile(item.file_id)}
-                                        className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center"
+                                        className="border-[1px] rounded-lg border-gray-400 p-3 flex items-center"
                                     >
                                         {['image/jpg', 'image/jpeg', 'image/png'].includes(item.file_type) ? (
                                             <div className="w-10 h-10">
@@ -389,22 +437,24 @@ const DetailExcercise = () => {
                             <span className="">
                                 <MdAccountCircle size={40} />
                             </span>
-                            <span className="border-2 rounded-2xl justify-between flex items-center h-10 w-full">
-                                <TextFeild
-                                    className="rounded-xl  px-4 w-[40rem]"
-                                    value={textValue}
-                                    onChange={handleTextField}
-                                    placeholder="Thêm nhận xét trong lớp học"
-                                />
-                                <span
-                                    className={`mr-2 text-blue-400 ${
-                                        textValue ? 'cursor-pointer' : 'cursor-not-allowed '
-                                    }`}
-                                    onClick={handleButtonClick}
-                                >
-                                    <MdSend size={20} />
+                            <div>
+                                <span className="border-2 rounded-2xl justify-between flex items-center h-10 w-full">
+                                    <TextFeild
+                                        className="rounded-xl  px-4 w-[40rem]"
+                                        value={textValue}
+                                        onChange={handleTextField}
+                                        placeholder="Thêm nhận xét trong lớp học"
+                                    />
+                                    <span
+                                        className={`mr-2 text-blue-400 ${
+                                            textValue ? 'cursor-pointer' : 'cursor-not-allowed '
+                                        }`}
+                                        onClick={handleButtonClick}
+                                    >
+                                        <MdSend size={20} />
+                                    </span>
                                 </span>
-                            </span>
+                            </div>
                         </div>
                         <div>
                             {/* {visibleCount < comments.length && (
@@ -419,23 +469,34 @@ const DetailExcercise = () => {
                             {comments.map((item, index) => {
                                 if (index < visibleCount) {
                                     return (
-                                        <div className="flex mt-4 gap-x-2" key={index}>
-                                            <div>
+                                        <div className="flex justify-between mt-4 gap-x-2" key={index}>
+                                            <div className="flex">
                                                 <div>
-                                                    <MdAccountCircle size={40} />
+                                                    <div>
+                                                        <MdAccountCircle size={40} />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <div className="flex gap-x-2 font-medium">
+                                                <div>
+                                                    <div className="flex gap-x-2 font-medium">
+                                                        <span>
+                                                            {item.last_name} {item.first_name}
+                                                        </span>
+                                                        <span>{handleFormatDate(item.comment_date)}</span>
+                                                    </div>
                                                     <span>
-                                                        {item.last_name} {item.first_name}
+                                                        <div>{item.content}</div>
                                                     </span>
-                                                    <span>{handleFormatDate(item.comment_date)}</span>
                                                 </div>
-                                                <span>
-                                                    <div>{item.content}</div>
-                                                </span>
                                             </div>
+                                            {item.account_id == accountId && (
+                                                <div>
+                                                    {item.account_id == accountId && (
+                                                        <div>
+                                                            <CustomButtonDelete onDelete={handleDelete} item={item} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 }

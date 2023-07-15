@@ -35,7 +35,7 @@ interface Data {
     student_exam_id: number;
     submission: number;
 }
-interface EssayAnswer  {
+interface EssayAnswer {
     [key: string]: any;
 }
 const { Header, Footer, Content } = Layout;
@@ -163,7 +163,7 @@ const JoinMark = () => {
             }, 1500);
         }
         //handleFetchData();
-        navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student`);
+        navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student`, { replace: true });
     };
     //console.log(classroom_id);
 
@@ -190,12 +190,12 @@ const JoinMark = () => {
         const { value } = e.target;
         setQuestionId(questionId);
         setEssayAnswers((prevAnswers) => ({
-          ...prevAnswers,
-          [questionId]: value,
+            ...prevAnswers,
+            [questionId]: value,
         }));
         setShouldCallAPI(true);
-      };
-      
+    };
+
     //console.log(isData?.list_questions_answers);
 
     return (
@@ -204,7 +204,7 @@ const JoinMark = () => {
                 <div>
                     <div className="h-screen grid grid-cols-1 grid-rows-[auto,1fr,auto] ">
                         <Header className="bg-blue-400 text-xl grid items-center">Bài Kiểm Tra</Header>
-                        <div>{send ? "Đang lưu ..." : ''}</div>
+                        <div>{send ? 'Đang lưu ...' : ''}</div>
                         <div className="p-5 grid justify-center ">
                             <div className="justify-center flex">
                                 <div className="w-[50rem]">
@@ -297,7 +297,7 @@ const JoinMark = () => {
                                                             setCheckTextValue((prevAnswers) => ({
                                                                 ...prevAnswers,
                                                                 [asw.id]: true,
-                                                              }));
+                                                            }));
                                                             handleTextAreaChange(e, asw.id);
                                                         }}
                                                     ></TextArea>

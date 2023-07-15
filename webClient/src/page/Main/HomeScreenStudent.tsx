@@ -30,7 +30,36 @@ const HomeScreenStudent: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
+<<<<<<< HEAD
+            window.location.replace('/');
+        } else {
+            setIsLoading(true);
+            axios
+                .get('https://103.116.9.71:3443/api/classrooms', config)
+                .then((response) => {
+                    // Xử lý dữ liệu từ response
+                    const data = response.data.response_data;
+                    console.log('data', data);
+                    setScreenClass(data.list_classrooms);
+                    setDataNoti(data.list_notifications);
+                    //Chuyển dữ liệu khi tạo mới phòng
+                })
+                .catch((error) => {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const content = 'Lỗi máy chủ';
+                        const title = 'Lỗi';
+                        ErrorCommon(title, content);
+                    }
+                    // Xử lý lỗi nếu có
+                    console.error(error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+=======
           return  window.location.replace('/');
+>>>>>>> 0983d82b4f64ebcf42a812db6e80a94d69802174
         }
         handleFetchData();
         // const socket = io('https://103.116.9.71:3443'); 

@@ -22,6 +22,7 @@ import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorAlert from '../../common/Screens/ErrorAlert';
 import '../scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
+import CustomButton from '../../components/CustomButton';
 const ListStudent = [
     { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
     { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={28} /> },
@@ -236,6 +237,15 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         }
         return '';
     };
+    const handleDetele = (id: any) => {
+        console.log(id);
+        const post_id = id;
+        const config = HeaderToken.getTokenConfig();
+        axios.delete(`${BASE_URL}/posts/${post_id}/delete-post`, config).then(() => {});
+    };
+    const handleEdit = (id: any) => {
+        console.log(id);
+    };
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -324,7 +334,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                     </div>
 
                     {data.map((item: any) => (
-                        <button
+                        <div
                             onClick={() => handleClick(item)}
                             className={`flex justify-between bg-slate-200 ${
                                 item.post_category_id === 1 ? ' ' : 'hover:shadow-lg'
@@ -382,11 +392,11 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                 )}
                             </div>
                             <div>
-                                <button className="m-auto p-1 hover:bg-slate-300 focus:bg-slate-400  rounded-full duration-300">
-                                    <MdMoreVert size={20} />
+                                <button className="">
+                                    <CustomButton item={item} onDelete={handleDetele} onEdit={handleEdit} />
                                 </button>
                             </div>
-                        </button>
+                        </div>
                     ))}
                 </div>
             </Spin>
