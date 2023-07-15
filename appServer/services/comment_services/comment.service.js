@@ -32,8 +32,10 @@ class CommentService {
             const isDelete = await Comment.update({
                 status: EnumServerDefinitions.STATUS.ACTIVE
             }, {
+               where: {
                 id: commentId,
                 account_id: accountId
+               }
             });
             return isDelete > EnumServerDefinitions.EMPTY
         } catch (error) {
