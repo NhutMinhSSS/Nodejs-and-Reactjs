@@ -15,7 +15,6 @@ import {
     MdSend,
 } from 'react-icons/md';
 import TextFeild from '../../../components/TextFeild';
-import { log } from 'console';
 import TextArea from 'antd/es/input/TextArea';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -28,9 +27,7 @@ import ErrorAlert from '../../../common/Screens/ErrorAlert';
 import { Button, Modal, Upload } from 'antd';
 import './scss/style.scss';
 import utc from 'dayjs/plugin/utc';
-
 dayjs.extend(utc);
-
 interface Comment {
     id: number;
     content: string;
@@ -211,7 +208,7 @@ const DetailExcercise = () => {
         const formatFinshDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
         const currentDay = dayjs().format('DD/MM/YYYY HH:mm:ss');
         if (currentDay < formatStartDate) {
-            Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài ! giờ bắt đầu ${formatStartDate}`);
+            Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài!!! Giờ bắt đầu ${formatStartDate}`);
         } else {
             navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student/test`);
         }

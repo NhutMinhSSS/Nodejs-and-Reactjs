@@ -155,7 +155,6 @@ function App() {
                 <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test" element={<DetailAll />}></Route>
                 <Route path="/giang-vien/class/:classroom_id/:post_id/document" element={<DetailDocument />}></Route>
                 <Route path="/giang-vien/class/:classroom_id/:post_id/detail-test/test" element={<JoinMark />}></Route>
-
                 <Route
                     path="/sinh-vien/class/:classroom_id/:post_id/detail-student"
                     element={<DetailExcercise />}

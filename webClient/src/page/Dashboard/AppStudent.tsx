@@ -175,7 +175,7 @@ const AppStudent = () => {
     const handleChangeCodeStudent = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         const formattedValue = inputValue
-            .replace(/^0+(?=\d{1,10})/, '')
+            .replace(/^(?=\d{1,10})/, '')
             .replace(/\D/g, '')
             .slice(0, 10);
         setIsValueMSSV(formattedValue);
