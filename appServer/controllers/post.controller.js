@@ -34,7 +34,7 @@ class PostController {
             const data = {
                 class_name: classroom.class_name,
                 title: classroom.title,
-                class_code: role === EnumServerDefinitions.ROLE.STUDENT ? null : classroom.class_code,
+                //class_code: role === EnumServerDefinitions.ROLE.STUDENT ? null : classroom.class_code,
                 list_post: listPost
             }
             let postDeadlines; // Di chuyển khai báo biến ra khỏi khối if
