@@ -130,6 +130,7 @@ class FormatUtils {
                 classroom_id: post.classroom_id,
                 last_name: account.last_name,
                 first_name: account.first_name,
+                account_id: post.account_id,
                 // topic_id: post.topic_id,
                 files: formattedPostFiles,
                 comments: formatComments
