@@ -387,10 +387,9 @@ class PostService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: { [Op.in]: Post.sequelize.literal('(SELECT file_id FROM post_files WHERE post_id = :postId)') },
+                    id: { [Op.in]: Post.sequelize.literal(`(SELECT file_id FROM post_files WHERE post_id = ${id} AND status = ${EnumServerDefinitions.STATUS.ACTIVE})`) },
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction,
-                bind: { postId: id }
             });
             const isDelete = await Post.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
