@@ -274,22 +274,25 @@ class PostController {
     }
     async deletePost(req, res) {
         const postId = req.params.post_id;
+        const accountId = req.user.account_id;
+        const role = req.user.role;
         if (!postId) {
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                 EnumMessage.REQUIRED_INFORMATION);
         }
-        const transaction = await sequelize.transaction();
         try {
+            const post = await PostService.findPostById(postId);
+            if (role === EnumServerDefinitions.ROLE.STUDENT && (accountId !== post.account_id || post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS)) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR);
+            }
             const isDelete = await PostService.deletePost(postId, transaction);
             if (!isDelete) {
-                await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                     EnumMessage.ERROR_DELETE);
             }
-            await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
-            await transaction.rollback();
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
                 EnumMessage.DEFAULT_ERROR);

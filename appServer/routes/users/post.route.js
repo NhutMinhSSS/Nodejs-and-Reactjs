@@ -9,5 +9,6 @@ const PostRouter = express.Router();
 PostRouter.get('/:classroom_id/get-list-student-classroom', StudentController.getStudentsByClassroomId);
 PostRouter.post('/create-post', download.array('files'), checkRoomMember, PostController.createPost);
 PostRouter.get('/:post_id/post-detail', checkPostBelongToClassroom, PostController.getPostDetail);
+PostRouter.delete('/:post_id/delete-post', PostController.deletePost);
 
 module.exports = PostRouter;
