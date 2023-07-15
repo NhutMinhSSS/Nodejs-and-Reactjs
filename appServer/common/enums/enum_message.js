@@ -54,7 +54,7 @@ class EnumMessage{
     //Error create
     static ERROR_CREATE = 'Create not success';
     //Error update
-    static ERROR_UPDATE = 'Update not success';
+    static ERROR_UPDATE = 'c';
     //Error delete
     static ERROR_DELETE = 'Delete not success';
     //Teacher no exists

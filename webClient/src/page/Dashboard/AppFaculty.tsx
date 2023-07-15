@@ -54,7 +54,6 @@ const AppFaculty = () => {
             .then((response) => {
                 const Api_Data_Faculty = response.data.response_data;
                 console.log('data: ', Api_Data_Faculty);
-
                 const newData: DataType[] = Api_Data_Faculty.map(
                     (item: { id: number; faculty_name: any; department_quantity: any }) => ({
                         facultyname: item.faculty_name,

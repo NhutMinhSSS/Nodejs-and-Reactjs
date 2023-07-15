@@ -207,52 +207,6 @@ const AppClassSection: React.FC = () => {
                         status: item.status === 1 ? 'Đang mở' : 'Đang đóng',
                         action: (
                             <>
-                                {/* <Space>
-                                    <Dropdown>đasad</Dropdown>
-                                </Space>
-                                <div className=" grid grid-cols-2  gap-y-1 w-[6rem]">
-                                    <Tooltip title="Sửa lớp học phần">
-                                        <button
-                                            className="bg-blue-400 px-3 py-2 w-10 rounded-lg hover:bg-blue-700 hover:text-white flex justify-center items-center"
-                                            onClick={() => handleEdit(item)}
-                                        >
-                                            <div>
-                                                <MdOutlineEditCalendar size={20} />
-                                            </div>
-                                        </button>
-                                    </Tooltip>
-
-                                    <Tooltip title={`${item.status === 1 ? 'Mở lớp học phần' : 'Đóng lớp học phần'}`}>
-                                        <button
-                                            className={`${colorStatus(
-                                                item.status,
-                                            )} rounded-md w-10 flex justify-center items-center  hover:text-white`}
-                                            onClick={() => handleStatus(item)}
-                                        >
-                                            {item.status === 1 ? <MdLockOutline size={20} /> : <MdLockOpen size={20} />}
-                                        </button>
-                                    </Tooltip>
-                                    <Tooltip title="Lưu trữ lớp học phần">
-                                        <button
-                                            className="bg-gray-400 px-3 py-2 rounded-lg w-10 hover:bg-gray-600 hover:text-white flex justify-center items-center"
-                                            onClick={() => handleEdit(item)}
-                                        >
-                                            <div>
-                                                <MdOutlineSave size={20} />
-                                            </div>
-                                        </button>
-                                    </Tooltip>
-                                    <Tooltip title="Xóa lớp học phần">
-                                        <button
-                                            className="bg-yellow-400 px-3 py-2 rounded-lg w-10 hover:bg-yellow-700 hover:text-white flex justify-center items-center"
-                                            onClick={() => handleDelete(item)}
-                                        >
-                                            <div>
-                                                <MdDelete size={20} />
-                                            </div>
-                                        </button>
-                                    </Tooltip>
-                                </div> */}
                                 <Dropdown
                                     trigger={['click']}
                                     overlay={
@@ -485,10 +439,35 @@ const AppClassSection: React.FC = () => {
         const config = HeaderToken.getTokenConfig();
         const classroom_id = selectedItemStorageClassName?.id;
 
-        axios.patch(`${BASE_URL}/classrooms/${classroom_id}/close-storage`, {}, config).then((response) => {
-            handleFetchData();
-            Notification('success', 'Thông báo', 'Lưu trữ thành công lớp học phần');
-        });
+        axios
+            .patch(`${BASE_URL}/classrooms/${classroom_id}/close-storage`, {}, config)
+            .then((response) => {
+                handleFetchData();
+                Notification('success', 'Thông báo', 'Lưu trữ thành công lớp học phần');
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                const {
+                    status,
+                    data: { error_message: errorMessage },
+                } = error.response;
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 400 && errorMessage === 'Required more information') {
+                        content = 'Thông tin bắt buộc';
+                    } else if (status === 400 && errorMessage === 'Update not success') {
+                        content = 'Cập nhật không thành công!!!';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
     };
     // const handleClassSectionDetail = () => {
     //     const config = HeaderToken.getTokenConfig();
@@ -506,15 +485,32 @@ const AppClassSection: React.FC = () => {
     // };
     const fecthDataOption = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config).then((response) => {
-            const Api_option_classsection = response.data.response_data;
-            setSubjectRefresh(Api_option_classsection.subjects);
-            setTeacherRefresh(Api_option_classsection.teachers);
-            setClasses(Api_option_classsection.regular_class);
-            setClassesEdit(Api_option_classsection.regular_class);
-            // setSubjects(Api_option_classsection.subjects);
-            // setTeachers(Api_option_classsection.teachers);
-        });
+        axios
+            .get(`${BASE_URL}/admin/classrooms/get-teachers-subjects-regularclass`, config)
+            .then((response) => {
+                const Api_option_classsection = response.data.response_data;
+                setSubjectRefresh(Api_option_classsection.subjects);
+                setTeacherRefresh(Api_option_classsection.teachers);
+                setClasses(Api_option_classsection.regular_class);
+                setClassesEdit(Api_option_classsection.regular_class);
+                // setSubjects(Api_option_classsection.subjects);
+                // setTeachers(Api_option_classsection.teachers);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    const title = 'Lỗi';
+                    let content = '';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
     };
 
     const handleEdit = (item: {

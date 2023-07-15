@@ -157,11 +157,32 @@ const AppClass = () => {
     };
     const handleFecthDataOption = () => {
         const config = HeaderToken.getTokenConfig();
-        axios.get(`${BASE_URL}/subjects/get-subjects`, config).then((response) => {
-            const Api_data_option = response.data.response_data;
-            console.log('data option: ', Api_data_option);
-            setIsOption(Api_data_option);
-        });
+        axios
+            .get(`${BASE_URL}/subjects/get-subjects`, config)
+            .then((response) => {
+                const Api_data_option = response.data.response_data;
+                console.log('data option: ', Api_data_option);
+                setIsOption(Api_data_option);
+            })
+            .catch((error) => {
+                setLoading(false);
+                if (error) {
+                    const isError = UnauthorizedError.checkError(error);
+                    if (!isError) {
+                        const title = 'Lỗi';
+                        let content = '';
+                        {
+                            content = 'Lỗi máy chủ';
+                        }
+                        ErrorCommon(title, content);
+                    }
+                } else {
+                    const title = 'Lỗi';
+                    const content = 'Máy chủ không hoạt động';
+                    localStorage.clear();
+                    ErrorCommon(title, content);
+                }
+            });
     };
     const handleEdit = (row: DataType) => {
         setEditedData(row);

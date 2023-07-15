@@ -162,9 +162,9 @@ const JoinClassedStudent = () => {
     const handlePassPageNoti = (item: any) => {
         // navigate(`/sinh-vien/class/${item['classroom_id']}`);
         const data = {};
-        axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config);
-        window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
-        handleFetchData();
+        axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(() => {
+            window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+        });
     };
     const handleFormatDate = (formatDate: any) => {
         return dayjs(formatDate).format('DD/MM/YYYY HH:mm');
@@ -175,12 +175,16 @@ const JoinClassedStudent = () => {
     return (
         <>
             {!isData ? (
-                <Spin size="small" spinning={isLoading} />
+                <Spin size="large" className="flex justify-center mt-[20rem]" spinning={isLoading} />
             ) : (
                 <div className="h-16 p-5  shadow-md flex flex-grow sm:grid-cols-2 max-w-full ">
                     <div className=" basis-1/6 flex items-center full">
-                        <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
-                            <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}
+                        <button className="flex items-center justify-center ">
+                            <MenuOutlined
+                                className="hover:bg-gray-200 rounded-full p-2 flex items-center  transition duration-150 ease-in-out"
+                                onClick={handleDrawer}
+                                size={40}
+                            />{' '}
                         </button>
                         <div className="h-auto w-auto ml-2">
                             <div className="block max-w-full overflow-hidden truncate ... w-44">
@@ -228,24 +232,24 @@ const JoinClassedStudent = () => {
                 </div>
             )}
             {isDataDrawer ? (
-                <Spin size="default" spinning={loading}>
-                    <Drawer
-                        visible={visbleDrawer}
-                        maskClosable={true}
-                        onClose={() => setVisibleDrawer(false)}
-                        title={
-                            <Space>
-                                <button onClick={handleNavHome}>Danh sách lớp học phần</button>
-                            </Space>
-                        }
-                        closable={true}
-                        placement="left"
-                        extra={
-                            <Space>
-                                <Dropdown
-                                    overlay={
-                                        <Menu>
-                                            {isDataNoti.map((item: any) => (
+                <Drawer
+                    visible={visbleDrawer}
+                    maskClosable={true}
+                    onClose={() => setVisibleDrawer(false)}
+                    title={
+                        <Space>
+                            <button onClick={handleNavHome}>Danh sách lớp học phần</button>
+                        </Space>
+                    }
+                    closable={true}
+                    placement="left"
+                    extra={
+                        <Space>
+                            <Dropdown
+                                overlay={
+                                    <Menu>
+                                        {isDataNoti.map((item: any) => (
+                                            <Spin size="default" spinning={loading}>
                                                 <Menu.Item key={item.id}>
                                                     <button
                                                         onClick={() => handlePassPageNoti(item)}
@@ -262,55 +266,55 @@ const JoinClassedStudent = () => {
                                                         </span>
                                                     </button>
                                                 </Menu.Item>
-                                            ))}
-                                        </Menu>
-                                    }
-                                    trigger={['click']}
-                                >
-                                    <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full relative">
-                                        <div className="flex items-center justify-center">
-                                            {notificationCount > 0 && (
-                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs">
-                                                    {notificationCount}
-                                                </span>
-                                            )}
-                                            <MdNotificationsNone size={20} />
-                                        </div>
-                                    </button>
-                                </Dropdown>
-                            </Space>
-                        }
-                        footer={
-                            <Space>
-                                <button>Lưu lớp học phần</button>
-                            </Space>
-                        }
-                    >
-                        <div>
-                            <div>Giảng dạy</div>
-                            <div className="mt-2">
-                                <div className="flex flex-col gap-y-5 h-auto overflow-auto ">
-                                    {isDataDrawer.map((item: any) => (
-                                        <button
-                                            onClick={() => handlePassPage(item)}
-                                            className="hover:text-black hover:bg-slate-200 transition duration-500   w-full h-auto py-2 px-2 border-2 rounded-md flex items-center gap-x-2"
-                                        >
+                                            </Spin>
+                                        ))}
+                                    </Menu>
+                                }
+                                trigger={['click']}
+                            >
+                                <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full relative">
+                                    <div className="flex items-center justify-center">
+                                        {notificationCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs">
+                                                {notificationCount}
+                                            </span>
+                                        )}
+                                        <MdNotificationsNone size={20} />
+                                    </div>
+                                </button>
+                            </Dropdown>
+                        </Space>
+                    }
+                    footer={
+                        <Space>
+                            <button>Lưu lớp học phần</button>
+                        </Space>
+                    }
+                >
+                    <div>
+                        <div>Giảng dạy</div>
+                        <div className="mt-2">
+                            <div className="flex flex-col gap-y-5 h-auto overflow-auto ">
+                                {isDataDrawer.map((item: any) => (
+                                    <button
+                                        onClick={() => handlePassPage(item)}
+                                        className="hover:text-black hover:bg-slate-200 transition duration-500   w-full h-auto py-2 px-2 border-2 rounded-md flex items-center gap-x-2"
+                                    >
+                                        <span>
+                                            <MdAccountCircle size={30} />
+                                        </span>
+                                        <span className="flex flex-col">
+                                            <span className="font-medium">{item.class_name}</span>
                                             <span>
-                                                <MdAccountCircle size={30} />
+                                                Học kỳ {item.semester} - {item.school_year}
                                             </span>
-                                            <span className="flex flex-col">
-                                                <span className="font-medium">{item.class_name}</span>
-                                                <span>
-                                                    Học kỳ {item.semester} - {item.school_year}
-                                                </span>
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
+                                        </span>
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    </Drawer>
-                </Spin>
+                    </div>
+                </Drawer>
             ) : (
                 ''
             )}

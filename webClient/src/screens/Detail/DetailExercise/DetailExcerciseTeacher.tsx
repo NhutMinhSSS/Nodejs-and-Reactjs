@@ -26,12 +26,16 @@ import UnauthorizedError from '../../../common/exception/unauthorized_error';
 import ErrorAlert from '../../../common/Screens/ErrorAlert';
 import { Button, Modal } from 'antd';
 import './scss/style.scss';
+import CustomButton from '../../../components/CustomButton';
+import CustomButtonDelete from '../../../components/CustomButtonDelete';
+import ErrorCommon from '../../../common/Screens/ErrorCommon';
 interface Comment {
     id: number;
     content: string;
     last_name: string;
     first_name: string;
     comment_date: string;
+    account_id: number;
 }
 interface File {
     file_id: string;
@@ -206,7 +210,6 @@ const DetailExcercise = () => {
         setVisibleCount(comments.length);
     };
     const role = localStorage.getItem('role');
-    console.log(role);
     const handleChange = (post_category_id: any) => {
         if (post_category_id === 2) {
             return <MdOutlineBook className="bg-blue-400 text-white rounded-full p-1.5 w-10 h-10" size={32} />;
@@ -217,6 +220,38 @@ const DetailExcercise = () => {
         }
         return '';
     };
+    const handleDelete = (id: number) => {
+        console.log(id);
+        const config = HeaderToken.getTokenConfig();
+        const comment_id = id;
+        axios
+            .delete(`${BASE_URL}/comments/${comment_id}/delete-comment`, config)
+            .then((response) => {
+                const updatedCommentList = comments.filter((comment) => comment.id !== comment_id);
+                setComments(updatedCommentList);
+            })
+            .catch((error) => {
+                const isError = UnauthorizedError.checkError(error);
+                if (!isError) {
+                    let content = '';
+                    const title = 'Lỗi';
+                    const {
+                        status,
+                        data: { error_message: errorMessage },
+                    } = error.response;
+                    if (status === 404 && errorMessage === 'Not exist') {
+                        content = 'Không tồn tại';
+                    } else if (status === 400 && errorMessage === 'Delete not success') {
+                        content = 'Xóa không thành công';
+                    } else {
+                        content = 'Lỗi máy chủ';
+                    }
+                    ErrorCommon(title, content);
+                }
+            });
+    };
+    const user = localStorage.getItem('user');
+    const accountId = user ? JSON.parse(user).accoutId : null;
     return (
         <>
             <div className="flex justify-center ">
@@ -303,35 +338,47 @@ const DetailExcercise = () => {
                         </div>
                         <div>
                             <span></span>
+
+                            <div className="mt-4">
+                                Tổng nhận xét: {comments.length}
+                                <div></div>
+                            </div>
+                            {comments.map((item, index) => {
+                                if (index < visibleCount) {
+                                    return (
+                                        <div className="flex justify-between mt-4 gap-x-2" key={index}>
+                                            <div className="flex">
+                                                <div>
+                                                    <div>
+                                                        <MdAccountCircle size={40} />
+                                                    </div>
+                                                </div>
+                                                <div className="ml-4">
+                                                    <div className=" flex gap-x-2 font-medium">
+                                                        <span>
+                                                            {item.last_name} {item.first_name}
+                                                        </span>
+                                                        <span>{handleFormatDate(item.comment_date)}</span>
+                                                    </div>
+                                                    <span>
+                                                        <div>{item.content}</div>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {item.account_id == accountId && (
+                                                <div>
+                                                    <CustomButtonDelete onDelete={handleDelete} item={item} />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                }
+                            })}
                             {visibleCount < comments.length && (
                                 <div className="mt-4">
                                     <button onClick={handleShowMoreComments}>Nhận xét</button>
                                 </div>
                             )}
-                            <div className="mt-4">
-                                Tổng nhận xét: {comments.length}
-                                <div></div>
-                            </div>
-                            {comments.map((item: any) => (
-                                <div className="flex mt-4  gap-x-2">
-                                    <div>
-                                        <div>
-                                            <MdAccountCircle size={40} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex gap-x-2 font-medium">
-                                            <span>
-                                                {item.last_name} {item.first_name}
-                                            </span>
-                                            <span>{handleFormatDate(item.comment_date)}</span>
-                                        </div>
-                                        <span>
-                                            <div>{item.content}</div>
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>

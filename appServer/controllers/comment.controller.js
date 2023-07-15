@@ -1,12 +1,12 @@
-const logger = require("../config/logger.config");
-const ServerResponse = require("../common/utils/server_response");
-const SystemConst = require("../common/consts/system_const");
-const EnumMessage = require("../common/enums/enum_message");
-const CommentService = require("../services/comment_services/comment.service");
-const db = require("../config/connect_database.config");
-const EnumServerDefinitions = require("../common/enums/enum_server_definitions");
-const TeacherService = require("../services/teacher_services/teacher.service");
-const StudentService = require("../services/student_services/student.service");
+const logger = require('../config/logger.config');
+const ServerResponse = require('../common/utils/server_response');
+const SystemConst = require('../common/consts/system_const');
+const EnumMessage = require('../common/enums/enum_message');
+const CommentService = require('../services/comment_services/comment.service');
+const db = require('../config/connect_database.config');
+const EnumServerDefinitions = require('../common/enums/enum_server_definitions');
+const TeacherService = require('../services/teacher_services/teacher.service');
+const StudentService = require('../services/student_services/student.service');
 const sequelize = db.getPool();
 
 class CommentController {
@@ -16,26 +16,43 @@ class CommentController {
         const role = req.user.role;
         const content = req.body.content;
         if (!content) {
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                EnumMessage.REQUIRED_INFORMATION);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.BAD_REQUEST,
+                EnumMessage.REQUIRED_INFORMATION,
+            );
         }
         const transaction = await sequelize.transaction();
         try {
-            const newComment = await CommentService.createComment(post.id, content, accountId, transaction);
-            const user = await (role === EnumServerDefinitions.ROLE.TEACHER ?  TeacherService.findTeacherByAccountId(accountId) : StudentService.findStudentByAccountId(accountId));
+            const newComment = await CommentService.createComment(
+                post.id,
+                content,
+                accountId,
+                transaction,
+            );
+            const user = await (role === EnumServerDefinitions.ROLE.TEACHER
+                ? TeacherService.findTeacherByAccountId(accountId)
+                : StudentService.findStudentByAccountId(accountId));
             const result = {
                 ...newComment.dataValues,
                 first_name: user.first_name,
                 last_name: user.last_name,
-                account_id: accountId
-            }
+                account_id: accountId,
+            };
             await transaction.commit();
-            return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS, result);
+            return ServerResponse.createSuccessResponse(
+                res,
+                SystemConst.STATUS_CODE.SUCCESS,
+                result,
+            );
         } catch (error) {
             logger.error(error);
             await transaction.rollback();
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
         }
     }
     async deleteComment(req, res) {
@@ -44,24 +61,36 @@ class CommentController {
         try {
             const comment = await CommentService.findCommentById(commentId);
             if (!comment) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
-                    EnumMessage.NOT_EXIST);
+                return ServerResponse.createErrorResponse(
+                    res,
+                    SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.NOT_EXIST,
+                );
             }
             if (comment.account_id !== accountId) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
-                    EnumMessage.ACCESS_DENIED_ERROR);
+                return ServerResponse.createErrorResponse(
+                    res,
+                    SystemConst.STATUS_CODE.FORBIDDEN_REQUEST,
+                    EnumMessage.ACCESS_DENIED_ERROR,
+                );
             }
             const isDelete = await CommentService.deleteComment(commentId, accountId);
             if (!isDelete) {
-                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                    EnumMessage.ERROR_DELETE);
+                return ServerResponse.createErrorResponse(
+                    res,
+                    SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_DELETE,
+                );
             }
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
         } catch (error) {
             logger.error(error);
-            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
-                EnumMessage.DEFAULT_ERROR);
+            return ServerResponse.createErrorResponse(
+                res,
+                SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR,
+            );
         }
     }
 }
-module.exports = new CommentController;
+module.exports = new CommentController();

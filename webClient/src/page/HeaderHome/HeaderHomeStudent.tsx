@@ -81,15 +81,12 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
     };
 
     const handlePassPageNoti = (item: any) => {
+        console.log('dsadasdasdsa', item);
         // navigate(`/sinh-vien/class/${item['classroom_id']}`);
         const data = {};
         axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config);
         window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
         handleFetchData();
-    };
-    const handleFetchDataNoti = () => {
-        const notifilcation_id = isDataNoti.map(() => {});
-        axios.patch(`${BASE_URL}/students/notification_id/student-read-notification`, config);
     };
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -114,8 +111,12 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
         <>
             <div className="bg-blue-400 shadow-md h-16 p-5 flex items-center justify-between">
                 <div className="flex items-center">
-                    <button className="hover:bg-gray-200 rounded-full h-9 w-9 flex items-center justify-center transition duration-150 ease-in-out ">
-                        <MenuOutlined className="flex items-center" onClick={handleDrawer} size={40} />{' '}
+                    <button className=" flex items-center justify-center ">
+                        <MenuOutlined
+                            className="hover:bg-gray-200 rounded-full p-2 flex items-center  transition duration-150 ease-in-out"
+                            onClick={handleDrawer}
+                            size={40}
+                        />{' '}
                     </button>
                     <div>
                         <img className="h-12 cursor-pointer" src={logoTruong} alt="" />
@@ -159,7 +160,7 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
                             overlay={
                                 <Menu>
                                     {isDataNoti.map((item: any) => (
-                                        <Menu.Item key={item.id}>
+                                        <Menu.Item className="max-h-96 h-auto overflow-auto" key={item.id}>
                                             <button
                                                 onClick={() => handlePassPageNoti(item)}
                                                 className={`${colorBg(
