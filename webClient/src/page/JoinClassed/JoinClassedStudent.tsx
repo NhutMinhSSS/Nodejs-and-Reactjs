@@ -127,8 +127,6 @@ const JoinClassedStudent = () => {
                     // Xử lý dữ liệu từ response
                     const data = response.data.response_data.list_classrooms;
                     const dataNoti = response.data.response_data.list_notifications;
-                    console.log('data nè', data);
-                    console.log('data noti nè', dataNoti);
                     setIsDataDawer(data);
                     setIsDataNoti(dataNoti);
                     const unreadCount = isDataNoti.filter((notification) => !notification.read).length;
@@ -161,10 +159,14 @@ const JoinClassedStudent = () => {
     };
     const handlePassPageNoti = (item: any) => {
         // navigate(`/sinh-vien/class/${item['classroom_id']}`);
-        const data = {};
-        axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(() => {
-            window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
-        });
+        if (item['read'] === false) {
+            const data = {};
+            axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(() => {
+                //window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+                handleFetchData();
+            });
+        }
+        window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
     };
     const handleFormatDate = (formatDate: any) => {
         return dayjs(formatDate).format('DD/MM/YYYY HH:mm');

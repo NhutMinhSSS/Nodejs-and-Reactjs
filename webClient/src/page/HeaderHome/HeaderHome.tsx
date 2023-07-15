@@ -10,6 +10,7 @@ import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import HeaderToken from '../../common/utils/headerToken';
 import { MdAccountCircle, MdNotificationsNone } from 'react-icons/md';
+import SystemConst from '../../common/consts/system_const';
 
 const HeaderHome: React.FC = () => {
     const navigate = useNavigate();
@@ -27,13 +28,15 @@ const HeaderHome: React.FC = () => {
             const config = HeaderToken.getTokenConfig();
             setLoading(true);
             axios
+<<<<<<< HEAD
                 .get('https://103.116.9.71:3443/api/classrooms', config)
+=======
+                .get(`${SystemConst.DOMAIN}/classrooms`, config)
+>>>>>>> 0983d82b4f64ebcf42a812db6e80a94d69802174
                 .then((response) => {
                     // Xử lý dữ liệu từ response
                     const data = response.data.response_data.list_classrooms;
                     const dataNoti = response.data.response_data.list_notifications;
-                    console.log('data nè', data);
-                    console.log('data nè', dataNoti);
                     setIsData(data);
                     setIsDataNoti(dataNoti);
                     //Chuyển dữ liệu khi tạo mới phòng
@@ -131,18 +134,18 @@ const HeaderHome: React.FC = () => {
                 }
                 closable={true}
                 placement="left"
-                extra={
-                    <Space>
-                        <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
-                            <MdNotificationsNone size={20} />
-                            {notificationCount > 0 && (
-                                <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center">
-                                    {notificationCount}
-                                </span>
-                            )}
-                        </button>
-                    </Space>
-                }
+                // extra={
+                //     <Space>
+                //         <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
+                //             <MdNotificationsNone size={20} />
+                //             {notificationCount > 0 && (
+                //                 <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white flex items-center justify-center">
+                //                     {notificationCount}
+                //                 </span>
+                //             )}
+                //         </button>
+                //     </Space>
+                // }
                 footer={
                     <Space>
                         <button>Lưu lớp học phần</button>

@@ -251,7 +251,7 @@ const DetailExcercise = () => {
             });
     };
     const user = localStorage.getItem('user');
-    const accountId = user ? JSON.parse(user).accoutId : null;
+    const accountId = user ? JSON.parse(user).account_id : null;
     return (
         <>
             <div className="flex justify-center ">

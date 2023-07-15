@@ -217,7 +217,7 @@ const DetailExcercise = () => {
     };
     const handleTest = () => {
         const formatStartDate = dayjs(isData?.start_date).format('DD/MM/YYYY HH:mm:ss');
-        const formatFinshDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
+        const formatFinishDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
         const currentDay = dayjs().format('DD/MM/YYYY HH:mm:ss');
         if (currentDay < formatStartDate) {
             Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài!!! Giờ bắt đầu ${formatStartDate}`);
@@ -302,7 +302,7 @@ const DetailExcercise = () => {
         return '';
     };
     const user = localStorage.getItem('user');
-    const accountId = user ? JSON.parse(user).accoutId : null;
+    const accountId = user ? JSON.parse(user).account_id : null;
     console.log(accountId);
 
     const [submissionStatus, setSubmissionStatus] = useState<number>(valueStudentExam?.submission || 0);

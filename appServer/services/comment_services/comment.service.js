@@ -7,7 +7,7 @@ class CommentService {
             const comment = await Comment.findOne({
                 where: {
                     id: commentId,
-                    status:EnumServerDefinitions.STATUS.ACTIVE
+                    status: EnumServerDefinitions.STATUS.ACTIVE
                 }
             });
             return comment;
@@ -21,7 +21,7 @@ class CommentService {
                 post_id: postId,
                 account_id: accountId,
                 content: content,
-            }, {transaction});
+            }, { transaction });
             return newComment;
         } catch (error) {
             throw error;
@@ -30,10 +30,12 @@ class CommentService {
     async deleteComment(commentId, accountId) {
         try {
             const isDelete = await Comment.update({
-                status: EnumServerDefinitions.STATUS.ACTIVE
+                status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
-                id: commentId,
-                account_id: accountId
+                where: {
+                    id: commentId,
+                    account_id: accountId
+                }
             });
             return isDelete > EnumServerDefinitions.EMPTY
         } catch (error) {

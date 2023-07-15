@@ -44,7 +44,7 @@ class ClassroomController {
                 teacherId = teacher.id;
             }
             const classroomsStorage = await ClassroomService.findAllClassroomsStorage(teacherId);
-            const result = classroomsStorage.map(({id, class_name, semester, school_year, status, RegularClass}) => ({
+            const result = classroomsStorage.map(({ id, class_name, semester, school_year, status, RegularClass }) => ({
                 id,
                 class_name,
                 semester,
@@ -72,15 +72,15 @@ class ClassroomController {
                     EnumMessage.ERROR_CLASSROOM.CLASSROOM_NOT_EXISTS);
             }
             const listTeachersAndStudents = await ClassroomService.findTeachersAndStudentsBelongToClassByClassroomId(classroomId);
-            const { Teachers, Students } = listTeachersAndStudents; 
-            const result ={
-                teachers: Teachers.map(({id, first_name, last_name, Department}) => ({
+            const { Teachers, Students } = listTeachersAndStudents;
+            const result = {
+                teachers: Teachers.map(({ id, first_name, last_name, Department }) => ({
                     id,
                     first_name,
                     last_name,
                     department_name: Department.department_name
                 })),
-                students: Students.map(({id, first_name, last_name, RegularClass}) => ({
+                students: Students.map(({ id, first_name, last_name, RegularClass }) => ({
                     id,
                     first_name,
                     last_name,

@@ -83,10 +83,14 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
     const handlePassPageNoti = (item: any) => {
         console.log('dsadasdasdsa', item);
         // navigate(`/sinh-vien/class/${item['classroom_id']}`);
-        const data = {};
-        axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config);
-        window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
-        handleFetchData();
+        if (item['read'] === false) {
+            const data = {};
+            axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(()=> {
+            //window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+            handleFetchData();
+        });
+        }
+         window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
     };
     const handleLogout = () => {
         localStorage.removeItem('token');

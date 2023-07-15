@@ -9,6 +9,7 @@ import { MdAccountCircle } from 'react-icons/md';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import ErrorCommon from '../../common/Screens/ErrorCommon';
 import { Spin } from 'antd';
+import io from 'socket.io-client';
 
 const HomeScreen: React.FC = () => {
     const [screenClass, setScreenClass] = useState([]);
@@ -18,12 +19,27 @@ const HomeScreen: React.FC = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            window.location.replace('/');
-        } else {
-            const config = HeaderToken.getTokenConfig();
+           return window.location.replace('/');
+        }
+        handleFetchData();
+        // const socket = io('https://103.116.9.71:3443'); 
+        // socket.on('connect', () => {
+        //     console.log('Connected to server');
+        //   });
+        // return () => {
+        //     // Hủy kết nối khi component bị unmount
+        //     socket.disconnect();
+        //   };
+    }, []);
+    const handleFetchData = () => {
+        const config = HeaderToken.getTokenConfig();
             setIsLoading(true);
             axios
+<<<<<<< HEAD
                 .get('https://103.116.9.71:3443/api/classrooms', config)
+=======
+                .get(`${SystemConst.DOMAIN}/classrooms`, config)
+>>>>>>> 0983d82b4f64ebcf42a812db6e80a94d69802174
                 .then((response) => {
                     // Xử lý dữ liệu từ response
                     const data = response.data.response_data;
@@ -63,9 +79,7 @@ const HomeScreen: React.FC = () => {
                 .finally(() => {
                     setIsLoading(false);
                 });
-        }
-    }, []);
-
+    }
     return (
         <div>
             <HeaderHome />

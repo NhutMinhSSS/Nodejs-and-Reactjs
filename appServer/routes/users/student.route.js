@@ -7,7 +7,7 @@ const EnumServerDefinitions = require('../../common/enums/enum_server_definition
 
 const StudentRouter = express.Router();
 
-StudentRouter.post('/submission', authorize([EnumServerDefinitions.ROLE.STUDENT]), upload.array('files'),checkPostBelongToClassroom, StudentController.studentSubmissionExam);
+StudentRouter.post('/submission', authorize([EnumServerDefinitions.ROLE.STUDENT]), upload.array('files'), checkPostBelongToClassroom, StudentController.studentSubmissionExam);
 StudentRouter.patch('/update-answer', authorize([EnumServerDefinitions.ROLE.STUDENT]), StudentController.studentChooseAnswer);
 StudentRouter.patch('/:notification_id/student-read-notification', authorize([EnumServerDefinitions.ROLE.STUDENT]), StudentController.studentReadNotification);
 

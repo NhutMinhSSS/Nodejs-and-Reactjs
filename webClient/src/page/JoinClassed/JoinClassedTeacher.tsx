@@ -121,13 +121,15 @@ const JoinClassedTeacher: React.FC = () => {
             const config = HeaderToken.getTokenConfig();
             setLoading(true);
             axios
+<<<<<<< HEAD
                 .get('https://103.116.9.71:3443/api/classrooms', config)
+=======
+                .get(`${SystemConst.DOMAIN}/classrooms`, config)
+>>>>>>> 0983d82b4f64ebcf42a812db6e80a94d69802174
                 .then((response) => {
                     // Xử lý dữ liệu từ response
                     const data = response.data.response_data.list_classrooms;
                     const dataNoti = response.data.response_data.list_notifications;
-                    console.log('data nè', data);
-                    console.log('data noti nè ', dataNoti);
                     setIsDataDawer(data);
                     //Chuyển dữ liệu khi tạo mới phòng
                 })

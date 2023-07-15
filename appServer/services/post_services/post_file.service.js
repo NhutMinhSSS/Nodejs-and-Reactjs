@@ -6,11 +6,11 @@ const PostFile = require("../../models/post_file.model");
 class PostFileService {
     async addPostFiles(postId, listFileIds, transaction) {
         try {
-            const listPostFile = listFileIds.map(fileId  => ({
+            const listPostFile = listFileIds.map(fileId => ({
                 post_id: postId,
-                file_id: fileId 
+                file_id: fileId
             }));
-            const newPostFile = await PostFile.bulkCreate(listPostFile, {transaction});
+            const newPostFile = await PostFile.bulkCreate(listPostFile, { transaction });
             return newPostFile;
         } catch (error) {
             throw error;
@@ -25,7 +25,7 @@ class PostFileService {
                 include: {
                     model: File,
                     where: {
-                        id: {[Op.in]: fileIds},
+                        id: { [Op.in]: fileIds },
                         status: EnumServerDefinitions.STATUS.ACTIVE
                     }
                 },
@@ -35,7 +35,7 @@ class PostFileService {
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {
-                    id: {[Op.in]: postFileIds.map(item => item.id)},
+                    id: { [Op.in]: postFileIds.map(item => item.id) },
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction
             });
@@ -46,7 +46,7 @@ class PostFileService {
     }
     async deletePostFile(postId, transaction) {
         try {
-            const isDelete =  await PostFile.update({
+            const isDelete = await PostFile.update({
                 status: EnumServerDefinitions.STATUS.NO_ACTIVE
             }, {
                 where: {

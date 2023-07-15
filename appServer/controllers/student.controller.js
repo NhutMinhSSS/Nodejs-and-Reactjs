@@ -281,9 +281,9 @@ class StudentController {
                 if (req.directoryPath) {
                     fs.removeSync(req.directoryPath);
                 }
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                        EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
-                }
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_POST.POST_NOT_CATEGORY);
+            }
             const postDetail = await PostDetailService.findDetailByPostId(post.id);
             const isDeadLineExceeded = FormatUtils.checkDeadlineExceeded(postDetail.finish_date);
             if (isDeadLineExceeded) {
@@ -298,7 +298,7 @@ class StudentController {
                 const files = req.files;
                 const fileSubmission = await StudentFileSubmissionService.checkFileSubmissionByStudentExam(studentExamId);
                 if (files.length !== EnumServerDefinitions.EMPTY || listFilesRemove.length > fileSubmission || (fileSubmission && listFilesRemove.length !== fileSubmission)) {
-                    await StudentController.prototype.submissionExercise(studentExamId, files, accountId, listFilesRemove);   
+                    await StudentController.prototype.submissionExercise(studentExamId, files, accountId, listFilesRemove);
                 } else {
                     if (req.directoryPath) {
                         fs.removeSync(req.directoryPath);
@@ -327,7 +327,7 @@ class StudentController {
         const transaction = await sequelize.transaction();
         try {
             if (listFilesRemove && listFilesRemove.length > EnumServerDefinitions.EMPTY) {
-                const isDelete =  await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove, transaction);
+                const isDelete = await StudentFileSubmissionService.deleteStudentFileSubmission(listFilesRemove, transaction);
                 if (!isDelete) {
                     throw new Error(EnumMessage.ERROR_SUBMISSION.NOT_SUBMISSION);
                 }
@@ -335,9 +335,9 @@ class StudentController {
             const submissionDate = FormatUtils.dateTimeNow();
             if (files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
-            const newFile = await FileService.createFiles(listFiles, transaction);
-            const listFileIds = newFile.map(item => item.id);
-            await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
+                const newFile = await FileService.createFiles(listFiles, transaction);
+                const listFileIds = newFile.map(item => item.id);
+                await StudentFileSubmissionService.createStudentFileSubmission(studentExamId, listFileIds, transaction);
             }
             const submission = await StudentExamService.updateStudentExam(studentExamId, submissionDate, 0, EnumServerDefinitions.SUBMISSION.NOT_SCORED, transaction);
             if (!submission) {
@@ -349,7 +349,7 @@ class StudentController {
             throw error;
         }
     }
-    async unSubmissionExercise(studentExamId, ) {
+    async unSubmissionExercise(studentExamId,) {
         const transaction = await sequelize.transaction();
         try {
             //const submissionDate = FormatUtils.dateTimeNow();
@@ -459,7 +459,7 @@ class StudentController {
                 EnumMessage.DEFAULT_ERROR);
         }
     }
-    
+
 }
 
 module.exports = new StudentController;
