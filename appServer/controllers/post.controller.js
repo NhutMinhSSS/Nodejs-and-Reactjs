@@ -150,12 +150,12 @@ class PostController {
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
                 //student exam
-                if (newPostDetail.is_public) {
+                if (isPublic) {
                     const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
                     studentIds = listStudents.map(item => item.student_id);
                 } else {
-                    const listStudents = req.body.list_student;
-                    studentIds = listStudents.map(item => item.id);
+                    const listStudents = JSON.parse(req.body.list_students) || [];
+                    studentIds = listStudents.map(item => item.student_id);
                 }
                 const studentExams = studentIds.map(item => ({
                     exam_id: newPost.id,

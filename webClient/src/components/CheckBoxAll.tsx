@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 type CheckBoxAllProps = {
-    options: { id: number, firstName: string; lastName: string; icon: React.ReactNode }[];
+    options: { student_id: number, first_name: string; last_name: string; icon: React.ReactNode }[];
     onChange: (selectedOptions: number[], selectAll: boolean) => void;
 };
 
@@ -11,13 +11,13 @@ const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
     const [selectAll, setSelectAll] = useState(false);
   
     useEffect(() => {
-      const initialOptions = options.map((option) => option.id);
+      const initialOptions = options.map((option) => option.student_id);
       setSelectedOptions(initialOptions);
       setSelectAll(false);
     }, [options]);
   
     useEffect(() => {
-      const allSelected = options.every((option) => selectedOptions.includes(option.id));
+      const allSelected = options.every((option) => selectedOptions.includes(option.student_id));
       setSelectAll(allSelected);
     }, [selectedOptions, options]);
   
@@ -27,13 +27,13 @@ const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
           : [...selectedOptions, option];
       
         setSelectedOptions(updatedOptions);
-        const allSelected = options.every((option) => updatedOptions.includes(option.id));
+        const allSelected = options.every((option) => updatedOptions.includes(option.student_id));
         setSelectAll(allSelected);
         onChange(updatedOptions, allSelected);
       };
   
     const handleSelectAll = () => {
-      const updatedOptions = selectAll ? [] : options.map((option) => option.id);
+      const updatedOptions = selectAll ? [] : options.map((option) => option.student_id);
       setSelectedOptions(updatedOptions);
       onChange(updatedOptions, !selectAll);
     };
@@ -46,13 +46,13 @@ const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
         </label>
         <br />
         {options.map((option) => (
-          <label key={option.id} className="flex items-center flex-row p-2 gap-x-2">
+          <label key={option.student_id} className="flex items-center flex-row p-2 gap-x-2">
             <input
               type="checkbox"
-              checked={selectedOptions.includes(option.id)}
-              onChange={() => handleOptionChange(option.id)}
+              checked={selectedOptions.includes(option.student_id)}
+              onChange={() => handleOptionChange(option.student_id)}
             />
-            {option.lastName + option.lastName}
+            {option.last_name + ' '+ option.first_name}
           </label>
         ))}
       </div>

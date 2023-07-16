@@ -14,7 +14,12 @@ const { Header, Content, Footer } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchData: any }) => {
     const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) =>  {
-        console.log( selectedOptions, selectAll);
+       if (!selectAll) {
+        setListStudentExam(selectedOptions);
+       } else {
+        setListStudentExam([]);
+       }
+       setIsPublic(selectAll);
     };
     const ListStudent = [
         { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
@@ -25,6 +30,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     const [valueContent, setValueContent] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
     const [listStudent, setListStudent] = useState<any>([]);
+    const [listStudentExam, setListStudentExam] = useState<number[]>([]);
     const [isPublic, setIsPublic] = useState(true);
     const { classroom_id } = useParams();
     useEffect(() => {
@@ -32,7 +38,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     }, []);
     const handleFetchStudentList = () => {
         const config = HeaderToken.getTokenConfig(); 
-        axios.get(`${SystemConst.DOMAIN}/${classroom_id}/get-list-student-classroom`, config).then((response) => {
+        axios.get(`${SystemConst.DOMAIN}/posts/${classroom_id}/get-list-student-classroom`, config).then((response) => {
             const studentList = response.data.response_data;
             setListStudent(studentList);
         });
@@ -58,6 +64,8 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
             formData.append('content', plainTextContent);
             formData.append('title', plainTextTitle);
             formData.append('post_category_id', parsedPostCategoryId.toString());
+            formData.append('is_public', isPublic.toString());
+            formData.append('list_students', JSON.stringify(listStudentExam));
             selectedFile.forEach((files) => {
                 formData.append(`files`, files);
             });
@@ -68,6 +76,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                     setValueContent('');
                     setValueTitle('');
                     setSelectedFile([]);
+                    setListStudentExam([]);
                     visible();
                     onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
