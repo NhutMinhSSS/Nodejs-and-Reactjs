@@ -255,6 +255,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             const updatePostList = postList.filter((item: any) => item.id !== id);
             // data = data.filter((item: any) => item.id !== id);
             setPostList(updatePostList);
+            onFetchData();
             Notification('success', 'Thông báo', 'Xóa thành công bảng tin');
         });
     };

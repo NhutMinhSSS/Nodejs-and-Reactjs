@@ -41,7 +41,7 @@ const dataExersise = [
     },
 ];
 
-const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
+const ClassroomExercisesTeacher = ({ data, onFetchData }: { data: any, onFetchData: any }) => {
     const navigate = useNavigate();
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [isPopupVisibleDocument, setIsPopupVisibleDocument] = useState(false);
@@ -136,7 +136,7 @@ const ClassroomExercisesTeacher = ({ data }: { data: any }) => {
                         closable={false}
                         width="100%"
                     >
-                        <PopupCreateExercise visible={handlePopupCancel} />
+                        <PopupCreateExercise onFetchData={onFetchData} visible={handlePopupCancel} />
                     </Modal>
                 </div>
                 <div>

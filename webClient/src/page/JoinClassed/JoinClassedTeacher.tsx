@@ -191,7 +191,7 @@ const JoinClassedTeacher: React.FC = () => {
                                 />
                             </TabPane>
                             <TabPane tab="Bài tập trên lớp" key="2">
-                                <ClassroomExercisesTeacher data={isData} />
+                                <ClassroomExercisesTeacher onFetchData={handleFetchData} data={isData} />
                             </TabPane>
                             <TabPane tab="Mọi người" key="3">
                                 <AllPeople />
