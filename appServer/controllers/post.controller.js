@@ -154,8 +154,7 @@ class PostController {
                     const listStudents = await ClassroomStudentService.findStudentsByClassroomId(classroomId);
                     studentIds = listStudents.map(item => item.student_id);
                 } else {
-                    const listStudents = req.body.list_student;
-                    studentIds = listStudents.map(item => item.id);
+                    studentIds = JSON.parse(req.body.list_students) || [];
                 }
                 const studentExams = studentIds.map(item => ({
                     exam_id: newPost.id,

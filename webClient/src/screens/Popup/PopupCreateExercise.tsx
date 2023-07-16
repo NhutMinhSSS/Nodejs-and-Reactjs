@@ -12,27 +12,28 @@ import { useEffect, useState } from 'react';
 import Notification from '../../components/Notification';
 const { Header, Content, Footer } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchData: any }) => {
-    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) => {
-        console.log(selectedOptions, selectAll);
+const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchData: any }) => {
+    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) =>  {
+       if (!selectAll) {
+        setListStudentExam(selectedOptions);
+       } else {
+        setListStudentExam([]);
+       }
+       setIsPublic(selectAll);
     };
-    const ListStudent = [
-        { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
-        { id: 2, label: 'Nguyễn Văn B', icon: <MdAccountCircle size={32} /> },
-        { id: 3, label: 'Nguyễn Văn C', icon: <MdAccountCircle size={32} /> },
-    ];
     const [valueTitle, setValueTitle] = useState('');
     const [valueContent, setValueContent] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
     const [listStudent, setListStudent] = useState<any>([]);
+    const [listStudentExam, setListStudentExam] = useState<number[]>([]);
     const [isPublic, setIsPublic] = useState(true);
     const { classroom_id } = useParams();
     useEffect(() => {
         handleFetchStudentList();
-    }, []);
+    }, [visible]);
     const handleFetchStudentList = () => {
-        const config = HeaderToken.getTokenConfig();
-        axios.get(`${SystemConst.DOMAIN}/${classroom_id}/get-list-student-classroom`, config).then((response) => {
+        const config = HeaderToken.getTokenConfig(); 
+        axios.get(`${SystemConst.DOMAIN}/posts/${classroom_id}/get-list-student-classroom`, config).then((response) => {
             const studentList = response.data.response_data;
             setListStudent(studentList);
         });
@@ -58,6 +59,8 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchDa
             formData.append('content', plainTextContent);
             formData.append('title', plainTextTitle);
             formData.append('post_category_id', parsedPostCategoryId.toString());
+            formData.append('is_public', isPublic.toString());
+            formData.append('list_students', JSON.stringify(listStudentExam));
             selectedFile.forEach((files) => {
                 formData.append(`files`, files);
             });
@@ -68,6 +71,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchDa
                     setValueContent('');
                     setValueTitle('');
                     setSelectedFile([]);
+                    setListStudent([]);
                     visible();
                     onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
@@ -97,6 +101,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchDa
     const handleButtonCancel = () => {
         setValueContent('');
         setValueTitle('');
+        setListStudent([]);
         setSelectedFile([]);
         visible();
     };
