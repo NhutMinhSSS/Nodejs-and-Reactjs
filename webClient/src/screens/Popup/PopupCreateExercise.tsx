@@ -8,21 +8,35 @@ import HeaderToken from '../../common/utils/headerToken';
 import axios from 'axios';
 import SystemConst from '../../common/consts/system_const';
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Notification from '../../components/Notification';
 const { Header, Content, Footer } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateExercise = ({ visible }: { visible: any }) => {
-    const handleMenuListStudentChange = (selectedOptions: string[]) => void {};
+const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchData: any }) => {
+    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) =>  {
+        console.log( selectedOptions, selectAll);
+    };
     const ListStudent = [
-        { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
-        { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={32} /> },
-        { label: 'Nguyễn Văn C', icon: <MdAccountCircle size={32} /> },
+        { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
+        { id: 2, label: 'Nguyễn Văn B', icon: <MdAccountCircle size={32} /> },
+        { id: 3, label: 'Nguyễn Văn C', icon: <MdAccountCircle size={32} /> },
     ];
     const [valueTitle, setValueTitle] = useState('');
     const [valueContent, setValueContent] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
+    const [listStudent, setListStudent] = useState<any>([]);
+    const [isPublic, setIsPublic] = useState(true);
     const { classroom_id } = useParams();
+    useEffect(() => {
+        handleFetchStudentList();
+    }, []);
+    const handleFetchStudentList = () => {
+        const config = HeaderToken.getTokenConfig(); 
+        axios.get(`${SystemConst.DOMAIN}/${classroom_id}/get-list-student-classroom`, config).then((response) => {
+            const studentList = response.data.response_data;
+            setListStudent(studentList);
+        });
+    }
     const handleFetchUploadFile = () => {
         const token = localStorage.getItem('token');
         const config = {
@@ -55,6 +69,7 @@ const PopupCreateExercise = ({ visible }: { visible: any }) => {
                     setValueTitle('');
                     setSelectedFile([]);
                     visible();
+                    onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
                 })
                 .finally(() => {});
@@ -148,6 +163,7 @@ const PopupCreateExercise = ({ visible }: { visible: any }) => {
                                                 handleFileUpload(file);
                                                 return false;
                                             }}
+                                            fileList={selectedFile}
                                             onRemove={(file) => handleRemoveFile(file)}
                                         >
                                             <Button className="w-full">
@@ -163,7 +179,7 @@ const PopupCreateExercise = ({ visible }: { visible: any }) => {
                                         overlay={
                                             <Menu className="w-full fixed ">
                                                 <CheckBoxAll
-                                                    options={ListStudent}
+                                                    options={listStudent}
                                                     onChange={handleMenuListStudentChange}
                                                 />
                                             </Menu>
