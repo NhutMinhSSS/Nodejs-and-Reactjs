@@ -19,9 +19,7 @@ import HeaderToken from '../../common/utils/headerToken';
 import { MdNotificationsNone, MdAccountCircle } from 'react-icons/md';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-
 dayjs.extend(utc);
-
 interface listNotification {
     class_name: string;
     classroom_id: number;
@@ -148,7 +146,6 @@ const JoinClassedStudent = () => {
                 });
         }
     };
-
     const handleNavHome = () => {
         navigate('/sinh-vien');
     };

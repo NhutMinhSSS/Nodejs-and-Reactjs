@@ -1,4 +1,4 @@
-import { Button, Col, DatePicker, Input, Row, Select, Switch, Tabs } from 'antd';
+import { Button, Col, DatePicker, Dropdown, Input, Menu, Row, Select, Switch, Tabs } from 'antd';
 import TabPane from 'antd/es/tabs/TabPane';
 import '../../style/Tabs.scss';
 import AllPeople from '../AllPeople';
@@ -6,7 +6,7 @@ import ClassBulletin from '../Classbulletin/ClassBulletin';
 import ClassroomExercisesTeacher from '../ClassExercises/ClassroomExercisesTeacher';
 import FormCreateTest from '../../page/FormCreateTest/FormCreateTest';
 import { Content, Header } from 'antd/es/layout/layout';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/en';
 import axios from 'axios';
@@ -14,6 +14,8 @@ import SystemConst from '../../common/consts/system_const';
 import HeaderToken from '../../common/utils/headerToken';
 import { useParams } from 'react-router-dom';
 import utc from 'dayjs/plugin/utc';
+import CheckBoxAll from '../../components/CheckBoxAll';
+import { MdKeyboardArrowDown } from 'react-icons/md';
 dayjs.extend(utc);
 
 const { TextArea } = Input;
@@ -32,7 +34,7 @@ interface Question {
     inputType: 'checkbox' | 'radio' | 'text'; // Added 'text' as an option
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible }) => {
+const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> = ({ data, visible, onFetchData }) => {
     const [title, setTitle] = useState<string>('');
     const [instruction, setInstruction] = useState<string>('');
     const [point, setPoint] = useState<number | string>(100);
@@ -40,9 +42,32 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
     const [endDate, setEndDate] = useState<Dayjs | null>(null);
     const [isReverseQuestion, setIsReverseQuestion] = useState<boolean>(false);
     const [isReverseAnswer, setIsReverseAnswer] = useState<boolean>(false);
+    const [listStudentExam, setListStudentExam] = useState<number[]>([]);
     const [questions, setQuestions] = useState<Question[]>([{ id: 1, title: '', options: [], inputType: 'checkbox' }]);
     const [questionPoints, setQuestionPoints] = useState<{ [key: number]: number }>({});
-    const [isPoint, setIsPoint] = useState<number>(0);
+    const [listStudent, setListStudent] = useState<any>([]);
+    const [isPublic, setIsPublic] = useState(true);
+    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) => {
+        if (!selectAll) {
+            setListStudentExam(selectedOptions);
+        } else {
+            setListStudentExam([]);
+        }
+        setIsPublic(selectAll);
+    };
+    const { classroom_id } = useParams();
+    useEffect(() => {
+        handleFetchStudentList();
+    }, [visible]);
+    console.log(isPublic);
+
+    const handleFetchStudentList = () => {
+        const config = HeaderToken.getTokenConfig();
+        axios.get(`${SystemConst.DOMAIN}/posts/${classroom_id}/get-list-student-classroom`, config).then((response) => {
+            const studentList = response.data.response_data;
+            setListStudent(studentList);
+        });
+    };
     const handleAddQuestion = () => {
         setQuestions((prevQuestions) => [
             ...prevQuestions,
@@ -54,13 +79,11 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             },
         ]);
     };
-
     const handleQuestionChange = (questionId: number, title: string) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) => (question.id === questionId ? { ...question, title } : question)),
         );
     };
-
     const handleOptionChange = (questionId: number, optionId: number, answer: string) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
@@ -118,21 +141,6 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             ),
         );
     };
-
-    // const handleFormSubmit = (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     const questionsWithoutId = questions.map((question) => {
-    //         return {
-    //             id: question.id,
-    //             title: question.title,
-    //             options: question.options,
-    //             inputType: question.inputType,
-    //             point: questionPoints[question.id],
-    //         };
-    //     });
-    //     console.log(questionsWithoutId);
-    // };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLSelectElement>, questionId: number) => {
         const { value } = e.target;
         setQuestions((prevQuestions) =>
@@ -160,7 +168,6 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             }),
         );
     };
-
     const handleAddOption = (questionId: number) => {
         setQuestions((prevQuestions) =>
             prevQuestions.map((question) =>
@@ -243,7 +250,6 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
                     inputTypeNumber = 0;
                     break;
             }
-
             return {
                 content: question.title,
                 answers: question.options,
@@ -260,6 +266,7 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             title: title,
             content: instruction,
             point,
+            list_students: JSON.stringify(listStudentExam),
             start_date: formattedStartDate,
             finish_date: formattedEndDate,
             inverted_questions: isReverseQuestion,
@@ -267,13 +274,14 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
             list_questions_and_answers: questionsWithoutId,
             classroom_id: parseInt(data),
             post_category_id: 4,
+            is_public: isPublic.toString(),
         };
         console.log('Submit: ', formData);
         axios.post(`${BASE_URL}/posts/create-post`, formData, config).then((response) => {
             visible();
+            onFetchData();
         });
     };
-
     const handleButtonCancel = () => {
         setTitle('');
         setInstruction('');
@@ -468,14 +476,47 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
                                 </div>
                             </div>
                             <div className="col-span-1 bg-white shadow-lg p-5 rounded-lg mx-5 max-h-[28rem] h-[38rem]">
-                                <div className="px-2 mb-2">
-                                    <p>Điểm</p>
-                                    <Select defaultValue={point} className="w-40" onChange={handlePointChange}>
-                                        <option value={100}>100</option>
-                                        <option value="chua-cham-diem">Chưa chấm điểm</option>
-                                        {/* Các option khác */}
-                                    </Select>
+                                <div className="flex">
+                                    <div className="px-2 mb-2">
+                                        <p>Điểm</p>
+                                        <Select defaultValue={point} className="w-40" onChange={handlePointChange}>
+                                            <option value={100}>100</option>
+                                            <option value="chua-cham-diem">Chưa chấm điểm</option>
+                                            {/* Các option khác */}
+                                        </Select>
+                                    </div>
+
+                                    <div>
+                                        <div> Dành cho</div>
+                                        <Dropdown
+                                            overlay={
+                                                <Menu className="w-full fixed max-h-60 overflow-auto">
+                                                    <CheckBoxAll
+                                                        options={listStudent}
+                                                        onChange={handleMenuListStudentChange}
+                                                    />
+                                                </Menu>
+                                            }
+                                            placement="bottom"
+                                            trigger={['click']}
+                                            overlayClassName="custom-dropdown-menu"
+                                            overlayStyle={{
+                                                width: '240px',
+                                                height: '250px',
+                                                padding: '10px',
+                                                gap: '10px',
+                                            }}
+                                        >
+                                            <Button className="gap-x-1">
+                                                Học viên
+                                                <span>
+                                                    <MdKeyboardArrowDown />
+                                                </span>
+                                            </Button>
+                                        </Dropdown>
+                                    </div>
                                 </div>
+
                                 <div className="flex gap-x-2 justify-around items-center px-2 mt-5">
                                     <div className="flex flex-col">
                                         <label htmlFor="">Giờ bắt đầu</label>
@@ -511,6 +552,7 @@ const PopupCreateTest: React.FC<{ data: any; visible: any }> = ({ data, visible 
                                         <Switch defaultChecked={isReverseAnswer} onChange={handleReverseAnswerChange} />
                                     </div>
                                 </div>
+
                                 <div className="flex justify-end mt-10 gap-x-2">
                                     <div className="  grid iphone 12:grid-flow-col ">
                                         <Button disabled={!title} htmlType="submit" type="primary">
