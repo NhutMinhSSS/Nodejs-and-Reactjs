@@ -12,9 +12,9 @@ import { useEffect, useState } from 'react';
 import Notification from '../../components/Notification';
 const { Header, Content, Footer } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchData: any }) => {
-    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) =>  {
-        console.log( selectedOptions, selectAll);
+const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchData: any }) => {
+    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) => {
+        console.log(selectedOptions, selectAll);
     };
     const ListStudent = [
         { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
@@ -31,12 +31,12 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
         handleFetchStudentList();
     }, []);
     const handleFetchStudentList = () => {
-        const config = HeaderToken.getTokenConfig(); 
+        const config = HeaderToken.getTokenConfig();
         axios.get(`${SystemConst.DOMAIN}/${classroom_id}/get-list-student-classroom`, config).then((response) => {
             const studentList = response.data.response_data;
             setListStudent(studentList);
         });
-    }
+    };
     const handleFetchUploadFile = () => {
         const token = localStorage.getItem('token');
         const config = {
@@ -177,7 +177,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                                 <div>
                                     <Dropdown
                                         overlay={
-                                            <Menu className="w-full fixed ">
+                                            <Menu className="w-full fixed max-h-60 overflow-auto">
                                                 <CheckBoxAll
                                                     options={listStudent}
                                                     onChange={handleMenuListStudentChange}
