@@ -2,64 +2,61 @@ import React, { useState, useEffect } from 'react';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
 type CheckBoxAllProps = {
-    options: { label: string; icon: React.ReactNode }[];
-    onChange: (selectedOptions: string[]) => void;
+    options: { id: number, firstName: string; lastName: string; icon: React.ReactNode }[];
+    onChange: (selectedOptions: number[], selectAll: boolean) => void;
 };
 
 const CheckBoxAll: React.FC<CheckBoxAllProps> = ({ options, onChange }) => {
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-    const [selectAll, setSelectAll] = useState(true);
-
+    const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+    const [selectAll, setSelectAll] = useState(false);
+  
     useEffect(() => {
-        const initialOptions = options.map((option) => option.label);
-        setSelectedOptions(initialOptions);
-        setSelectAll(true);
-    }, []);
-
+      const initialOptions = options.map((option) => option.id);
+      setSelectedOptions(initialOptions);
+      setSelectAll(false);
+    }, [options]);
+  
     useEffect(() => {
-        const allSelected = options.every((option) => selectedOptions.includes(option.label));
-        const someSelected = selectedOptions.length > 0 && !allSelected;
+      const allSelected = options.every((option) => selectedOptions.includes(option.id));
+      setSelectAll(allSelected);
     }, [selectedOptions, options]);
-
-    const handleOptionChange = (option: string) => {
+  
+    const handleOptionChange = (option: number) => {
         const updatedOptions = selectedOptions.includes(option)
-            ? selectedOptions.filter((item) => item !== option)
-            : [...selectedOptions, option];
-
+          ? selectedOptions.filter((item) => item !== option)
+          : [...selectedOptions, option];
+      
         setSelectedOptions(updatedOptions);
-        onChange(updatedOptions);
-
-        setSelectAll(updatedOptions.length === options.length);
-    };
-
+        const allSelected = options.every((option) => updatedOptions.includes(option.id));
+        setSelectAll(allSelected);
+        onChange(updatedOptions, allSelected);
+      };
+  
     const handleSelectAll = () => {
-        const updatedOptions = selectAll ? [] : options.map((option) => option.label);
-        setSelectedOptions(updatedOptions);
-        onChange(updatedOptions);
-
-        setSelectAll(!selectAll);
+      const updatedOptions = selectAll ? [] : options.map((option) => option.id);
+      setSelectedOptions(updatedOptions);
+      onChange(updatedOptions, !selectAll);
     };
-
+  
     return (
-        <div className="p-2">
-            <label className="flex items-center flex-row gap-x-2 text-base">
-                <input className="mt-1" type="checkbox" checked={selectAll} onChange={handleSelectAll} />
-                Chọn tất cả
-            </label>
-            <br />
-            {options.map((option) => (
-                <label key={option.label} className="flex items-center flex-row p-2 gap-x-2">
-                    <input
-                        type="checkbox"
-                        checked={selectedOptions.includes(option.label)}
-                        onChange={() => handleOptionChange(option.label)}
-                    />
-                    {option.icon}
-                    {option.label}
-                </label>
-            ))}
-        </div>
+      <div className="p-2">
+        <label className="flex items-center flex-row gap-x-2 text-base">
+          <input className="mt-1" type="checkbox" checked={selectAll} onChange={handleSelectAll} />
+          Chọn tất cả
+        </label>
+        <br />
+        {options.map((option) => (
+          <label key={option.id} className="flex items-center flex-row p-2 gap-x-2">
+            <input
+              type="checkbox"
+              checked={selectedOptions.includes(option.id)}
+              onChange={() => handleOptionChange(option.id)}
+            />
+            {option.lastName + option.lastName}
+          </label>
+        ))}
+      </div>
     );
-};
+  };
 
 export default CheckBoxAll;
