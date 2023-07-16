@@ -147,7 +147,11 @@ const ClassroomExercisesTeacher = ({ data, onFetchData }: { data: any; onFetchDa
                         footer={null}
                         closable={false}
                     >
-                        <PopupCreateTest visible={handlePopupCancelPopupCreateTest} data={classroom_id} />
+                        <PopupCreateTest
+                            onFetchData={onFetchData}
+                            visible={handlePopupCancelPopupCreateTest}
+                            data={classroom_id}
+                        />
                     </Modal>
                 </div>
                 <div>

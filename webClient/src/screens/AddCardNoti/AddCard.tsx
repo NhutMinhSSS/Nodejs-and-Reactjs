@@ -4,7 +4,6 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import {
     MdAccountCircle,
-    MdMoreVert,
     MdNoteAlt,
     MdOutlineAssignment,
     MdOutlineBook,
@@ -12,7 +11,7 @@ import {
     MdOutlineFileUpload,
     MdOutlineImage,
 } from 'react-icons/md';
-import { Button, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
+import { Button, Input, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
 import axios from 'axios';
 import HeaderToken from '../../common/utils/headerToken';
 import SystemConst from '../../common/consts/system_const';
@@ -23,17 +22,7 @@ import ErrorAlert from '../../common/Screens/ErrorAlert';
 import '../scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
 import CustomButton from '../../components/CustomButton';
-const ListStudent = [
-    { label: 'Nguyễn Văn A', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn B', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn C', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn D', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn E', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn F', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn G', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn H', icon: <MdAccountCircle size={28} /> },
-    { label: 'Nguyễn Văn L', icon: <MdAccountCircle size={28} /> },
-];
+
 interface File {
     file_name: string;
     file_type: string;
@@ -50,17 +39,16 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [message, setMessage] = useState('');
     const [value, setValue] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
     const { classroom_id } = useParams();
     const [loading, setLoading] = useState(false);
     const [downloadComplete, setDownloadComplete] = useState(false);
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
     const [postList, setPostList] = useState([]);
-    const [postListEdit, setPostListEdit] = useState<News[]>([]);
+    const [editNew, setEditNew] = useState<News[]>([]);
     useEffect(() => {
         setPostList(data);
-        setPostListEdit(data);
+        setEditNew(data);
     }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
@@ -70,7 +58,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             // setLoading(true);
             const post_id = id;
             const file_id = fileId;
-
             const axiosInstance = axios.create({});
             axiosInstance.interceptors.request.use((config) => {
                 // Thay YOUR_AUTH_TOKEN bằng giá trị token thực tế của bạn
@@ -259,20 +246,74 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             Notification('success', 'Thông báo', 'Xóa thành công bảng tin');
         });
     };
-    console.log(postListEdit);
-    const handleEdit = (id: any) => {
-        const result = postListEdit
-            .filter((post) => post.id === id)
-            .map((post) => ({ title: post.title, content: post.content }));
-        const edit = {
-            title: result[0].title,
-        };
-        console.log(edit, id);
+    const [showEdit, setShowEdit] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+    const [editContent, setEditContent] = useState('');
+    const [itemEdit, setItemEdit] = useState<{ post_category_id?: number; file: string } | null>(null);
+    const [selectedItemEditNews, setSelectedItemEditNews] = useState<{
+        id?: number;
+        content: string;
+        title: string;
+    } | null>(null);
+    const [file, setFile] = useState(null);
+    const [showDelete, setShowDelete] = useState(false);
+    const handleEditNews = () => {
+        setShowEdit(true);
+    };
+    const handleCancelEdit = () => {
+        setShowEdit(false);
+    };
+    const handleContentEditNews = (e: { target: { value: any } }) => {
+        setSelectedItemEditNews({
+            ...selectedItemEditNews,
+            content: e.target.value || null,
+            title: e.target.value || null,
+        });
+    };
+    const handleEdit = (item: {
+        id?: number | undefined;
+        post_category_id?: number | undefined;
+        content: string;
+        title: string;
+        file: string;
+    }) => {
+        handleEditNews();
+        setSelectedItemEditNews(item);
+        setItemEdit(item);
+        // const result = postListEdit
+        //     .filter((post) => post.id === id)
+        //     .map((post) => ({ title: post.title, content: post.content }));
+        // const edit = {
+        //     title: result[0].title,
+        //     content: result[0].content,
+        // };
+        // console.log(edit, id);
 
         // const edit = {
         //     title:
         // }
+        const formData = new FormData();
+        formData.append('title', editTitle);
+        formData.append('content', editContent);
+        // formData.append('file', file);
+        // Gọi API edit với dữ liệu trong formData
+        console.log('đáadsd', formData);
+
+        // Example:
+        // axios
+        //     .post('/api/edit', formData)
+        //     .then((response) => {
+        //         // Xử lý thành công
+        //         console.log(response.data);
+        //         // Đóng Modal và thực hiện các thao tác khác
+        //         handleCancelEdit();
+        //     })
+        //     .catch((error) => {
+        //         // Xử lý lỗi
+        //         console.error(error);
+        //     });
     };
+
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -359,7 +400,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                             </form>
                         )}
                     </div>
-
                     {postList.map((item: any) => (
                         <div
                             onClick={() => handleClick(item)}
@@ -420,7 +460,12 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                             </div>
                             <div>
                                 <button className="">
-                                    <CustomButton item={item} onDelete={handleDetele} onEdit={handleEdit} />
+                                    <CustomButton
+                                        post_category_id={item.post_category_id}
+                                        item={item}
+                                        onDelete={handleDetele}
+                                        onEdit={() => handleEdit(item)}
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -446,6 +491,56 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                         <Button onClick={handleVisibleDownloadFile} type="default" className="mr-5">
                             Hủy
                         </Button>
+                    </div>
+                </Modal>
+            ) : (
+                ''
+            )}
+            {itemEdit ? (
+                <Modal
+                    title={
+                        <>
+                            <div className="bg-blue-300 font-medium text-base px-6 py-4 ">Sửa bảng tin</div>
+                        </>
+                    }
+                    className="customModal"
+                    footer={
+                        <div className="text-end mr-5 mt-10">
+                            <Button type="primary" onClick={(item: any) => handleEdit(item)}>
+                                Sửa
+                            </Button>{' '}
+                        </div>
+                    }
+                    open={showEdit}
+                    onCancel={handleCancelEdit}
+                >
+                    <div className="flex flex-col gap-y-4  px-10 mt-10">
+                        {itemEdit.post_category_id !== 1 && (
+                            <div>
+                                <label htmlFor="">Tiêu đề</label>
+                                <Input
+                                    value={selectedItemEditNews?.title}
+                                    onChange={(e) => handleContentEditNews({ target: { value: e.target.value } })}
+                                />
+                            </div>
+                        )}
+                        <div>
+                            <label htmlFor="">Nội dung</label>
+                            <Input
+                                value={selectedItemEditNews?.content}
+                                onChange={(e) => handleContentEditNews({ target: { value: e.target.value } })}
+                            />
+                        </div>
+                        <Upload
+                            className="mt-5 max-h-60 overflow-auto"
+                            listType="picture"
+                            multiple
+                            beforeUpload={(file: any) => {
+                                return false; // Prevent file from being uploaded immediately
+                            }}
+                        >
+                            <Button>Upload File</Button>
+                        </Upload>
                     </div>
                 </Modal>
             ) : (

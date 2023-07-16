@@ -28,6 +28,8 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchDa
     const [listStudentExam, setListStudentExam] = useState<number[]>([]);
     const [isPublic, setIsPublic] = useState(true);
     const { classroom_id } = useParams();
+    console.log(classroom_id);
+
     useEffect(() => {
         handleFetchStudentList();
     }, [visible]);
@@ -181,32 +183,32 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchDa
                         </div>
                     </Content>
                     <Sider style={{ background: '#f0f0f0' }} className="w-[40%]">
-                        <div className="w-[20%] p-10">
-                            <div>
-                                <Dropdown
-                                    overlay={
-                                        <Menu className="w-full fixed max-h-60 overflow-auto">
-                                            <CheckBoxAll options={listStudent} onChange={handleMenuListStudentChange} />
-                                        </Menu>
-                                    }
-                                    placement="bottom"
-                                    trigger={['click']}
-                                    overlayClassName="custom-dropdown-menu"
-                                    overlayStyle={{
-                                        width: '240px',
-                                        height: '250px',
-                                        padding: '10px',
-                                        gap: '10px',
-                                    }}
-                                >
-                                    <Button className="gap-x-1">
-                                        Dành cho
-                                        <span>
-                                            <MdKeyboardArrowDown />
-                                        </span>
-                                    </Button>
-                                </Dropdown>
-                            </div>
+                        <div className="mt-10 px-2">
+                            <div>Dành cho</div>
+
+                            <Dropdown
+                                overlay={
+                                    <Menu className="w-full fixed max-h-60 overflow-auto">
+                                        <CheckBoxAll options={listStudent} onChange={handleMenuListStudentChange} />
+                                    </Menu>
+                                }
+                                placement="bottom"
+                                trigger={['click']}
+                                overlayClassName="custom-dropdown-menu"
+                                overlayStyle={{
+                                    width: '240px',
+                                    height: '250px',
+                                    padding: '10px',
+                                    gap: '10px',
+                                }}
+                            >
+                                <Button className="gap-x-1">
+                                    Học viên
+                                    <span>
+                                        <MdKeyboardArrowDown />
+                                    </span>
+                                </Button>
+                            </Dropdown>
                         </div>
                     </Sider>
                 </Layout>

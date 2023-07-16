@@ -13,7 +13,6 @@ import Notification from '../../components/Notification';
 const { Header, Content, Footer, Sider } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const PopupCreateDocument = ({ visible, onFetchData }: { visible: any; onFetchData: any }) => {
-    const options = ['Thực tập tốt nghiệp', 'Đồ Án Tốt Nghiệp'];
     const handleMenuChange = (selectedOptions: string[]) => void {};
     const [isPublic, setIsPublic] = useState(true);
     const [valueTitle, setValueTitle] = useState('');
@@ -121,9 +120,8 @@ const PopupCreateDocument = ({ visible, onFetchData }: { visible: any; onFetchDa
                         </div>
                     </div>
                 </Header>
-
                 <Layout>
-                    <Content>
+                    <Content className="w-3/5">
                         <div>
                             <div className="border-slate-300 ] p-10">
                                 <div className="mb-5 ">
@@ -183,33 +181,32 @@ const PopupCreateDocument = ({ visible, onFetchData }: { visible: any; onFetchDa
                             </div>
                         </div>
                     </Content>
-                    <Sider className="bg-white" style={{ background: '#f0f0f0' }}>
-                        <div className="w-[20%] p-10">
-                            <div>
-                                <Dropdown
-                                    overlay={
-                                        <Menu className="w-full fixed max-h-60 overflow-auto">
-                                            <CheckBoxAll options={listStudent} onChange={handleMenuListStudentChange} />
-                                        </Menu>
-                                    }
-                                    placement="bottom"
-                                    trigger={['click']}
-                                    overlayClassName="custom-dropdown-menu"
-                                    overlayStyle={{
-                                        width: '240px',
-                                        height: '250px',
-                                        padding: '10px',
-                                        gap: '10px',
-                                    }}
-                                >
-                                    <Button className="gap-x-1">
-                                        Dành cho
-                                        <span>
-                                            <MdKeyboardArrowDown />
-                                        </span>
-                                    </Button>
-                                </Dropdown>
-                            </div>
+                    <Sider className="bg-white w-2/5" style={{ background: '#f0f0f0' }}>
+                        <div className="mt-10 px-2">
+                            <div>Dành cho</div>
+                            <Dropdown
+                                overlay={
+                                    <Menu className="w-full fixed max-h-60 overflow-auto">
+                                        <CheckBoxAll options={listStudent} onChange={handleMenuListStudentChange} />
+                                    </Menu>
+                                }
+                                placement="bottom"
+                                trigger={['click']}
+                                overlayClassName="custom-dropdown-menu"
+                                overlayStyle={{
+                                    width: '240px',
+                                    height: '250px',
+                                    padding: '10px',
+                                    gap: '10px',
+                                }}
+                            >
+                                <Button className="gap-x-1">
+                                    Học viên
+                                    <span>
+                                        <MdKeyboardArrowDown />
+                                    </span>
+                                </Button>
+                            </Dropdown>
                         </div>
                     </Sider>
                 </Layout>

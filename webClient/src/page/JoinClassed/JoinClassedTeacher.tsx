@@ -234,13 +234,6 @@ const JoinClassedTeacher: React.FC = () => {
                         }
                         closable={true}
                         placement="left"
-                        extra={
-                            <Space>
-                                <button className="hover:bg-slate-200 duration-200 transition-all p-2 rounded-full">
-                                    <MdNotificationsNone size={20} />
-                                </button>
-                            </Space>
-                        }
                         footer={
                             <Space>
                                 <button>Lưu lớp học phần</button>

@@ -421,7 +421,12 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                             <div>
                                 {item.account_id == accountId && role == '0' && (
                                     <button className="">
-                                        <CustomButton item={item} onDelete={handleDetele} onEdit={handleEdit} />
+                                        <CustomButton
+                                            post_category_id={item.post_category_id}
+                                            item={item}
+                                            onDelete={handleDetele}
+                                            onEdit={handleEdit}
+                                        />
                                     </button>
                                 )}
                             </div>
