@@ -51,7 +51,10 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [downloadComplete, setDownloadComplete] = useState(false);
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
-
+    const [postList, setPostList] = useState([]);
+    useEffect(() => {
+        setPostList(data);
+    }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -241,7 +244,12 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         console.log(id);
         const post_id = id;
         const config = HeaderToken.getTokenConfig();
-        axios.delete(`${BASE_URL}/posts/${post_id}/delete-post`, config).then(() => {});
+        axios.delete(`${BASE_URL}/posts/${post_id}/delete-post`, config).then(() => {
+            const updatePostList = postList.filter((item: any) => item.id !== id);
+            // data = data.filter((item: any) => item.id !== id);
+            setPostList(updatePostList);
+            Notification('success', 'Thông báo', 'Xóa thành công bảng tin');
+        });
     };
     const handleEdit = (id: any) => {
         console.log(id);
@@ -333,7 +341,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                         )}
                     </div>
 
-                    {data.map((item: any) => (
+                    {postList.map((item: any) => (
                         <div
                             onClick={() => handleClick(item)}
                             className={`flex justify-between bg-slate-200 ${
