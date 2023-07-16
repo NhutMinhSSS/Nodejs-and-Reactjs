@@ -39,6 +39,11 @@ interface File {
     file_type: string;
     file_id: number;
 }
+interface News {
+    id: number;
+    title: string;
+    content: string;
+}
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [showForm, setShowForm] = useState(false);
@@ -52,8 +57,10 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [percent, setPercent] = useState(0);
     const [progressbar, setProgressbar] = useState('none');
     const [postList, setPostList] = useState([]);
+    const [postListEdit, setPostListEdit] = useState<News[]>([]);
     useEffect(() => {
         setPostList(data);
+        setPostListEdit(data);
     }, [data]);
     const handleDownPost = async (id: number, fileId: number) => {
         const token = localStorage.getItem('token');
@@ -252,8 +259,19 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             Notification('success', 'Thông báo', 'Xóa thành công bảng tin');
         });
     };
+    console.log(postListEdit);
     const handleEdit = (id: any) => {
-        console.log(id);
+        const result = postListEdit
+            .filter((post) => post.id === id)
+            .map((post) => ({ title: post.title, content: post.content }));
+        const edit = {
+            title: result[0].title,
+        };
+        console.log(edit, id);
+
+        // const edit = {
+        //     title:
+        // }
     };
     return (
         <>
