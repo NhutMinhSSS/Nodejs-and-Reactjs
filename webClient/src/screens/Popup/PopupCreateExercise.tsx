@@ -21,11 +21,6 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
        }
        setIsPublic(selectAll);
     };
-    const ListStudent = [
-        { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
-        { id: 2, label: 'Nguyễn Văn B', icon: <MdAccountCircle size={32} /> },
-        { id: 3, label: 'Nguyễn Văn C', icon: <MdAccountCircle size={32} /> },
-    ];
     const [valueTitle, setValueTitle] = useState('');
     const [valueContent, setValueContent] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
@@ -35,7 +30,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     const { classroom_id } = useParams();
     useEffect(() => {
         handleFetchStudentList();
-    }, []);
+    }, [visible]);
     const handleFetchStudentList = () => {
         const config = HeaderToken.getTokenConfig(); 
         axios.get(`${SystemConst.DOMAIN}/posts/${classroom_id}/get-list-student-classroom`, config).then((response) => {
@@ -76,7 +71,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                     setValueContent('');
                     setValueTitle('');
                     setSelectedFile([]);
-                    setListStudentExam([]);
+                    setListStudent([]);
                     visible();
                     onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
@@ -106,6 +101,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     const handleButtonCancel = () => {
         setValueContent('');
         setValueTitle('');
+        setListStudent([]);
         setSelectedFile([]);
         visible();
     };
