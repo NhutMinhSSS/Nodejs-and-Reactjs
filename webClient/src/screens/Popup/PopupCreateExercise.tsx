@@ -37,7 +37,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
             const studentList = response.data.response_data;
             setListStudent(studentList);
         });
-    }
+    };
     const handleFetchUploadFile = () => {
         const token = localStorage.getItem('token');
         const config = {
@@ -182,7 +182,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                                 <div>
                                     <Dropdown
                                         overlay={
-                                            <Menu className="w-full fixed ">
+                                            <Menu className="w-full fixed max-h-60 overflow-auto">
                                                 <CheckBoxAll
                                                     options={listStudent}
                                                     onChange={handleMenuListStudentChange}
