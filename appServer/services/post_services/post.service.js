@@ -262,6 +262,7 @@ class PostService {
                     order: [['comment_date', 'ASC']]
                 }, {
                     model: StudentExam,
+                    required: false,
                     where: {
                         // '$Post.post_category_id$': {[Op.ne]: EnumServerDefinitions.POST_CATEGORY.DOCUMENT},
                         status: EnumServerDefinitions.STATUS.ACTIVE
