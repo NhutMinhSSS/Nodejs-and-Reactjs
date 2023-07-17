@@ -311,6 +311,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         // Gọi API edit với dữ liệu trong formData
         axios.put(`${SystemConst.DOMAIN}/posts/update-post`, formData, config).then(()=> {
             Notification('success', 'Thông báo', 'Cập nhật thành công');
+            onFetchData();
             setShowEdit(false);
         }).catch(()=> {
             Notification('error', 'Lỗi', 'Không thể cập nhật');

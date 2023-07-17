@@ -221,11 +221,21 @@ class PostController {
         try {
             const post = await PostService.findPostById(postIdParseInt);
             if (!post) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_POST.POST_NOT_EXISTS);
             }
-            await PostService.updatePost(post.id, title, content, topicId, transaction);
+            const isUpdate = await PostService.updatePost(post.id, title, content, topicId, transaction);
+            if (!isUpdate) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
             //const isUpdatePost = await PostFileService
             if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const isPublic = req.body.is_public;
@@ -248,6 +258,9 @@ class PostController {
                 //
                 const isRemove = await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
                 if (!isRemove) {
+                    if (req.directoryPath) {
+                        fs.removeSync(req.directoryPath);
+                    }
                     await transaction.rollback();
                     return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
                         EnumMessage.ERROR_DELETE);

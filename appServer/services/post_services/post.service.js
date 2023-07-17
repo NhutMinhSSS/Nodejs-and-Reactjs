@@ -364,12 +364,8 @@ class PostService {
                     id: id,
                     status: EnumServerDefinitions.STATUS.ACTIVE
                 }, transaction,
-                fields: ['title', 'content', 'topic_id']
             });
-            if (post) {
-                throw new Error(EnumMessage.ERROR_POST.POST_NOT_EXISTS);
-            }
-            return id;
+            return post > EnumServerDefinitions.EMPTY;
         } catch (error) {
             throw error;
         }
