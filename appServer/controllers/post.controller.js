@@ -270,7 +270,7 @@ class PostController {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
-                await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
+                await PostFileService.addPostFiles(post.id, fileIds, transaction);
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);
