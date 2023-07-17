@@ -247,26 +247,28 @@ const JoinClassedStudent = () => {
                             <Dropdown
                                 overlay={
                                     <Menu>
-                                        {isDataNoti.map((item: any) => (
-                                            <Spin size="default" spinning={loading}>
-                                                <Menu.Item key={item.id}>
-                                                    <button
-                                                        onClick={() => handlePassPageNoti(item)}
-                                                        className={`${colorBg(
-                                                            item.read,
-                                                        )} hover:text-black  hover:bg-slate-400 transition duration-500 w-full h-auto py-2 px-2 border-2 rounded-md flex flex-col items-center gap-x-2`}
-                                                    >
-                                                        <span className="flex flex-col">
-                                                            <span className="font-medium">{item.class_name}</span>
-                                                        </span>
-                                                        <span className="flex gap-x-3">
-                                                            <span>{item.message}</span>
-                                                            <span>{handleFormatDate(item.create_date)}</span>
-                                                        </span>
-                                                    </button>
-                                                </Menu.Item>
-                                            </Spin>
-                                        ))}
+                                        <Spin size="default" spinning={loading}>
+                                            <div className="max-h-[28rem] overflow-auto">
+                                                {isDataNoti.map((item: any) => (
+                                                    <Menu.Item key={item.id}>
+                                                        <button
+                                                            onClick={() => handlePassPageNoti(item)}
+                                                            className={`${colorBg(
+                                                                item.read,
+                                                            )} hover:text-black  hover:bg-slate-400 transition duration-500 w-full h-auto py-2 px-2 border-2 rounded-md flex flex-col items-center gap-x-2`}
+                                                        >
+                                                            <span className="flex flex-col">
+                                                                <span className="font-medium">{item.class_name}</span>
+                                                            </span>
+                                                            <span className="flex gap-x-3">
+                                                                <span>{item.message}</span>
+                                                                <span>{handleFormatDate(item.create_date)}</span>
+                                                            </span>
+                                                        </button>
+                                                    </Menu.Item>
+                                                ))}
+                                            </div>
+                                        </Spin>
                                     </Menu>
                                 }
                                 trigger={['click']}

@@ -16,11 +16,12 @@ import { useParams } from 'react-router-dom';
 import utc from 'dayjs/plugin/utc';
 import CheckBoxAll from '../../components/CheckBoxAll';
 import { MdKeyboardArrowDown } from 'react-icons/md';
-dayjs.extend(utc);
+import Notification from '../../components/Notification';
+// dayjs.extend(utc);
 
 const { TextArea } = Input;
 dayjs.locale('en');
-dayjs.extend(utc);
+// dayjs.extend(utc);
 interface Option {
     id: number;
     answer: string;
@@ -211,14 +212,13 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
     };
 
     const handleStartDateChange = (date: any) => {
-        const formattedDate = dayjs.utc(date).format('DD-MM-YYYY HH:mm');
-        console.log('Giờ bắt đầu (UTC):', formattedDate);
+        const formattedStartDate = dayjs(date).format('DD-MM-YYYY HH:mm');
+        console.log('Giờ bắt đầu (UTC):', formattedStartDate);
         setStartDate(date);
     };
-
     const handleEndDateChange = (date: Dayjs | null, dateString: string) => {
-        const formattedDate = date ? date.format('DD-MM-YYYY HH:mm') : '';
-        console.log('Hạn Nộp:', formattedDate);
+        const formattedEndDate = dayjs(date).format('DD-MM-YYYY HH:mm');
+        console.log('Hạn Nộp:', formattedEndDate);
         setEndDate(date);
     };
 
@@ -258,8 +258,8 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
             };
         });
         console.log(questionsWithoutId);
-        const formattedEndDate = endDate ? dayjs.utc(endDate).format('YYYY-MM-DD HH:mm') : null;
-        const formattedStartDate = startDate ? dayjs.utc(startDate).format('YYYY-MM-DD HH:mm') : null;
+        const formattedEndDate = endDate ? dayjs(endDate).format('YYYY-MM-DD HH:mm') : null;
+        const formattedStartDate = startDate ? dayjs(startDate).format('YYYY-MM-DD HH:mm') : null;
         const config = HeaderToken.getTokenConfig();
         // Tiếp tục xử lý dữ liệu đã format ở đây, ví dụ: gửi lên server
         const formData = {
@@ -282,6 +282,12 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
             onFetchData();
         });
     };
+    // const onChangeDate = (startDate: any, finshDate: any) => {
+    //     if (startDate > finshDate) {
+    //         return Notification('warning', 'Thông báo', 'Ngày bắt đầu phải nhỏ hơn ngày kết thúc');
+    //     }
+    //     return null;
+    // };
     const handleButtonCancel = () => {
         setTitle('');
         setInstruction('');
@@ -519,7 +525,7 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
 
                                 <div className="flex gap-x-2 justify-around items-center px-2 mt-5">
                                     <div className="flex flex-col">
-                                        <label htmlFor="">Giờ bắt đầu</label>
+                                        <label htmlFor="">Bắt đầu</label>
                                         <DatePicker
                                             value={startDate}
                                             onChange={handleStartDateChange}
@@ -528,7 +534,7 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label htmlFor="">Hạn Nộp</label>
+                                        <label htmlFor="">Kết thúc</label>
                                         <DatePicker
                                             value={endDate}
                                             onChange={handleEndDateChange}

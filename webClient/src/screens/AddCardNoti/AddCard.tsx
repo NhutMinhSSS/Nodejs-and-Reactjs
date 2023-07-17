@@ -298,7 +298,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         // formData.append('file', file);
         // Gọi API edit với dữ liệu trong formData
         console.log('đáadsd', formData);
-
         // Example:
         // axios
         //     .post('/api/edit', formData)

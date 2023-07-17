@@ -220,11 +220,19 @@ const DetailExcercise = () => {
         const formatFinishDate = dayjs(isData?.finish_date).format(' DD/MM/YYYY HH:mm:ss');
         const currentDay = dayjs().format('DD/MM/YYYY HH:mm:ss');
         if (currentDay < formatStartDate) {
-            Notification('info', 'Thông báo', `Chưa tới giờ bắt đầu làm bài!!! Giờ bắt đầu ${formatStartDate}`);
+            Notification(
+                'info',
+                'Thông báo',
+                `Chưa tới giờ bắt đầu làm bài!!! Giờ bắt đầu ${formatStartDate} giờ kết thúc ${formatFinishDate}`,
+            );
+        } else if (currentDay > formatFinishDate) {
+            Notification('info', 'Thông báo', `Đã quá thời hạn làm bài `);
         } else {
             navigate(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student/test`);
         }
+        console.log(currentDay, formatFinishDate);
     };
+
     const [send, setSend] = useState(false);
     const handleSubmitFile = () => {
         const config = HeaderToken.getTokenConfig();

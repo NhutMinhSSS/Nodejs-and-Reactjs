@@ -204,9 +204,9 @@ const JoinMark = () => {
                 <div>
                     <div className="h-screen grid grid-cols-1 grid-rows-[auto,1fr,auto] ">
                         <Header className="bg-blue-400 text-xl grid items-center">Bài Kiểm Tra</Header>
-                        <div>{send ? 'Đang lưu ...' : ''}</div>
                         <div className="p-5 grid justify-center ">
                             <div className="justify-center flex">
+                                <div>{send ? 'Đang lưu ...' : ''}</div>
                                 <div className="w-[50rem]">
                                     {isData?.list_questions_answers.map((asw, index) => (
                                         <div key={asw.id} className="mb-4 bg-gray-300 rounded-md px-4 py-4 ">
