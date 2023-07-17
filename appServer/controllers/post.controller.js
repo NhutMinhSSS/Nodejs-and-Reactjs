@@ -256,15 +256,7 @@ class PostController {
             }
             if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
                 //
-                const isRemove = await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
-                if (!isRemove) {
-                    if (req.directoryPath) {
-                        fs.removeSync(req.directoryPath);
-                    }
-                    await transaction.rollback();
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                        EnumMessage.ERROR_DELETE);
-                }
+                await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
             }
             if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
