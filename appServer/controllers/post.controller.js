@@ -147,7 +147,7 @@ class PostController {
                 const invertedAnswer = req.body.inverted_answers || 0;
                 const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
-                if (startDate <= finishDate ) {
+                if (startDate >= finishDate ) {
                     if (req.directoryPath) {
                         fs.removeSync(req.directoryPath);
                     }
@@ -251,7 +251,7 @@ class PostController {
                 const finishDate = req.body.finish_date;
                 const invertedQuestion = req.body.inverted_question;
                 const invertedAnswer = req.body.inverted_answer;
-                if (startDate <= finishDate ) {
+                if (startDate >= finishDate ) {
                     if (req.directoryPath) {
                         fs.removeSync(req.directoryPath);
                     }
