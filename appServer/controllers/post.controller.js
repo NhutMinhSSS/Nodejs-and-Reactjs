@@ -214,7 +214,7 @@ class PostController {
         const content = req.body.content;
         const topicId = req.body.topic_id;
         //const postCategoryId = req.body.post_category_id;
-        const listFileRemove = req.body.list_file_remove;
+        const listFileRemove = JSON.parse(req.body.list_files_remove) || [];
         const files = req.files;
         const postIdParseInt = parseInt(postId);
         const transaction = await sequelize.transaction();

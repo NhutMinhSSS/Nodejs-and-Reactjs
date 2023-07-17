@@ -304,6 +304,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         formData.append('post_id', selectedItemEditNews.id.toString());
         formData.append('classroom_id', classroom_id.toString());
         // formData.append('file', file);
+        formData.append('list_files_remove', JSON.stringify(removeFile));
         selectedFile.forEach((item) => {
             formData.append('files', item);
         });
@@ -598,6 +599,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                             className="mt-5 max-h-60 overflow-auto"
                             listType="picture"
                             multiple
+                            fileList={selectedFile}
                             beforeUpload={(file: any) => {
                                 handleFileUpload(file);
                                 return false; // Prevent file from being uploaded immediately
