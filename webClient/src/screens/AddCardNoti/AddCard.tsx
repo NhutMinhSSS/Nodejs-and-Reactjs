@@ -11,7 +11,7 @@ import {
     MdOutlineFileUpload,
     MdOutlineImage,
 } from 'react-icons/md';
-import { Button, Input, Modal, Progress, Spin, Tooltip, Upload } from 'antd';
+import { Button, Input, Modal, Progress, Spin, Tooltip, Upload, notification } from 'antd';
 import axios from 'axios';
 import HeaderToken from '../../common/utils/headerToken';
 import SystemConst from '../../common/consts/system_const';
@@ -23,7 +23,7 @@ import '../scss/style.scss';
 import TextArea from 'antd/es/input/TextArea';
 import CustomButton from '../../components/CustomButton';
 
-interface File {
+interface Files {
     file_name: string;
     file_type: string;
     file_id: number;
@@ -32,6 +32,7 @@ interface News {
     id: number;
     title: string;
     content: string;
+    files: Files[];
 }
 const BASE_URL = `${SystemConst.DOMAIN}`;
 const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
@@ -46,6 +47,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [progressbar, setProgressbar] = useState('none');
     const [postList, setPostList] = useState([]);
     const [editNew, setEditNew] = useState<News[]>([]);
+    const [getNew, setGetNew] = useState<News>();
     useEffect(() => {
         setPostList(data);
         setEditNew(data);
@@ -249,7 +251,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     const [showEdit, setShowEdit] = useState(false);
     const [editTitle, setEditTitle] = useState('');
     const [editContent, setEditContent] = useState('');
-    const [itemEdit, setItemEdit] = useState<{ post_category_id?: number; file: string } | null>(null);
+    const [itemEdit, setItemEdit] = useState<{ post_category_id?: number; files: Files[] } | null>(null);
     const [selectedItemEditNews, setSelectedItemEditNews] = useState<{
         id?: number;
         content: string;
@@ -257,8 +259,16 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     } | null>(null);
     const [file, setFile] = useState(null);
     const [showDelete, setShowDelete] = useState(false);
-    const handleEditNews = () => {
+    const handleEditNews = (item: {
+        id?: number | undefined;
+        post_category_id?: number | undefined;
+        content: string;
+        title: string;
+        files: Files[];
+    }) => {
         setShowEdit(true);
+        setSelectedItemEditNews(item);
+        setItemEdit(item);
     };
     const handleCancelEdit = () => {
         setShowEdit(false);
@@ -270,16 +280,8 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             title: e.target.value || null,
         });
     };
-    const handleEdit = (item: {
-        id?: number | undefined;
-        post_category_id?: number | undefined;
-        content: string;
-        title: string;
-        file: string;
-    }) => {
-        handleEditNews();
-        setSelectedItemEditNews(item);
-        setItemEdit(item);
+    const handleEdit = () => {
+        //handleEditNews();
         // const result = postListEdit
         //     .filter((post) => post.id === id)
         //     .map((post) => ({ title: post.title, content: post.content }));
@@ -292,12 +294,34 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         // const edit = {
         //     title:
         // }
-        const formData = new FormData();
-        formData.append('title', editTitle);
-        formData.append('content', editContent);
-        // formData.append('file', file);
-        // Gọi API edit với dữ liệu trong formData
-        console.log('đáadsd', formData);
+        const config = HeaderToken.getTokenConfig();
+        if (selectedItemEditNews?.id && classroom_id) {
+            const formData = new FormData();
+            //formData.append('title', editTitle);
+            formData.append('content', selectedItemEditNews.content);
+            formData.append('post_id', selectedItemEditNews.id.toString());
+            formData.append('classroom_id', classroom_id.toString());
+            // formData.append('file', file);
+            formData.append('list_files_remove', JSON.stringify(removeFile));
+            selectedFile.forEach((item) => {
+                formData.append('files', item);
+            });
+
+            // Gọi API edit với dữ liệu trong formData
+            axios
+                .put(`${SystemConst.DOMAIN}/posts/update-post`, formData, config)
+                .then(() => {
+                    Notification('success', 'Thông báo', 'Cập nhật thành công');
+                    onFetchData();
+                    setShowEdit(false);
+                })
+                .catch(() => {
+                    Notification('error', 'Lỗi', 'Không thể cập nhật');
+                });
+        } else {
+            Notification('error', 'Lỗi', 'Thiếu thông tin');
+        }
+
         // Example:
         // axios
         //     .post('/api/edit', formData)
@@ -311,6 +335,17 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         //         // Xử lý lỗi
         //         console.error(error);
         //     });
+    };
+    const [removeFile, setRemoveFile] = useState<number[]>([]);
+    const handleRemoveFileInSnubmit = (idFile: number) => {
+        setRemoveFile((prevRemoveFile) => [...prevRemoveFile, idFile]);
+        if (itemEdit) {
+            const newEdit = {
+                ...itemEdit,
+                files: itemEdit?.files.filter((file) => file.file_id !== idFile) ?? [],
+            };
+            setItemEdit(newEdit);
+        }
     };
 
     return (
@@ -463,7 +498,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                         post_category_id={item.post_category_id}
                                         item={item}
                                         onDelete={handleDetele}
-                                        onEdit={() => handleEdit(item)}
+                                        onEdit={() => handleEditNews(item)}
                                     />
                                 </button>
                             </div>
@@ -505,7 +540,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                     className="customModal"
                     footer={
                         <div className="text-end mr-5 mt-10">
-                            <Button type="primary" onClick={(item: any) => handleEdit(item)}>
+                            <Button type="primary" onClick={handleEdit}>
                                 Sửa
                             </Button>{' '}
                         </div>
@@ -530,13 +565,45 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                 onChange={(e) => handleContentEditNews({ target: { value: e.target.value } })}
                             />
                         </div>
+                        <div className=" overflow-auto max-h-40 mb-2">
+                            {itemEdit?.files &&
+                                itemEdit?.files.map((item: any) => (
+                                    <div className="border-2 p-2 flex flex-row max-h-40  gap-y-3 items-center">
+                                        <div>
+                                            {['image/jpg', 'image/jpeg', 'image/png'].includes(item.file_type) ? (
+                                                <div className="w-10 h-10">
+                                                    <MdOutlineImage size={32} />
+                                                </div>
+                                            ) : (
+                                                <div className="w-10 h-10">
+                                                    <MdOutlineFilePresent size={32} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="truncate">{item.file_name}</div>
+                                        <Button
+                                            type="default"
+                                            onClick={() => {
+                                                handleRemoveFileInSnubmit(item.file_id);
+                                            }}
+                                            danger
+                                            shape="circle"
+                                        >
+                                            X
+                                        </Button>
+                                    </div>
+                                ))}
+                        </div>
                         <Upload
                             className="mt-5 max-h-60 overflow-auto"
                             listType="picture"
                             multiple
+                            fileList={selectedFile}
                             beforeUpload={(file: any) => {
+                                handleFileUpload(file);
                                 return false; // Prevent file from being uploaded immediately
                             }}
+                            onRemove={handleRemoveFile}
                         >
                             <Button>Upload File</Button>
                         </Upload>

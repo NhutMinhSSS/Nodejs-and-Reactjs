@@ -214,18 +214,28 @@ class PostController {
         const content = req.body.content;
         const topicId = req.body.topic_id;
         //const postCategoryId = req.body.post_category_id;
-        const listFileRemove = req.body.list_file_remove;
+        const listFileRemove = JSON.parse(req.body.list_files_remove) || [];
         const files = req.files;
         const postIdParseInt = parseInt(postId);
         const transaction = await sequelize.transaction();
         try {
             const post = await PostService.findPostById(postIdParseInt);
             if (!post) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
                 await transaction.rollback();
                 return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
                     EnumMessage.ERROR_POST.POST_NOT_EXISTS);
             }
-            await PostService.updatePost(post.id, title, content, topicId, transaction);
+            const isUpdate = await PostService.updatePost(post.id, title, content, topicId, transaction);
+            if (!isUpdate) {
+                if (req.directoryPath) {
+                    fs.removeSync(req.directoryPath);
+                }
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                    EnumMessage.ERROR_UPDATE);
+            }
             //const isUpdatePost = await PostFileService
             if (post.post_category_id !== EnumServerDefinitions.POST_CATEGORY.NEWS) {
                 const isPublic = req.body.is_public;
@@ -246,18 +256,13 @@ class PostController {
             }
             if (listFileRemove && listFileRemove.length > EnumServerDefinitions.EMPTY) {
                 //
-                const isRemove = await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
-                if (!isRemove) {
-                    await transaction.rollback();
-                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
-                        EnumMessage.ERROR_DELETE);
-                }
+                await PostFileService.deletePostFileByFileIds(listFileRemove, transaction);
             }
             if (files && files.length > EnumServerDefinitions.EMPTY) {
                 const listFiles = FormatUtils.formatFileRequest(files, accountId);
                 const newFiles = await FileService.createFiles(listFiles, transaction);
                 const fileIds = newFiles.map(item => item.id);
-                await PostFileService.addPostFiles(newPost.id, fileIds, transaction);
+                await PostFileService.addPostFiles(post.id, fileIds, transaction);
             }
             await transaction.commit();
             return ServerResponse.createSuccessResponse(res, SystemConst.STATUS_CODE.SUCCESS);

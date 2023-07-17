@@ -297,7 +297,7 @@ const DetailExcercise = () => {
         console.log(file);
     };
     const handleRemoveFile = (file: any) => {
-        setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f !== file));
+        setSelectedFile((prevSelectedFile) => prevSelectedFile.filter((f) => f.uid !== file.uid));
     };
     const handleChangeIcon = (post_category_id: any) => {
         if (post_category_id === 2) {

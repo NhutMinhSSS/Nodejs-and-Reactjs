@@ -11,6 +11,7 @@ const PostRouter = express.Router();
 PostRouter.get('/:classroom_id/get-list-student-classroom', authorize([EnumServerDefinitions.ROLE.TEACHER]), StudentController.getStudentsByClassroomId);
 PostRouter.post('/create-post', authorize([EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER]), download.array('files'), checkRoomMember, PostController.createPost);
 PostRouter.get('/:post_id/post-detail', authorize([EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER]), checkPostBelongToClassroom, PostController.getPostDetail);
+PostRouter.put('/update-post', authorize([EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER]), download.array('files'), checkRoomMember, PostController.updatePost);
 PostRouter.delete('/:post_id/delete-post', authorize([EnumServerDefinitions.ROLE.STUDENT, EnumServerDefinitions.ROLE.TEACHER]), PostController.deletePost);
 
 module.exports = PostRouter;
