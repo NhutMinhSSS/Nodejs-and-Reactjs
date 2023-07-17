@@ -10,22 +10,17 @@ import SystemConst from '../../common/consts/system_const';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Notification from '../../components/Notification';
-const { Header, Content, Footer } = Layout;
+const { Header, Content, Footer, Sider } = Layout;
 const BASE_URL = `${SystemConst.DOMAIN}`;
-const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchData: any }) => {
-    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) =>  {
-       if (!selectAll) {
-        setListStudentExam(selectedOptions);
-       } else {
-        setListStudentExam([]);
-       }
-       setIsPublic(selectAll);
+const PopupCreateExercise = ({ visible, onFetchData }: { visible: any; onFetchData: any }) => {
+    const handleMenuListStudentChange = (selectedOptions: number[], selectAll: boolean) => {
+        if (!selectAll) {
+            setListStudentExam(selectedOptions);
+        } else {
+            setListStudentExam([]);
+        }
+        setIsPublic(selectAll);
     };
-    const ListStudent = [
-        { id: 1, label: 'Nguyễn Văn A', icon: <MdAccountCircle size={32} /> },
-        { id: 2, label: 'Nguyễn Văn B', icon: <MdAccountCircle size={32} /> },
-        { id: 3, label: 'Nguyễn Văn C', icon: <MdAccountCircle size={32} /> },
-    ];
     const [valueTitle, setValueTitle] = useState('');
     const [valueContent, setValueContent] = useState('');
     const [selectedFile, setSelectedFile] = useState<any[]>([]);
@@ -33,16 +28,18 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     const [listStudentExam, setListStudentExam] = useState<number[]>([]);
     const [isPublic, setIsPublic] = useState(true);
     const { classroom_id } = useParams();
+    console.log(classroom_id);
+
     useEffect(() => {
         handleFetchStudentList();
-    }, []);
+    }, [visible]);
     const handleFetchStudentList = () => {
-        const config = HeaderToken.getTokenConfig(); 
+        const config = HeaderToken.getTokenConfig();
         axios.get(`${SystemConst.DOMAIN}/posts/${classroom_id}/get-list-student-classroom`, config).then((response) => {
             const studentList = response.data.response_data;
             setListStudent(studentList);
         });
-    }
+    };
     const handleFetchUploadFile = () => {
         const token = localStorage.getItem('token');
         const config = {
@@ -76,7 +73,7 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                     setValueContent('');
                     setValueTitle('');
                     setSelectedFile([]);
-                    setListStudentExam([]);
+                    setListStudent([]);
                     visible();
                     onFetchData();
                     Notification('success', 'Thông báo', 'Tạo thành công bảng tin');
@@ -106,26 +103,27 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
     const handleButtonCancel = () => {
         setValueContent('');
         setValueTitle('');
+        setListStudent([]);
         setSelectedFile([]);
         visible();
     };
     return (
         <>
-            <Layout>
-                <form action="" onSubmit={handleSubmit}>
-                    <Header className="bg-blue-400 h-16 flex items-center justify-between">
-                        <div className="">
-                            <div className="ml-10 text-xl text-gray-200 font-sans flex items-center gap-x-3">
-                                <div className="bg-blue-400 text-indigo-500 text-2xl p-1 rounded-2xl">
-                                    <MdOutlineEventNote></MdOutlineEventNote>
-                                </div>
-                                <div> Bài Tập</div>
+            <form action="" onSubmit={handleSubmit}>
+                <Header className="bg-blue-400 h-16 flex items-center justify-between">
+                    <div className="">
+                        <div className="ml-10 text-xl text-gray-200 font-sans flex items-center gap-x-3">
+                            <div className="bg-blue-400 text-indigo-500 text-2xl p-1 rounded-2xl">
+                                <MdOutlineEventNote></MdOutlineEventNote>
                             </div>
+                            <div> Bài Tập</div>
                         </div>
-                    </Header>
+                    </div>
+                </Header>
+                <Layout>
                     <Content>
                         <div className="flex justify-between">
-                            <div className="border-slate-300 border-r-2 w-full h-full  p-10">
+                            <div className="w-full h-full  p-10">
                                 <div className="mb-5 ">
                                     <div className="relative mb-3 mt-2 px-2" data-te-input-wrapper-init>
                                         <textarea
@@ -182,50 +180,49 @@ const PopupCreateExercise = ({ visible, onFetchData }: { visible: any, onFetchDa
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-[20%] p-10">
-                                <div>
-                                    <Dropdown
-                                        overlay={
-                                            <Menu className="w-full fixed ">
-                                                <CheckBoxAll
-                                                    options={listStudent}
-                                                    onChange={handleMenuListStudentChange}
-                                                />
-                                            </Menu>
-                                        }
-                                        placement="bottom"
-                                        trigger={['click']}
-                                        overlayClassName="custom-dropdown-menu"
-                                        overlayStyle={{
-                                            width: '240px',
-                                            height: '250px',
-                                            padding: '10px',
-                                            gap: '10px',
-                                        }}
-                                    >
-                                        <Button className="gap-x-1">
-                                            Dành cho
-                                            <span>
-                                                <MdKeyboardArrowDown />
-                                            </span>
-                                        </Button>
-                                    </Dropdown>
-                                </div>
-                            </div>
                         </div>
                     </Content>
-                    <Footer className="bg-slate-100 p-20">
-                        <div className="w-full h-full justify-end flex  gap-x-2">
-                            <Button disabled={!valueTitle} htmlType="submit" type="primary">
-                                Gửi
-                            </Button>
-                            <Button onClick={handleButtonCancel} type="primary" danger>
-                                Hủy
-                            </Button>
+                    <Sider style={{ background: '#f0f0f0' }} className="w-[40%]">
+                        <div className="mt-10 px-2">
+                            <div>Dành cho</div>
+
+                            <Dropdown
+                                overlay={
+                                    <Menu className="w-full fixed max-h-60 overflow-auto">
+                                        <CheckBoxAll options={listStudent} onChange={handleMenuListStudentChange} />
+                                    </Menu>
+                                }
+                                placement="bottom"
+                                trigger={['click']}
+                                overlayClassName="custom-dropdown-menu"
+                                overlayStyle={{
+                                    width: '240px',
+                                    height: '250px',
+                                    padding: '10px',
+                                    gap: '10px',
+                                }}
+                            >
+                                <Button className="gap-x-1">
+                                    Học viên
+                                    <span>
+                                        <MdKeyboardArrowDown />
+                                    </span>
+                                </Button>
+                            </Dropdown>
                         </div>
-                    </Footer>
-                </form>
-            </Layout>
+                    </Sider>
+                </Layout>
+                <Footer className="bg-slate-100 p-20">
+                    <div className="w-full h-full justify-end flex  gap-x-2">
+                        <Button disabled={!valueTitle} htmlType="submit" type="primary">
+                            Gửi
+                        </Button>
+                        <Button onClick={handleButtonCancel} type="primary" danger>
+                            Hủy
+                        </Button>
+                    </div>
+                </Footer>
+            </form>
         </>
     );
 };
