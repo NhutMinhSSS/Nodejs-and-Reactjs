@@ -165,6 +165,7 @@ const PopupCreateDocument = ({ visible, onFetchData }: { visible: any; onFetchDa
                                             listType="picture"
                                             multiple
                                             showUploadList={{ showRemoveIcon: true }}
+                                            fileList={selectedFile}
                                             accept=".png,.jpeg,.jpg,.pdf,.docx,.doc,.pptx,.xlsx,.rar,.zip"
                                             beforeUpload={(file) => {
                                                 handleFileUpload(file);

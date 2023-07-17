@@ -8,13 +8,19 @@ import ErrorAlert from '../../common/Screens/ErrorAlert';
 import Notification from '../../components/Notification';
 import UnauthorizedError from '../../common/exception/unauthorized_error';
 import { Button, Input, Modal } from 'antd';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 const { TextArea } = Input;
 interface Student {
     id: number;
     submission: number;
     total_score: number;
+    finish_date: string;
     first_name: string;
     last_name: string;
+    file: File[];
 }
 interface Data {
     id: number;
@@ -165,7 +171,7 @@ const DetailTestStudent = ({
     const handleChange = () => {
         return (
             <>
-                <div>Ngày nộp: </div>
+                <div > {isStudent?.submission === 1  || isStudent?.submission === 2?  <div className='flex justify-between'> <div>Ngày nộp:</div><div>{handleFormatDate(isStudent?.finish_date)}</div></div> :''}</div>
                 <div className="flex justify-center gap-x-5 w-[20rem]">
                     <div className="w-[70%]">
                         {isStudent?.submission === 1
@@ -174,8 +180,8 @@ const DetailTestStudent = ({
                             ? 'Đã chấm điểm'
                             : 'Chưa nộp'}
                     </div>
-                    <div className="w-[30%]">
-                        {pointsValue} <span> /100</span>
+                    <div className="w-[30%] flex justify-between">
+                        <div> {pointsValue}/100</div>
                     </div>
                 </div>
             </>
@@ -273,6 +279,9 @@ const DetailTestStudent = ({
             return 'Chưa chấm';
         }
         return 'Không làm';
+    };    
+    const handleFormatDate = (formatDate: any) => {
+        return dayjs(formatDate).format('DD/MM/YYYY HH:mm');
     };
     return (
         <>
@@ -305,7 +314,7 @@ const DetailTestStudent = ({
             </div>
             {(isStudent?.submission === 1 || isStudent?.submission === 2) && post_category_id === 3 && (
                 <div className="flex flex-col gap-y-2 p-5 w-80  ">
-                    {isStudentExamFile?.files.map((file: any) => {
+                    {isStudent?.file.map((file: any) => {
                         return (
                             <button
                                 onClick={() => handlePopupDownloadFile(file.file_id)}

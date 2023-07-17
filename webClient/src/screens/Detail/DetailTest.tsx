@@ -49,7 +49,6 @@ const DetailTest = () => {
         axios.get(`${BASE_URL}/posts/${post_id}/post-detail`, config).then((response) => {
             const data_detail = response.data.response_data;
             const data_student_exam = response.data.response_data;
-            console.log('data: ', data_detail);
             setIsData(data_detail);
             setIsDataStudentExam(data_student_exam);
         });
@@ -102,10 +101,11 @@ const DetailTest = () => {
                                 </button>
                                 {isData?.student_exams.map((student) => (
                                     <button
-                                        className="flex p-4 hover:bg-slate-300 rounded-sm w-full"
+                                        className="flex flex-col p-4 hover:bg-slate-300 rounded-sm w-full"
                                         onClick={() => handleGetStudent(student.id)}
                                     >
-                                        {student.last_name} {student.first_name}
+                                        <div>{student.last_name} {student.first_name}</div>
+                                        <div>{student.submission === 0 && 'Chưa nộp' || student.submission === 1 && 'Đã nộp' || student.submission === 2 && 'Đã chấm điểm'}</div>
                                     </button>
                                 ))}
                             </div>
