@@ -260,6 +260,9 @@ const PopupCreateTest: React.FC<{ data: any; visible: any; onFetchData: any }> =
         console.log(questionsWithoutId);
         const formattedEndDate = endDate ? dayjs(endDate).format('YYYY-MM-DD HH:mm') : null;
         const formattedStartDate = startDate ? dayjs(startDate).format('YYYY-MM-DD HH:mm') : null;
+        if (formattedEndDate && formattedStartDate && formattedStartDate >= formattedEndDate) {
+            return Notification('error', 'Lỗi', 'Giờ bắt đầu nhỏ hơn giờ kết thúc');
+        }
         const config = HeaderToken.getTokenConfig();
         // Tiếp tục xử lý dữ liệu đã format ở đây, ví dụ: gửi lên server
         const formData = {
