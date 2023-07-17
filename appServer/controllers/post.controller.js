@@ -147,6 +147,14 @@ class PostController {
                 const invertedAnswer = req.body.inverted_answers || 0;
                 const isPublic = req.body.is_public || true;
                 const isHidden = req.body.is_hidden || false;
+                if (startDate <= finishDate ) {
+                    if (req.directoryPath) {
+                        fs.removeSync(req.directoryPath);
+                    }
+                    await transaction.rollback();
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.DATE_VALID);
+                }
                 //PostDetail
                 const newPostDetail = await PostDetailService.createPostDetail(newPost.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic, isHidden, transaction);
                 //student exam
@@ -243,6 +251,14 @@ class PostController {
                 const finishDate = req.body.finish_date;
                 const invertedQuestion = req.body.inverted_question;
                 const invertedAnswer = req.body.inverted_answer;
+                if (startDate <= finishDate ) {
+                    if (req.directoryPath) {
+                        fs.removeSync(req.directoryPath);
+                    }
+                    await transaction.rollback();
+                    return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.BAD_REQUEST,
+                        EnumMessage.DATE_VALID);
+                }
                 await PostDetailService.updatePostDetail(post.id, startDate, finishDate, invertedQuestion, invertedAnswer, isPublic);
                 const newListStudentExams = req.body.list_student_exams;
                 if (newListStudentExams && newListStudentExams.length > EnumServerDefinitions.EMPTY) {

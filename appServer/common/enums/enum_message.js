@@ -73,6 +73,8 @@ class EnumMessage{
     static TEACHER_NOT_SUBJECT = `Teacher not assigned to subject`;
     //File not exists
     static FILE_NOT_EXISTS = 'File not exists';
+    //Date valid
+    static DATE_VALID = 'Date valid';
     //Error post
     static ERROR_POST = {
         //Post Not exists
