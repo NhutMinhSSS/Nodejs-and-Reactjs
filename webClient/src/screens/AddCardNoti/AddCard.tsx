@@ -259,15 +259,13 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
     } | null>(null);
     const [file, setFile] = useState(null);
     const [showDelete, setShowDelete] = useState(false);
-    const handleEditNews = (
-        item: {
-            id?: number | undefined;
-            post_category_id?: number | undefined;
-            content: string;
-            title: string;
-            files: Files[];
-        }
-    ) => {
+    const handleEditNews = (item: {
+        id?: number | undefined;
+        post_category_id?: number | undefined;
+        content: string;
+        title: string;
+        files: Files[];
+    }) => {
         setShowEdit(true);
         setSelectedItemEditNews(item);
         setItemEdit(item);
@@ -299,24 +297,27 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
         const config = HeaderToken.getTokenConfig();
         if (selectedItemEditNews?.id && classroom_id) {
             const formData = new FormData();
-        //formData.append('title', editTitle);
-        formData.append('content', selectedItemEditNews.content);
-        formData.append('post_id', selectedItemEditNews.id.toString());
-        formData.append('classroom_id', classroom_id.toString());
-        // formData.append('file', file);
-        formData.append('list_files_remove', JSON.stringify(removeFile));
-        selectedFile.forEach((item) => {
-            formData.append('files', item);
-        });
-        
-        // Gọi API edit với dữ liệu trong formData
-        axios.put(`${SystemConst.DOMAIN}/posts/update-post`, formData, config).then(()=> {
-            Notification('success', 'Thông báo', 'Cập nhật thành công');
-            onFetchData();
-            setShowEdit(false);
-        }).catch(()=> {
-            Notification('error', 'Lỗi', 'Không thể cập nhật');
-        })
+            //formData.append('title', editTitle);
+            formData.append('content', selectedItemEditNews.content);
+            formData.append('post_id', selectedItemEditNews.id.toString());
+            formData.append('classroom_id', classroom_id.toString());
+            // formData.append('file', file);
+            formData.append('list_files_remove', JSON.stringify(removeFile));
+            selectedFile.forEach((item) => {
+                formData.append('files', item);
+            });
+
+            // Gọi API edit với dữ liệu trong formData
+            axios
+                .put(`${SystemConst.DOMAIN}/posts/update-post`, formData, config)
+                .then(() => {
+                    Notification('success', 'Thông báo', 'Cập nhật thành công');
+                    onFetchData();
+                    setShowEdit(false);
+                })
+                .catch(() => {
+                    Notification('error', 'Lỗi', 'Không thể cập nhật');
+                });
         } else {
             Notification('error', 'Lỗi', 'Thiếu thông tin');
         }
@@ -346,7 +347,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             setItemEdit(newEdit);
         }
     };
-        
+
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -565,36 +566,34 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                             />
                         </div>
                         <div className=" overflow-auto max-h-40 mb-2">
-                                    {itemEdit?.files &&
-                                        itemEdit?.files.map((item: any) => (
-                                            <div className="border-2 p-2 flex flex-row max-h-40  gap-y-3 items-center">
-                                                <div>
-                                                    {['image/jpg', 'image/jpeg', 'image/png'].includes(
-                                                        item.file_type,
-                                                    ) ? (
-                                                        <div className="w-10 h-10">
-                                                            <MdOutlineImage size={32} />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="w-10 h-10">
-                                                            <MdOutlineFilePresent size={32} />
-                                                        </div>
-                                                    )}
+                            {itemEdit?.files &&
+                                itemEdit?.files.map((item: any) => (
+                                    <div className="border-2 p-2 flex flex-row max-h-40  gap-y-3 items-center">
+                                        <div>
+                                            {['image/jpg', 'image/jpeg', 'image/png'].includes(item.file_type) ? (
+                                                <div className="w-10 h-10">
+                                                    <MdOutlineImage size={32} />
                                                 </div>
-                                                <div className="truncate">{item.file_name}</div>
-                                                <Button
-                                                    type="default"
-                                                    onClick={() => {
-                                                        handleRemoveFileInSnubmit(item.file_id);
-                                                    }}
-                                                    danger
-                                                    shape="circle"
-                                                >
-                                                    X
-                                                </Button>
-                                            </div>
-                                        ))}
-                                </div>
+                                            ) : (
+                                                <div className="w-10 h-10">
+                                                    <MdOutlineFilePresent size={32} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="truncate">{item.file_name}</div>
+                                        <Button
+                                            type="default"
+                                            onClick={() => {
+                                                handleRemoveFileInSnubmit(item.file_id);
+                                            }}
+                                            danger
+                                            shape="circle"
+                                        >
+                                            X
+                                        </Button>
+                                    </div>
+                                ))}
+                        </div>
                         <Upload
                             className="mt-5 max-h-60 overflow-auto"
                             listType="picture"

@@ -85,12 +85,12 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
         // navigate(`/sinh-vien/class/${item['classroom_id']}`);
         if (item['read'] === false) {
             const data = {};
-            axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(()=> {
-            //window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
-            handleFetchData();
-        });
+            axios.patch(`${BASE_URL}/students/${item['id']}/student-read-notification`, data, config).finally(() => {
+                //window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+                handleFetchData();
+            });
         }
-         window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
+        window.location.replace(`/sinh-vien/class/${item['classroom_id']}`);
     };
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -163,24 +163,26 @@ const HeaderHomeStudent = ({ list_notification }: { list_notification: any }) =>
                         <Dropdown
                             overlay={
                                 <Menu>
-                                    {isDataNoti.map((item: any) => (
-                                        <Menu.Item className="max-h-96 h-auto overflow-auto" key={item.id}>
-                                            <button
-                                                onClick={() => handlePassPageNoti(item)}
-                                                className={`${colorBg(
-                                                    item.read,
-                                                )} hover:text-black  hover:bg-slate-400 transition duration-500 w-full h-auto py-2 px-2 border-2 rounded-md flex flex-col items-center gap-x-2`}
-                                            >
-                                                <span className="flex flex-col">
-                                                    <span className="font-medium">{item.class_name}</span>
-                                                </span>
-                                                <span className="flex gap-x-3">
-                                                    <span>{item.message}</span>
-                                                    <span>{handleFormatDate(item.create_date)}</span>
-                                                </span>
-                                            </button>
-                                        </Menu.Item>
-                                    ))}
+                                    <div className="max-h-[28rem] overflow-auto">
+                                        {isDataNoti.map((item: any) => (
+                                            <Menu.Item className="max-h-96 h-auto overflow-auto" key={item.id}>
+                                                <button
+                                                    onClick={() => handlePassPageNoti(item)}
+                                                    className={`${colorBg(
+                                                        item.read,
+                                                    )} hover:text-black  hover:bg-slate-400 transition duration-500 w-full h-auto py-2 px-2 border-2 rounded-md flex flex-col items-center gap-x-2`}
+                                                >
+                                                    <span className="flex flex-col">
+                                                        <span className="font-medium">{item.class_name}</span>
+                                                    </span>
+                                                    <span className="flex gap-x-3">
+                                                        <span>{item.message}</span>
+                                                        <span>{handleFormatDate(item.create_date)}</span>
+                                                    </span>
+                                                </button>
+                                            </Menu.Item>
+                                        ))}
+                                    </div>
                                 </Menu>
                             }
                             trigger={['click']}
