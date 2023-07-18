@@ -5,5 +5,6 @@ const checkPostBelongToClassroom = require('../../middlewares/check_post_classro
 const FileRouter = express.Router();
 
 FileRouter.get('/:post_id/:file_id/download', checkPostBelongToClassroom, FileController.sendFileToClient);
+FileRouter.get('/stream/file_id', FileController.showFileToClient);
 
 module.exports = FileRouter;

@@ -8,6 +8,31 @@ const path = require("path");
 
 
 class FileController {
+    async showFileToClient(req, res) {
+        try {
+            const fileId = req.params.file_id;
+            const file = await FileService.findFileById(fileId);
+            if (!file) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.FILE_NOT_EXISTS);
+            }
+            const filePath = path.join(__dirname, '..', file.file_path, file.physical_name);
+            if (!filePath) {
+                return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.NOT_FOUND,
+                    EnumMessage.FILE_NOT_EXISTS);
+            }
+            // Thiết lập tiêu đề và loại nội dung của phản hồi
+            res.setHeader('Content-Type', file.file_type);
+          
+            // Đọc tệp tin và gửi dữ liệu streaming từ server tới client
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+        } catch (error) {
+            logger.error(error);
+            return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
+                EnumMessage.DEFAULT_ERROR);
+        }
+    }
     async sendFileToClient(req, res) {
         try {
             const fileId = req.params.file_id;
