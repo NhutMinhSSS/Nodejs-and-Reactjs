@@ -133,7 +133,7 @@ class PostService {
                                 },
                                 attributes: ['last_name', 'first_name']
                             }],
-                            attributes: ['id', 'role']
+                            attributes: ['id', 'role', 'avatar']
                         }],
                         as: 'comments',
                         attributes: ['id', 'content', 'comment_date', 'account_id'],
@@ -255,7 +255,7 @@ class PostService {
                             },
                             attributes: ['last_name', 'first_name']
                         }],
-                        attributes: ['id', 'role']
+                        attributes: ['id', 'role', 'avatar']
                     }],
                     as: 'comments',
                     attributes: ['id', 'content', 'comment_date', 'account_id'],

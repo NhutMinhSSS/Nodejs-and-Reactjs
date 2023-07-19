@@ -115,7 +115,7 @@ class FormatUtils {
                 account_id: comment.account_id
             }
             if (comment.Account.avatar) {
-                const imageData = fs.readFileSync(path.join(__dirname, '../', account.avatar));
+                const imageData = fs.readFileSync(path.join(__dirname, '../', comment.Account.avatar));
                 const base64Data = imageData.toString('base64');
                 result.avatar = `data:${file_type};base64,${base64Data}`
             }
