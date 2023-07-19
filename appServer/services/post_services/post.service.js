@@ -220,7 +220,7 @@ class PostService {
                         where: {
                             status: EnumServerDefinitions.STATUS.ACTIVE
                         },
-                        attributes: ['id', 'file_name', 'create_date', 'file_type']
+                        attributes: ['id', 'file_name', 'physical_name', 'file_type', 'file_path']
                     }],
                 }, {
                     model: PostDetail,
