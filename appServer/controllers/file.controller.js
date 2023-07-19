@@ -50,7 +50,8 @@ class FileController {
             const encodedFilename = encodeURIComponent(file.file_name);
             res.set('Content-Disposition', `attachment; filename="${encodedFilename}"`)
             res.set('Content-Type', file.file_type);
-            return res.sendFile(filePath);
+            const fileStream = fs.createReadStream(filePath);
+            return fileStream.pipe(res);
         } catch (error) {
             logger.error(error);
             return ServerResponse.createErrorResponse(res, SystemConst.STATUS_CODE.INTERNAL_SERVER,
