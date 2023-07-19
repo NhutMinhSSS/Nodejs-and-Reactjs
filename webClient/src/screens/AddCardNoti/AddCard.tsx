@@ -436,9 +436,8 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                     {postList.map((item: any) => (
                         <div
                             onClick={() => handleClick(item)}
-                            className={`flex justify-between bg-slate-200 ${
-                                item.post_category_id === 1 ? ' ' : 'hover:shadow-lg'
-                            } px-10 py-5 box-decoration-slice rounded-lg max-w-3xl cursor-pointer whitespace-pre-line`}
+                            className={`flex justify-between bg-slate-200 ${item.post_category_id === 1 ? ' ' : 'hover:shadow-lg'
+                                } px-10 py-5 box-decoration-slice rounded-lg max-w-3xl cursor-pointer whitespace-pre-line`}
                         >
                             <div className="flex gap-y-4 flex-col justify-start">
                                 <div className="flex flex-row items-center gap-x-2">
@@ -466,11 +465,8 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">
                                                         <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
-                                                            {['image/jpg', 'image/jpeg', 'image/png'].includes(
-                                                                file.file_type,
-                                                            ) ? (
+                                                            {file.file_type.startsWith('image/') ? (
                                                                 <div className="w-10 h-10">
-                                                                    {/* <MdOutlineImage size={32} /> */}
                                                                     <img src={file.file_path} alt="Hình ảnh" />
                                                                 </div>
                                                             ) : (

@@ -3,7 +3,6 @@ const SystemConst = require("../consts/system_const");
 const EnumServerDefinitions = require("../enums/enum_server_definitions");
 const moment = require("moment-timezone");
 const fs = require("fs");
-const path = require("path");
 
 
 class FormatUtils {
@@ -67,20 +66,20 @@ class FormatUtils {
 
     if (file_type.startsWith('image')) {
       // Đọc nội dung của tệp tin hình ảnh
-      const imageData = fs.readFileSync(path.join(__dirname, '..', file_path, physical_name));
+      const imageData = fs.readFileSync(path.join(__dirname, '../..', file_path, physical_name));
 
       // Mã hóa nội dung thành Base64
       const base64Data = imageData.toString('base64');
 
       return {
-        id,
+        file_id: id,
         file_name,
         file_type,
         file_path: `data:${file_type};base64,${base64Data}`,
       };
     } else {
       return {
-        id,
+        file_id: id,
         file_name,
         file_type,
       };
