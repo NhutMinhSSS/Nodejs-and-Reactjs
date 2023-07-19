@@ -24,7 +24,7 @@ import SystemConst from '../../../common/consts/system_const';
 import Notification from '../../../components/Notification';
 import UnauthorizedError from '../../../common/exception/unauthorized_error';
 import ErrorAlert from '../../../common/Screens/ErrorAlert';
-import { Button, Modal, Popconfirm, Upload } from 'antd';
+import { Avatar ,Button, Modal, Popconfirm, Upload } from 'antd';
 import './scss/style.scss';
 import utc from 'dayjs/plugin/utc';
 import CustomButtonDelete from '../../../components/CustomButtonDelete';
@@ -37,6 +37,7 @@ interface Comment {
     first_name: string;
     comment_date: string;
     account_id: number;
+    avatar: string;
 }
 interface File {
     file_id: number;
@@ -479,9 +480,9 @@ const DetailExcercise = () => {
                                     return (
                                         <div className="flex justify-between mt-4 gap-x-2" key={index}>
                                             <div className="flex">
-                                                <div>
+                                                <div className='mr-4'>
                                                     <div>
-                                                        <MdAccountCircle size={40} />
+                                                    <Avatar src={item.avatar} alt="Hình ảnh" size={45} shape="circle"/>
                                                     </div>
                                                 </div>
                                                 <div>
