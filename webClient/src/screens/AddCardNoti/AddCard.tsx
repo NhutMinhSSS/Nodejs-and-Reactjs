@@ -347,7 +347,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
             setItemEdit(newEdit);
         }
     };
-
     return (
         <>
             {progressbar === 'block' && !downloadComplete && (
@@ -471,7 +470,8 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                                                 file.file_type,
                                                             ) ? (
                                                                 <div className="w-10 h-10">
-                                                                    <MdOutlineImage size={32} />
+                                                                    {/* <MdOutlineImage size={32} /> */}
+                                                                    <img src={file.file_path} alt="Hình ảnh" />
                                                                 </div>
                                                             ) : (
                                                                 <div className="w-10 h-10">
@@ -631,3 +631,4 @@ const modules = {
 //     </div>
 // ))}
 // </div> */}
+

@@ -2,6 +2,7 @@ const path = require("path");
 const SystemConst = require("../consts/system_const");
 const EnumServerDefinitions = require("../enums/enum_server_definitions");
 const moment = require("moment-timezone");
+const fs = require("fs");
 
 
 class FormatUtils {
@@ -60,13 +61,30 @@ class FormatUtils {
     //// Format post
     //format file
     formatFile(listFile) {
-        return listFile.map(postFile => ({
-            file_id: postFile.File.id,
-            file_name: postFile.File.file_name,
-            file_type: postFile.File.file_type
-            // physical_name: postFile.File.physical_name,
-            // file_path: postFile.File.file_path
-        }));
+       return listFile.map(postFile => {
+    const { id, file_name, file_type } = postFile.File;
+
+    if (file_type.startsWith('image')) {
+      // Đọc nội dung của tệp tin hình ảnh
+      const imageData = fs.readFileSync(file_path);
+
+      // Mã hóa nội dung thành Base64
+      const base64Data = imageData.toString('base64');
+
+      return {
+        id,
+        file_name,
+        file_type,
+        file_path: `data:${file_type};base64,${base64Data}`,
+      };
+    } else {
+      return {
+        id,
+        file_name,
+        file_type,
+      };
+    }
+  });
     }
     //format account
     formatAccount(account) {
