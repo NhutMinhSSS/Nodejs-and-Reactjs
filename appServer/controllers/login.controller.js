@@ -39,6 +39,7 @@ class LoginController {
                         const base64Data = imageData.toString('base64');
                         result.avatar = `data:image;base64,${base64Data}`
                     }
+                    //New
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
                         result_message: EnumMessage.RESPONSE.SUCCESS,
                         ...result
