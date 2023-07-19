@@ -38,6 +38,10 @@ Account.init({
         defaultValue: 0,
         allowNull: false
     },
+    avatar: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     status: {
         type: DataTypes.SMALLINT,
         defaultValue: 1,

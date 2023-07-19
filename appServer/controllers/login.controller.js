@@ -32,6 +32,11 @@ class LoginController {
                         result.first_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.first_name : account.Student.first_name,
                             result.last_name = account.role === EnumServerDefinitions.ROLE.TEACHER ? account.Teacher.last_name : account.Student.last_name
                     }
+                    if (account.avatar) {
+                        const imageData = fs.readFileSync(path.join(__dirname, '../', account.avatar));
+                        const base64Data = imageData.toString('base64');
+                        result.avatar = `data:${file_type};base64,${base64Data}`
+                    }
                     return res.status(SystemConst.STATUS_CODE.SUCCESS).json({
                         result_message: EnumMessage.RESPONSE.SUCCESS,
                         ...result

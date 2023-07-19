@@ -95,7 +95,7 @@ class FormatUtils {
                 first_name: account.Teacher.first_name
             };
         } else {
-            // Nếu là học sinh (role = 2)
+            // Nếu là học sinh (role = 0)
             return {
                 last_name: account.Student.last_name,
                 first_name: account.Student.first_name
@@ -106,7 +106,7 @@ class FormatUtils {
     formatComments(listComments) {
         return listComments.map(comment => {
             const account = this.formatAccount(comment.Account);
-            return {
+            const result = {
                 id: comment.id,
                 content: comment.content,
                 comment_date: comment.comment_date,
@@ -114,6 +114,12 @@ class FormatUtils {
                 last_name: account.last_name,
                 account_id: comment.account_id
             }
+            if (comment.Account.avatar) {
+                const imageData = fs.readFileSync(path.join(__dirname, '../', account.avatar));
+                const base64Data = imageData.toString('base64');
+                result.avatar = `data:${file_type};base64,${base64Data}`
+            }
+            return result;
         });
     }
     //format post

@@ -467,7 +467,7 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                                                         <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
                                                             {file.file_type.startsWith('image/') ? (
                                                                 <div className="w-10 h-10">
-                                                                    <img src={file.file_path} alt="Hình ảnh" />
+                                                                    <img src={file.file_path} alt="Hình ảnh" loading='lazy'/>
                                                                 </div>
                                                             ) : (
                                                                 <div className="w-10 h-10">
