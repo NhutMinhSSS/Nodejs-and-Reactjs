@@ -98,7 +98,6 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    setModalDownloadFile(false);
                     Notification('success', 'Thông báo', 'Bạn đã tải 1 file thành công');
                 })
                 .catch((error) => {
@@ -134,9 +133,10 @@ const AddCard = ({ onFetchData, data }: { onFetchData: any; data: any }) => {
                     console.error(error);
                 })
                 .finally(() => {
-                    // setLoading(false);
+                    setLoading(false);
                     setDownloadComplete(false);
                 });
+                setModalDownloadFile(false);
         }
     };
     const handleFetchUploadFile = () => {
