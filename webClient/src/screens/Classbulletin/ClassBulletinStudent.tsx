@@ -5,14 +5,41 @@ import AddCard from '../AddCardNoti/AddCard';
 import { Link, useParams } from 'react-router-dom';
 import { MdContentCopy } from 'react-icons/md';
 import AddCardStudent from '../AddCardNoti/AddCardStudent';
-
+interface StudentDeadline {
+    id: number;
+    title: string;
+    finish_date: string;
+    // Các thuộc tính khác của đối tượng
+  }
 const ClassBulletinStudent: React.FC<{ onFetchData: any, data: any }> = ({ onFetchData, data }) => {
     const handleCopyClick = () => {
         // Logic để sao chép nội dung
         const textToCopy = data.class_code;
         navigator.clipboard.writeText(textToCopy);
     };
-    const dataPost = data.list_post;
+    const { classroom_id } = useParams();
+    const [studentDeadLine, setStudentDeadLine] = useState<StudentDeadline[]>([]);
+    useEffect(()=> {
+        handleCheckStudentExam();
+        console.log(studentDeadLine);
+        
+    }, []);
+    const handleCheckStudentExam = () => {
+        if (data.exam_deadline && data.exam_deadline.length > 0) {
+            data.exam_deadline.forEach((itemS: any) => {
+              const studentDeadLineItem = data.list_post.find((item: any) => item.id === itemS.id);
+              if (studentDeadLineItem) {
+                // Nếu tìm thấy phần tử tương ứng, thêm vào mảng state studentDeadLine
+                setStudentDeadLine((prev) => [...prev, studentDeadLineItem]);
+              }
+            });
+          }
+          
+    }
+    const handlePassPage = (post_id: any) => {
+        // navigate(`/giang-vien/class/${item['id']}`);
+        window.location.replace(`/sinh-vien/class/${classroom_id}/${post_id}/detail-student`);
+    };
     return (
         <div className="py-5">
             <div className="">
@@ -57,10 +84,10 @@ const ClassBulletinStudent: React.FC<{ onFetchData: any, data: any }> = ({ onFet
                         <div className="  bg-slate-200 rounded-lg h-auto w-52 m-15 p-3 mt-0">
                             <div className="font-bold text-lg ">Sắp đến hạn</div>
                             <div className="text-sm">
-                                <p>Bài tập 1</p>
-                                <p>Bài tập 2</p>
-                                <p>Bài tập 3</p>
-                                <p>Bài tập 4</p>
+                            {studentDeadLine&& studentDeadLine.map((item: any) => 
+                                (
+                                <button className= "border mt-2 mb-2 p-2" onClick={()=> handlePassPage(item.id)}> {item.title} </button>)
+                            )}
                             </div>
                             <Link className="flex justify-end" to="/AllExercises">
                                 Xem bài tập
@@ -68,7 +95,7 @@ const ClassBulletinStudent: React.FC<{ onFetchData: any, data: any }> = ({ onFet
                         </div>
                     </div>
                     <div className=" col-span-3 ">
-                        <AddCardStudent onFetchData= {onFetchData} data={dataPost}/>
+                        <AddCardStudent onFetchData= {onFetchData} data={data.list_post}/>
                     </div>
                 </div>
             </div>

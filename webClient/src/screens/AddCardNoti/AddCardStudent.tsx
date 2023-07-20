@@ -393,11 +393,9 @@ const AddCardStudent = ({ onFetchData, data }: { onFetchData: any; data: any }) 
                                                 <Tooltip title={file.file_name}>
                                                     <div className="p-1   ">
                                                         <div className="border-[1px] rounded-sm border-gray-400 p-2 flex items-center ">
-                                                            {['image/jpg', 'image/jpeg', 'image/png'].includes(
-                                                                file.file_type,
-                                                            ) ? (
+                                                        {file.file_type.startsWith('image/') ? (
                                                                 <div className="w-10 h-10">
-                                                                    <MdOutlineImage size={32} />
+                                                                    <img src={file.file_path} alt="Hình ảnh" loading='lazy'/>
                                                                 </div>
                                                             ) : (
                                                                 <div className="w-10 h-10">
