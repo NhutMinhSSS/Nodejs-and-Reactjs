@@ -43,6 +43,7 @@ const start = async (server, port) => {
     }
     catch (error) {
         logger.error(error);
+        return;
     }
 };
 start(httpsServer, portHttps);
